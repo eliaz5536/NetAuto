@@ -101,11 +101,17 @@ Make sure you provide the linux permission to execute the file before launching 
 chmod +x netauto
 ```
 
-Launch NetAuto bash script file by doing the following
+Launch NetAuto bash script file:
 ```shell
 ./netauto -i <TARGET_IP_ADDRESS>
 ```
+It will generate reports from NMAP that will display all ports that are running under the following target.
 
+Once it is generated, view the following ports and list all the ports that are reported for you to scan,
+by performing this following command:
+```
+./netauto -i <TARGET_IP_ADDRESS> -p <TARGET_PORTS>
+```
 
 # Usage 
 ```

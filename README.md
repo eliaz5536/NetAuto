@@ -93,7 +93,7 @@ sudo apt-get install python python2 python3 python3-pip pip pipx
 
 You can utilize the bash script by donwloading the git clone by the following:
 ```
-git clone <INSERT URL HERE>
+git clone https://github.com/eliaz5536/netauto.git
 ```
 
 Make sure you provide the linux permission to execute the file before launching the bash script:

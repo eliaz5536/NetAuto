@@ -144,7 +144,7 @@ Timing options:
 
 ```
 
-# Demonstration
+# Demos
 Default Scan
 ```
 

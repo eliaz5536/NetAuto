@@ -33,8 +33,57 @@ sudo apt-get install python python2 python3 python3-pip pip pipx
 These following tools need to be installed and put in /opt directory in order to utilize the following script:
 ```
 
-- list them over here
-
+nmap
+onesixtyone
+snmpwalk
+snmpcheck
+openssl
+ssh-audit
+ssh-keyscan
+dif
+finger
+ntpq
+impacket-rpcdump
+/usr/share/doc/python3-impacket/examples/rpcdump.py
+/usr/share/doc/python3-impacket/examples/rpcmap.py
+/opt/tools/MSRPC/IOXIDResolver.py
+nmblookup
+nbtscan
+enum4linux
+rpcclient
+netexec
+smbmap
+crackmapexec
+impacket-looksupid
+ldapsearch
+ike-scan
+curl
+rsync
+python2 /opt/tools/IPP/PRET/pret.py
+rusers
+rpcinfo
+python /opt/tools/Squid/spose/spose.py
+svn
+sudo python3 /opt/tools/CISCO_Smart_Install/SIETpy3/siet.py
+opalopc
+python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py
+GlusterFS/gluster
+nikto
+whatweb
+webtech
+webanalyze
+apiti
+wafw00f
+/opt/tools/HTTP/WhatWaf/whatwaf
+cmsmap
+wpscan
+joomscan
+python3 /opt/tools/HTTP/CMSeek/cmseek.py
+redis-cli
+oscanner
+tnscmd10g
+odat sidguesser
+odat-libc2.12-x86_64 passwordguesser -s $IP -d XE --accounts-file accounts/default.txt 
 ```
 
 Perform those following commands if you want to install simultaneously:

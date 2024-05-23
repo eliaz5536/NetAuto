@@ -1,0 +1,1675 @@
+#!/bin/bash
+
+echo "
+            ███╗   ██╗███████╗████████╗██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗              
+            ████╗  ██║██╔════╝╚══██╔══╝██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝              
+            ██╔██╗ ██║█████╗     ██║   ██║ █╗ ██║██║   ██║██████╔╝█████╔╝               
+            ██║╚██╗██║██╔══╝     ██║   ██║███╗██║██║   ██║██╔══██╗██╔═██╗               
+            ██║ ╚████║███████╗   ██║   ╚███╔███╔╝╚██████╔╝██║  ██║██║  ██╗              
+            ╚═╝  ╚═══╝╚══════╝   ╚═╝    ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝              
+███████╗███╗   ██╗██╗   ██╗███╗   ███╗███████╗██████╗  █████╗ ████████╗ ██████╗ ██████╗ 
+██╔════╝████╗  ██║██║   ██║████╗ ████║██╔════╝██╔══██╗██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
+█████╗  ██╔██╗ ██║██║   ██║██╔████╔██║█████╗  ██████╔╝███████║   ██║   ██║   ██║██████╔╝
+██╔══╝  ██║╚██╗██║██║   ██║██║╚██╔╝██║██╔══╝  ██╔══██╗██╔══██║   ██║   ██║   ██║██╔══██╗
+███████╗██║ ╚████║╚██████╔╝██║ ╚═╝ ██║███████╗██║  ██║██║  ██║   ██║   ╚██████╔╝██║  ██║
+╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
+
+"
+
+###############################################################
+# Protocols Scans 				 	      # 
+###############################################################
+dhcp_scan() {
+	mkdir -p Netauto/$IP/Protocols/DHCP
+	mkdir -p Netauto/$IP/Protocols/DHCP/nmap
+	sudo nmap -sU --script dhcp-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/dhcp_discover.txt
+	sudo nmap -sU --script broadcast-dhcp-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp_discover.txt
+	sudo nmap -sU --script broadcast-dhcp6-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp_discover.txt
+}
+
+snmp_scan() {
+	mkdir -p Netauto/$IP/Protocols/SNMP
+	mkdir -p Netauto/$IP/Protocols/SNMP/nmap
+	nmap -p 161 -sU -oA nmap_udp_snmp $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-udp.txt
+	nmap -sU --script snmp-info -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-info.txt
+	nmap -sU --script snmp-interfaces -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-interfaces.txt
+	nmap -sU --script snmp-ios-config -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-ios-config.txt
+	nmap -sU --script snmp-netstat -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-netstat.txt
+	nmap -sU --script snmp-processes -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-processes.txt
+	nmap -sU --script snmp-sysdescr -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmao/snmp-sysdescr.txt
+	nmap -sU --script snmp-win32-services -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-services.txt
+	nmap -sU --script snmp-win32-shares -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-shares.txt
+	nmap -sU --script snmp-win32-software -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-software.txt
+	nmap -sU --script snmp-win32-users -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-users.txt
+	nmap -sU --script snmp-hh3c-logins -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-hh3c-logins.txt
+	# nmap -sU --script snmp-brute -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-brute.txt
+	# nmap -sU --script snmp* -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp_all.txt
+	nmap -sU --script "snmp* and not brute" -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp_all.txt
+
+	onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp.txt $IP | tee Netauto/$IP/Protocols/SNMP/onsixtyone-bruteforce.txt
+
+	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk
+	snmpwalk -v1 -c public -m ALL $IP:161 | tee Netauto/$IP/Protocols/SSH/snmpwalk/ssnmp-snmpwalk-v1.txt
+	snmpwalk -v2c -c public $IP | tee Netauto/$IP/Protocols/SSH/snmpwalk/ssnmp-snmpwalk-v2c.txt
+	snmpwalk -v2c -c public -m ALL $IP:161 | tee Netauto/$IP/Protocols/SSH/snmpwalk/ssnmp-snmpwalk-v2c-full.txt
+	snmpwalk -v3 -l noAuthNoPriv -c public -m ALL $IP:161 | tee Netauto/$IP/Protocols/SSH/snmpwalk/ssnmp-snmpwalk-v3.txt
+
+	mkdir -p Netauto/$IP/Protocols/SNMP/snmp-check
+	snmp-check $IP -p 161 -c public | tee Netauto/$IP/Protocols/SSH/snmp-check/ssnmp-snmp-check.txt
+
+	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk/v1
+	# Interfaces
+	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.2.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_interfaces.txt
+	# Windows User Accounts
+	snmpwalk -c public -v1 $IP 1.3.6.1.4.1.77.1.2.25 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_user_accounts.txt
+	# Windows Running Programs
+	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.25.4.2.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_running_programs.txt
+	# Windows Hostname
+	snmpwalk -c public -v1 $IP .1.3.6.1.2.1.1.5 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_hostname.txt
+	# Windows Share Information
+	snmpwalk -c public -v1 $IP 1.3.6.1.4.1.77.1.2.3.1.1 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_share_information.txt
+	# More Windows Share Information
+	snmpwalk -c public -v1 $IP 1.3.6.1.4.1.77.1.2.27 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_more_windows_share_information.txt
+	# Windows TCP Ports
+	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.6.13.1.3 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_tcp_ports.txt
+	# Software Name
+	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.25.6.3.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_software_name.txt
+	# SysLocation
+	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.1.6 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_syslocation.txt
+
+	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk/v2c
+	# Interfaces
+	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.2.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_interfaces.txt
+	# Windows User Accounts
+	snmpwalk -c public -v2c $IP 1.3.6.1.4.1.77.1.2.25 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_user_accounts.txt
+	# Windows Running Programs
+	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.25.4.2.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_running_programs.txt
+	# Windows Hostname
+	snmpwalk -c public -v2c $IP .1.3.6.1.2.1.1.5 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_hostname.txt
+	# Windows Share Information
+	snmpwalk -c public -v2c $IP 1.3.6.1.4.1.77.1.2.3.1.1 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_share_information.txt
+	# More Windows Share Information
+	snmpwalk -c public -v2c $IP 1.3.6.1.4.1.77.1.2.27 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_more_windows_share_information.txt
+	# Windows TCP Ports
+	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.6.13.1.3 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_tcp_ports.txt
+	# Software Name
+	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.25.6.3.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_software_name.txt
+	# SysLocation
+	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.1.6 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_syslocation.txt
+
+	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk/v3
+	# Interfaces
+	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.2.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_interfaces.txt
+	# Windows User Accounts
+	snmpwalk -c public -v3 $IP 1.3.6.1.4.1.77.1.2.25 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_user_accounts.txt
+	# Windows Running Programs
+	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.25.4.2.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_running_programs.txt
+	# Windows Hostname
+	snmpwalk -c public -v3 $IP .1.3.6.1.2.1.1.5 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_hostname.txt
+	# Windows share Information
+	snmpwalk -c public -v3 $IP 1.3.6.1.4.1.77.1.2.3.1.1 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_share_information.txt
+	# More Windows Share Information
+	snmpwalk -c public -v3 $IP 1.3.6.1.4.1.77.1.2.27 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_more_windows_share_information.txt
+	# Windows TCP Ports
+	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.6.13.1.3 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_tcp_ports.txt
+	# Software Name
+	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.25.6.3.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_software_nane.txt
+	# SysLocation
+	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.1.6 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_syslocation.txt
+}
+
+echo_scan() {
+	mkdir -p Netauto/$IP/Protocols/Echo/nc
+	nc $IP $port | tee Netauto/$IP/Protocols/Echo/nc/echo_nc.txt
+	nc -vn $IP $port | tee Netauto/$IP/Protocols/Echo/nc/echo_nc_vn.txt
+
+	mkdir -p Netauto/$IP/Protocols/Echo/nmap
+	nmap -p 7 $IP -oN Netauto/$IP/Protocols/Echo/nmap/echo_nmap.txt
+}
+
+ftp_scan() {
+	mkdir -p Netauto/$IP/Protocols/ftp/nc
+	nc $IP $port | tee Netauto/$IP/Protocols/ftp/ftp_nc.txt
+	nc -vn $IP $port | tee Netauto/$IP/Protocols/ftp/ftp_nc_nv.txt
+	
+	mkdir -p Netauto/$IP/Protocols/ftp/openssl
+	openssl s_client -connect $IP:21 -starttls ftp | tee Netauto/$IP/Protocols/ftp/openssl/ftp-openssl.txt
+	
+	mkdir -p Netauto/$IP/Protocols/ftp/nmap
+	nmap --script ftp-anon -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-anon.txt
+	nmap --script ftp-bounce -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-bounce.txt
+	nmap --script ftp-libopie -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-libopie.txt
+	nmap --script ftp-proftpd-backdoor -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-proftpd-backdoor.txt
+	nmap --script ftp-syst -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-syst.txt
+	nmap --script ftp-vuln-cve2010-4221 -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-vuln-cve2010-4221.txt
+	nmap --script ftp-vuln* -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-vuln-all.txt
+	nmap --script "ftp-* and not brute"  -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-all.txt
+}
+
+ssh_scan() {
+	mkdir -p Netauto/$IP/Protocols/SSH/nc
+	nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/ssh-nc.txt
+	nc -nv $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/ssh-nc-nv.txt
+
+	mkdir -p Netauto/$IP/Protocols/SSH/ssh-audit
+	ssh-audit.py $IP | tee Netauto/$IP/Protocols/SSH/ssh-audit/ssh-audit.txt
+
+	mkdir -p Netauto/$IP/Protocols/SSH/ssh-keyscan
+	ssh-keyscan -t rsa $IP -p 22 | tee Netauto/$IP/Protocols/SSH/ssh-keyscan/ssh-keyscan-public-key.txt
+
+	mkdir -p Netauto/$IP/Protocols/SSH/nmap
+	nmap -p 22 $IP --script ssh2-enum-algos -oN Netauto/$IP/Protocols/SSH/nmap/ssh2-enum-algos.txt
+	nmap -p 22 $IP --script ssh-hostkey --script-args ssh_hostkey=full -oN Netauto/$IP/Protocols/SSH/nmap/ssh-hostkey.txt
+	nmap -p 22 $IP --script ssh-publickey-acceptance -oN Netauto/$IP/Protocols/SSH/nmap/ssh-publickey-acceptance.txt
+	nmap -p 22 $IP --script ssh-run -oN Netauto/$IP/Protocols/SSH/nmap/ssh-run.txt
+	nmap -p 22 $IP --script ssh-auth-methods -oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods.txt
+	nmap --script ssh-auth-methods --script-args="ssh.user=username" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods-default.txt
+	nmap -p 22 $IP --script ssh-auth-methods --script-args="ssh.user=root"-oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods-root.txt
+	nmap --script "ssh-* and not brute" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/ssh-all.txt
+}
+
+telnet_scan() {
+	mkdir -p Netauto/$IP/Protocols/Telnet/nc
+	nc $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/telnet-nc.txt
+	nc -nv $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/telnet-nc-nv.txt
+
+	mkdir -p Netauto/$IP/Protocols/Telnet/nmap
+	nmap -n -sV -Pn --script "*telnet* and safe" -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/telnet-scripts.txt
+	nmap --script telnet-encryption -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/telnet-encryption.txt
+	nmap --script telnet-ntlm-info -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/telnet-ntlm-info.txt
+}
+
+
+smtp_scan() {
+	mkdir -p Netauto/$IP/Protocols/SMTP/nc
+	nc $IP 25 | tee Netauto/$IP/Protocols/SMTP/smtp-nc.txt
+	nc -nv $IP 25 | tee Netauto/$IP/Protocols/SMTP/smtp-nv.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMTP/openssl
+	openssl s_client -starttls smtp -connect $IP:25 | tee Netauto/$IP/Protocols/SMTP/openssl/smtp-starttls.txt
+	openssl s_client -crlf -connect $IP:465 | tee Netauto/$IP/Protocols/SMTP/openssl/smtp-crlf.txt
+	openssl s_client -starttls smtp -crlf -connect $IP:587 | tee Netauto/$IP/Protocols/SMTP/openssl/smtp-starttls-crlf.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMTP/df
+	dif mx $IP | tee Netauto/$IP/Protocols/SMTP/df/smtp-mx-domains.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMTP/nmap
+	nmap --script smtp-commands -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-commands.txt
+	nmap --script smtp-open-relay -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-open-relay.txt
+	nmap --script smtp-enum-users -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-enum-users.txt
+	nmap --script smtp-strangeport -p- $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-strangeport.txt
+	nmap --script smtp-ntlm-info --script-args smtp-ntlm-info.domain=example.com -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-ntlm-info.txt
+	nmap --script smtp-vuln-cve2010-4344 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-vuln-cve2010-4344.txt
+	nmap --script smtp-vuln-cve2011-1720 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTPt/nmap/smtp-vuln-cve2011-1720.txt
+	nmap --script smtp-vuln-cve2011-1764 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-vuln-cve2011-1764.txt
+	nmap --script "smtp-* and not brute" -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-all.txt
+}
+
+whois_scan() {
+	mkdir -p Netauto/$IP/Protocols/WHOIS/nmap
+	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports.txt
+	nmap -sV -p 113	$IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports.txt
+	nmap -sC -sV -p 113 $IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports-and-version.txt
+}
+
+tacacs_scan() {
+	mkdir -p Netauto/$IP/Protocols/TACACS/nmap
+	nmap -sC -p 49 $IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports.txt
+	nmap -sV -p 49 $IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports.txt
+	nmap -sC -sV -p 49 $IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports-and-version.txt
+}
+
+dns_scan() {
+	mkdir -p Netauto/$IP/Protocols/DNS/nmap
+	nmap --script broadcast-dns-service-discovery -p- $IP -oN Netauto/$IP/Protocols/DNS/nmap/broadcast-dns-service-discovery.txt
+	nmap --script dns-blacklist -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-blacklist.txt
+	nmap --script dns-cache-snoop -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-cache-snoop.txt
+	nmap --script dns-check-zone -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-check-zone.txt
+	nmap --script dns-client-subnet-scan -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/dns-client-subnet-scan.txt
+	nmap --script dns-fuzz -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/dns-fuzz.txt
+	nmap --script dns-ip6-arpa-scan -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-ip6-arpa-scan.txt
+	nmap --script dns-nsec3-enum -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-nsec3-enum.txt
+	nmap --script dns-nsid -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-nsid.txt
+	nmap -sV --script dns-nsid -p53 -Pn $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-nsid-extended.txt
+	nmap --script dns-random-srcport -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-random-srcport.txt
+	nmap --script dns-random-txid -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-random-txid.txt
+	nmap --script dns-nsec-enum --script-args dns-nsec-enum.domains vulnerable.com -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-nsec-enum.txt
+	nmap --script dns-recursion -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-recursion.txt
+	nmap --script dns-service-discovery -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-service-discovery.txt
+	nmap --script dns-srv-enum -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-srv-enum.txt
+	nmap --script dns-update -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-update.txt
+	nmap --script dns-zeustracker -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-zeustracker.txt
+	nmap --script dns-zone-transfer -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-zone-transfer.txt
+	nmap -sn -Pn --script fcrdns -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-zone-transfer.txt
+	nmap --script "dns-* and not brute" -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-all.txt
+}
+
+tftp_scan() {
+	mkdir -p Netauto/$IP/Protocols/TFTP/nmap
+	nmap -sU -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-open-port.txt
+	nmap --script tftp-version -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-version.txt
+	nmap --script tftp-enum -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-enum.txt
+	nmap -sU --script tftp-enum -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-enum-UDP.txt
+	nmap -sU -p 69 --script tftp-enum.nse --script-args tftp-enum.filelist=enumlist.txt $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-enum-list.txt
+	nmap -n -Pn -sU -p 69 -sV --script tftp-enum $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-enum-scan-extended.txt
+}
+
+finger_scan() {
+	mkdir -p Netauto/$IP/Protocols/Finger
+	mkdir -p Netauto/$IP/Protocols/Finger/nc
+	nc $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/finger-nc.txt
+	nc -vn $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/finger-nc-vn.txt
+
+	mkdir -p Netauto/$IP/Protocols/Finger/nmap
+	nmap -sC -p 79 $IP -oN Netauto/$IP/Protocols/Finger/finger-ports.txt
+	nmap -sV -p 79 $IP -oN Netauto/$IP/Protocols/Finger/finger-version.txt
+	nmap -sC -sV -p 79 $IP -oN Netauto/$IP/Protocols/Finger/finger-ports-and-version.txt
+
+	mkdir -p Netauto/$IP/Protocols/Finger/enumeration
+	finger @$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-users.txt
+	finger user@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-user.txt
+	finger -l user@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-user-all-format.txt
+	finger admin@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-admin.txt
+	finger -l admin@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-admin-all-format.txt
+	finger root@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-root.txt
+	finger -l root@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-root-all-format.txt
+	finger 0@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-zero-enumeration.txt
+	finger 'a b c d e f g h'@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-all-accounts.txt
+}
+
+kerberos_scan() {
+	mkdir -p Netauto/$IP/Protocols/Kerberos/nmap
+	nmap -sC -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/kerberos-ports.txt
+	nmap -sV -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/kerberos-version.txt
+	nmap -sC -sV -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/kerberos-ports-and-version.txt
+	nmap -p 88 --script=krb5-enum-users -oN Netauto/$IP/Protocols/Kerberos/nmap/kerberos-script.txt
+}
+
+pop_scan() {
+	mkdir -p Netauto/$IP/Protocols/POP
+	mkdir -p Netauto/$IP/Protocols/POP/nc
+	nc $IP 110 | tee Netauto/$IP/Protocols/POP/nc/pop-nc.txt
+	nc -vn $IP 110 | tee Netauto/$IP/Protocols/POP/nc/pop-nc.txt
+
+	mkdir -p Netauto/$IP/Protocols/POP/openssl
+	openssl s_client -connect $IP:995 -crlf -quiet | tee Netauto/$IP/Protocols/POP/openssl/pop-openssl-crlf.txt
+
+	mkdir -p Netauto/$IP/Protocols/POP/nmap
+	nmap --script "pop3-capabilities or pop3-ntlm-info" -sV -port 110,995 $IP -oN Netauto/$IP/Protocols/POP/nmap/pop-script.txt
+	nmap -p 110,995 --script pop3-ntlm-info $IP -oN Netauto/$IP/Protocols/POP/nmap/pop-ntlm-info.txt
+	nmap -p 110,995 --script pop3-capabilities $IP -oN Netauto/$IP/Protocols/POP/nmap/pop-capabilities.txt
+}
+
+portmapper_scan() {
+	mkdir -p Netauto/$IP/Protocols/Portmapper/nmap
+	nmap -sC -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/portmapper-ports.txt
+	nmap -sV -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/portmapper-version.txt
+	nmap -sC -sV -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/portmapper-ports-and-version.txt
+	nmap -sSUC -p111 $IP -oN Netauto/$IP/Protocols/Portmapper/portmapper-info.txt
+}
+
+ident_scan() {
+	mkdir -p Netauto/$IP/Protocols/Ident/nmap
+	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/Ident/nmap/ident-ports.txt
+	nmap -sV -p 113	$IP -oN Netauto/$IP/Protocols/Ident/nmap/ident-version.txt
+	nmap -sC -sV -p 113 $IP -oN Netauto/$IP/Protocols/Ident/nmap/ident-ports-and-version.txt
+}
+
+ntp_scan() {
+	mkdir -p Netauto/$IP/Protocols/NTP
+	mkdir -p Netauto/$IP/Protocols/NTP/nmap
+	nmap -sU --script ntp-info -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-ports-and-version.txt
+	nmap -sU --script ntp-monlist -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-ports-and-version.txt
+	nmap -sU --script "ntp* and not (dos or brute)" -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-ports-and-version.txt
+	nmap -sU -sV --script "ntp* and not (dos or brute)" -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-ports-and-version.txt
+	nmap -sU -pU:123 -Pn -n --script=ntp-monlist $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-aggressive-monlist
+
+	mkdir -p Netauto/$IP/Protocols/NTP/ntpq
+	ntpq -c readlist $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-readlist.txt
+	ntpq -c readvar $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-readvar.txt
+	ntpq -c peers $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-peers.txt
+	ntpq -c associations $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-associations.txt
+}
+
+msrpc_scan() {
+	mkdir -p Netauto/$IP/Protocols/MSRPC/nmap
+	nmap -sC -p 135	$IP -oN Netauto/$IP/Protocols/MSRPC/nmap/msrpc-ports.txt
+	nmap -sV -p 135	$IP -oN Netauto/$IP/Protocols/MSRPC/nmap/msrpc-version.txt
+	nmap -sC -sV -p 135 $IP -oN Netauto/$IP/Protocols/MSRPC/nmap/msrpc-ports-and-version.txt
+	nmap --script msrpc-enum -p 135 $IP -oN Netauto/$IP/Protocols/MSRPC/nmap/msrpc-enum.txt
+
+	mkdir -p Netauto/$IP/Protocols/MSRPC/rpcdump
+	impacket-rpcdump -port 135 $IP | tee Netauto/$IP/Protocols/MSRPC/rpcdump/impacket-rpcdump.txt
+	/usr/share/doc/python3-impacket/examples/rpcdump.py $IP -p 135 | tee Netauto/$IP/Protocols/MSRPC/rpcdump/rpcdump_port.txt
+	/usr/share/doc/python3-impacket/examples/rpcmap.py 'ncacn_ip_tcp:$IP' | tee Netauto/$IP/Protocols/MSRPC/rpcdump/rpcmap.txt
+	python /opt/tools/MSRPC/IOXIDResolver.py -t $IP | tee Netauto/$IP/Protocols/MSRPC/rpcdump/IOXIDResolver.txt
+}
+
+netbios_scan() {
+	mkdir -p Netauto/$IP/Protocols/NetBios/nmap
+	nmap -sU -p 137,138,139 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-udp.txt
+	nmap -vv --reason -Pn -sV -p139,445 --script="(nbstat or smb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="unsafe=1" $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-udp-aggressive.txt
+	nmap -sT -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-tcp.txt
+	nmap -vv --reason -Pn -sU -sV -p137 --script="(nbstat or smb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="unsafe=1" $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-tcp-aggressive.txt
+	nmap -sC -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-ports.txt
+	nmap -sV -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-version.txt
+	nmap -sC -sV -p 135,137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-ports-and-version.txt
+	nmap --script broadcast-netbios-master-browser -p 135,137,139 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/broadcast-netbios-master-browser.txt
+	sudo nmap -sU -sV -T4 --script nbstat.nse -p137 -Pn -n $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-script.txt
+
+	mkdir -p Netauto/$IP/Protocols/NetBios/nmblookup
+	nmblookup -A $IP | tee Netauto/$IP/Protocols/NetBios/nmblookup/netbios-nmblookup.txt
+
+	mkdir -p Netauto/$IP/Protocols/NetBios/nbtscan
+	nbtscan $IP | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-default.txt
+	nbtscan -rvh $IP | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-rvh.txt
+	nbtscan $IP/30 | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-30.txt
+	nbtscan -r $IP/24 | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-24.txt
+
+	mkdir -p Netauto/$IP/Protocols/NetBios/enum4linux
+	enum4linux -a -M -l -d $IP | tee Netauto/$IP/Protocols/NetBios/enum4linux/netbios-enum4linux.txt
+
+	mkdir -p Netauto/$IP/Protocols/NetBios/rpcclient
+	rpcclient -U "" -P $IP | tee Netauto/$IP/Protocols/NetBios/rpcclient/null_session_attempt.txt
+}
+
+smb_scan() {
+	mkdir -p Netauto/$IP/Protocols/SMB/nmap
+	nmap --script smb-enum-shares.nse,smb-enum-users.nse -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-enum-shares-users.txt
+	nmap --script smb-enum* -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-enum-all.txt
+	nmap --script smb-protocols -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-protocols.txt
+	nmap --script smb-flood -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-flood.txt
+	nmap --script smb-ls -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-ls.txt
+	nmap --script smb-mbenum -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-mbenum.txt
+	nmap --script smb-os-discovery -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-os-discovery.txt
+	nmap --script smb-psexec -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-psexec.txt
+	nmap --script smb-security-mode -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-security-mode.txt
+	nmap --script smb-server-stats -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-server-stats.txt
+	nmap --script smb-system-info -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-system-info.txt
+	nmap --script smb-webexec-exploit -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-webexec-exploit.txt
+	nmap --script smb-double-pulsar-backdoor -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-double-pulsar-backdoor.txt
+	nmap --script smb-vuln* -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-vuln.txt
+	nmap --script "smb-* and not brute" -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-all.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMB/nmblookup
+	nmblookup -A $IP | tee Netauto/$IP/Protocols/SMB/nmblookup/smb-nmblookup.txt
+	mkdir -p Netauto/$IP/Protocols/SMB/nbtscan
+	nbtscan $IP | tee Netauto/$IP/Protocols/SMB/nbtscan/smb-nbtscan.txt
+	nbtscan -r $IP/24 | tee Netauto/$IP/Protocols/SMB/nbtscan/smb-nbtscan-recursive.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMB/enum4linux
+	enum4linux $IP | tee Netauto/$IP/Protocols/SMB/enum4linux/smb-enum4linux.txt
+	enum4linux -a $IP | tee Netauto/$IP/Protocols/SMB/enum4linux/smb-enum4linux-all.txt
+	enum4linux -v $IP | tee Netauto/$IP/Protocols/SMB/enum4linux/smb-enum4linux-verbose.txt
+	enum4linux -a -M -l -d $IP | tee Netauto/$IP/Protocols/SMB/enum4linux/smb-enum4linux-extended.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMB/enum4linux-ng
+	enum4linux-ng -A $IP | tee Netauto/$IP/Protocols/SMB/enum4linux-ng/smb-enum4linux-ng-all.txt
+	enum4linux-ng -As $IP | tee Netauto/$IP/Protocols/SMB/enum4linux-ng/smb-enum4linux-short-all.txt
+	
+	mkdir -p Netauto/$IP/Protocols/SMB/netexec
+	netexec smb $IP/24 | tee Netauto/$IP/Protocols/SMB/netexec/smb-netexec-scan.txt
+	netexec smb $IP | tee Netauto/$IP/Protocols/SMB/netexec/smb-netexec-default.txt
+	netexec smb $IP-1 $IP-2 | tee Netauto/$IP/Protocols/SMB/netexec/smb-netexec-targetips.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMB/smbmap
+	smbmap -H $IP | tee Netauto/$IP/Protocols/SMB/smbmap/smb-smbmap-scan-and-null-user.txt
+	smbmap -H $IP -P 445 | tee Netauto/$IP/Protocols/SMB/smbmap/smb-smbmap-port-null-user.txt
+	smbmap -u null -p "" $IP -P 445 | tee Netauto/$IP/Protocols/SMB/smbmap/smb-smbmap-null-session.txt
+	smbmap -u null -p "" $IP -P 445 -x "whoami" | tee Netauto/$IP/Protocols/SMB/smbmap/smb-smbmap-command-execution.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMB/crackmapexec
+	crackmapexec smb $IP -u '' -p '' --shares | tee Netauto/$IP/Protocols/SMB/crackmapexec/null-user-shares.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMB/smbclient
+	smbclient -L $IP | tee Netauto/$IP/Protocols/SMB/smbclient/smb-smbclient-directories.txt
+	smbclient -N -L $IP | tee Netauto/$IP/Protocols/SMB/smbclient/smb-smbclient-directories-nopswd.txt
+	smbclient -L\\ -N -I $IP | tee Netauto/$IP/Protocols/SMB/smbclient/smb-smbclient-null-session.txt
+	smbclient --no-pass -L //$IP | tee Netauto/$IP/Protocols/SMB/smbclient/smb-smbclient-null-user.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMB/netexec
+	netexec smb $IP -u '' -p '' --shares | tee Netauto/$IP/Protocols/SMB/netexec/smb-netexec-nullsessions.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMB/rpcclient
+	rpcclient -U "" -N $IP | tee Netauto/$IP/Protocols/SMB/rpcclient/smb-rpcclient-nullsessions.txt
+
+	mkdir -p Netauto/$IP/Protocols/SMB/RID-Cycling-Attack
+	impacket-lookupsid example.local/anonymous@$IP 20000 -no-pass | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/impacket-looksupid-anon-nopass.txt
+	impacket-lookupsid example.local/guest@$IP 20000 -no-pass | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/impacket-looksupid-guest-nopass.txt
+	impacket-lookupsid example.local/guest@$IP 20000 | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/impacket-looksupid-guest.txt
+}
+
+imap_scan() {
+	mkdir -p Netauto/$IP/Protocols/IMAP
+	mkdir -p Netauto/$IP/Protocols/IMAP/nc
+	nc $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/imap-nc.txt
+	nc -vn $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/imap-vn.txt
+
+	mkdir -p Netauto/$IP/Protocols/IMAP/openssl
+	openssl s_client -connect $IP:993 | tee Netauto/$IP/Protocols/IMAP/openssl/imap-openssl.txt
+	openssl s_client -connect $IP:993 -quiet | tee Netauto/$IP/Protocols/IMAP/openssl/imap-openssl-quiet.txt
+
+	mkdir -p Netauto/$IP/Protocols/IMAP/nmap
+	nmap --script imap-capabilities -p 143,993 $IP -oN Netauto/$IP/Protocols/IMAP/nmap/imap-capabilities.txt
+	nmap -p 143,993 --script imap-ntlm-info $IP -oN Netauto/$IP/Protocols/IMAP/nmap/imap-ntlm-info.txt
+	nmap --script imap-ntlm-info -p 143,993 $IP -oN Netauto/$IP/Protocols/IMAP/nmap/imap-ntlm-info.txt
+}
+
+irc_scan() {
+	mkdir -p Netauto/$IP/Protocols/IRC
+	mkdir -p Netauto/$IP/Protocols/IRC/nc
+	nc $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/irc-nc-194.txt
+	nc -vn $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/irc-vn-194.txt
+
+	mkdir -p Netauto/$IP/Protocols/IRC/openssl
+	openssl s_client -connect $IP:194 -quiet | tee Netauto/$IP/Protocols/IRC/openssl/irc-openssl-194-quiet.txt
+	openssl s_client -connect $IP:194 | tee Netauto/$IP/Protocols/IRC/openssl/irc-openssl-194-quiet.txt
+	openssl s_client -connect $IP:6667 -quiet | tee Netauto/$IP/Protocols/IRC/openssl/irc-openssl-6667-quiet.txt
+	openssl s_client -connect $IP:6667 | tee Netauto/$IP/Protocols/IRC/openssl/irc-openssl-6667.txt
+
+	mkdir -p Netauto/$IP/Protocols/IRC/nmap
+	nmap --script irc-info,irc-botnet-channels,irc-unrealircd-backdoor -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/irc-scan.txt
+	nmap -sV --script irc-info,irc-botnet-channels,irc-unrealircd-backdoor -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/irc-scan.txt
+	nmap -sV --script "irc-* and not brute" -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/irc-scan.txt
+}
+
+checkpoint_firewall_scan() {
+	mkdir -p Netauto/$IP/Protocols/Checkpoint_Firewall-1
+	mkdir -p Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap
+	nmap -sC -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/cpf-sc.txt
+	nmap -sV -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/cpf-sv.txt
+	nmap -sC -sV -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/cpf-info.txt
+}
+
+ldap_scan() {
+	mkdir -p Netauto/$IP/Protocols/LDAP
+	mkdir -p Netauto/$IP/Protocols/LDAP/nmap
+	nmap --script ldap-brute --script-args ldap.base='"cn=users,dc=cqure,dc=net"' -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-brute.txt
+	nmap --script ldap-search -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-search.txt
+	nmap --script ldap-novell-getpass -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-novell-getpass.txt
+	nmap --script ldap-rootdse -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-rootdse.txt
+	nmap --script "ldap* and not brute" -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-brute-and-all.txt
+	nmap -n -sV --script "ldap* and not brute" $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-brute-and-all-scan.txt
+	nmap --script ldap-* $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-all.txt
+
+	mkdir -p Netauto/$IP/Protocols/LDAP/ldapsearch
+	ldapsearch -LLL -x -H ldap://$IP -b ‘’ -s base '(objectclass=*)' | tee Netauto/$IP/Protocols/LDAP/ldapsearch/ldap-anonymous-credential-dumping.txt
+	ldapsearch -h $IP -x -s base namingcontexts | tee Netauto/$IP/Protocols/LDAP/ldapsearch/ldap-namingcontexts.txt
+	ldapsearch -h $IP -x -b "DC=BLACKFIELD,DC=local" | tee Netauto/$IP/Protocols/LDAP/ldapsearch/ldap-domainname.txt
+}
+
+ipsec_scan() {
+	mkdir -p Netauto/$IP/Protocols/IKE
+	mkdir -p Netauto/$IP/Protocols/IKE/nmap
+	nmap -sU -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/ike-all.txt
+	nmap --script ike-version -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/ike-version.txt
+	nmap --script http-cisco-anyconnect -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/http-cisco-anyconnect.txt
+
+	mkdir -p Netauto/$IP/Protocols/IKE/ike-scan
+	ike-scan -M $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/ike-scan.txt
+	ike-scan -M --showbackoff $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/ike-scan-aggressive.txt
+	ike-scan -P -M -A -n fakeID $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/ike-scan-fakeID.txt
+}
+
+modbus_scan() {
+	mkdir -p Netauto/$IP/Protocols/Modbus
+	mkdir -p Netauto/$IP/Protocols/Modbus/nmap
+	nmap -sC -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-sc.txt
+	nmap -sV -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-sv.txt
+	nmap -sC -sV -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-sc-sv.txt
+	nmap --script modbus-discover -p 502 $IP -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-discover.txt
+	nmap --script modbus-discover --script-args modbus-discover.aggressive=true -p 502 $IP -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-discover-aggressive.txt
+}
+
+rexec_scan() {
+	mkdir -p Netauto/$IP/Protocols/Rexec
+	mkdir -p Netauto/$IP/Protocols/Rexec/nmap
+	nmap -sC -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/rexec-sc.txt
+	nmap -sV -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/rexec-sv.txt
+	nmap -sC -sV -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/rexec-info.txt
+}
+
+rlogin_scan() {
+	mkdir -p Netauto/$IP/Protocols/Rlogin
+	mkdir -p Netauto/$IP/Protocols/Rlogin/nmap
+	nmap -sC -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/rlogin-sc.txt
+	nmap -sV -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/rlogin-sv.txt
+	nmap -sC -sV -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/rlogin-info.txt
+}
+
+rsh_scan() {
+	mkdir -p Netauto/$IP/Protocols/Rsh
+	mkdir -p Netauto/$IP/Protocols/Rsh/nmap
+	nmap -sC -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/rsh-sc.txt
+	nmap -sV -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/rsh-sv.txt
+	nmap -sC -sV -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/rsh-info.txt
+}
+
+lpd_scan() {
+	mkdir -p Netauto/$IP/Protocols/LPD
+	mkdir -p Netauto/$IP/Protocols/LPD/nmap
+	nmap -sC -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/lpd-sc.txt
+	nmap -sV -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/lpd-sv.txt
+	nmap -sC -sV -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/lpd-info.txt
+}
+
+afp_scan() {
+	mkdir -p Netauto/$IP/Protocols/AFP
+	mkdir -p Netauto/$IP/Protocols/AFP/nmap
+	nmap --script afp-ls -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/afp-ls.txt
+	nmap --script afp-path-vuln -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/afp-path-vuln.txt
+	nmap --script afp-serverinfo -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/afp-serverinfo.txt
+	nmap --script afp-showmount -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/afp-showmount.txt
+	nmap -sV --script "afp-* and not dos and not brute" -p 548 $IP -oN Netauto/$IP/Protocols/APF/nmap/afp-all.txt
+}
+
+rtsp_scan() {
+	mkdir -p Netauto/$IP/Protocols/RTSP
+	mkdir -p Netauto/$IP/Protocols/RTSP/nmap
+	nmap --script rtsp-url-brute -p 554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/rtsp-url-brute.txt
+	nmap --script rtsp-methods -p 554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/rtsp-methods.txt
+	nmap --script rtsp-* -p 554,8554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/rtsp-all.txt
+	nmap -sV --script "rtsp-*" -p 554,8554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/rtsp-all-version.txt
+}
+
+ipmi_scan() {
+	mkdir -p Netauto/$IP/Protocols/IPMI
+	mkdir -p Netauto/$IP/Protocols/IPMI/nmap
+	nmap -n -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/ipmi-scan.txt
+	nmap -n-sU -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/ipmi-scan-info.txt
+	nmap -sU --script ipmi-version -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/ipmi-version.txt
+}
+
+ipp_scan() {
+	mkdir -p Netauto/$IP/Protocols/IPP
+	mkdir -p Netauto/$IP/Protocols/IPP/nmap
+	nmap -sV -p631 --script=cups* $IP -oN Netauto/$IP/Protocols/IPP/nmap/ipp-all-.txt
+	nmap -sV -p631 --script=cups-info $IP -oN Netauto/$IP/Protocols/IPP/nmap/ipp-info.txt
+	nmap -sV -p631 --script=cups-queue-info $IP -oN Netauto/$IP/Protocols/IPP/nmap/ipp-queue-info.txt
+
+	curl http:/$IP:631 | tee Netauto/$IP/Protocols/IPP/ipp-curl.txt
+
+	mkdir -p Netauto/$IP/Protocols/IPP/PRET
+	python2 /opt/tools/IPP/PRET/pret.py $IP:631 ps | tee Netauto/$IP/Protocols/IPP/PRET/ipp-pret-ps.txt
+	python2 /opt/tools/IPP/PRET/pret.py $IP:631 pjl | tee Netauto/$IP/Protocols/IPP/PRET/ipp-pret-pjl.txt
+	python2 /opt/tools/IPP/PRET/pret.py $IP:631 pcl | tee Netauto/$IP/Protocols/IPP/PRET/ipp-pret-pcl.txt
+}
+
+epp_scan() {
+	mkdir -p Netauto/$IP/Protocols/EPP
+	mkdir -p Netauto/$IP/Protocols/EPP/nmap
+	nmap -sC -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/epp-sc.txt
+	nmap -sV -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/epp-sv.txt
+	nmap -sC -sV -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/epp-info.txt
+}
+
+rsync_scan() {
+	mkdir -p Netauto/$IP/Protocols/Rsync
+	mkdir -p Netauto/$IP/Protocols/Rsync/nmap
+	nmap --script rsync-list-modules -p 873 $IP -oN Netauto/$IP/Protocols/Rsync/nmap/rsync-list-modules.txt
+
+	mkdir -p Netauto/$IP/Protocols/Rsync/rsync
+	rsync $IP:: | tee Netauto/$IP/Protocols/Rsync/rsync/rsync-sync-data.txt
+	rsync -av --list-only rsync://$IP | tee Netauto/$IP/Protocols/Rsync/rsync/rsync-sync-only.txt
+	rsync $IP::files | tee Netauto/$IP/Protocols/Rsync/rsync/rsync-files.txt
+	rsync $IP::files/tmp/ | tee Netauto/$IP/Protocols/Rsync/rsync/rsync-files-tmp.txt
+
+	mkdir -p Netauto/$IP/Protocols/Rsync/rsync/shares
+	rsync $IP::shares | tee Netauto/$IP/Protocols/Rsync/rsync/shares/rsync-shares.txt
+	rsync -av --list-only rsync://$IP:873/shares | tee Netauto/$IP/Protocols/Rsync/rsync/shares/rsync-shares-list.txt
+}
+
+rusersd_scan() {
+	mkdir -p Netauto/$IP/Protocols/Rusersd
+	mkdir -p Netauto/$IP/Protocols/Rusersd/nmap
+	nmap -sC -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/rusersd-sc.txt
+	nmap -sV -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/rusersd-sv.txt
+	nmap -sC -sV -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/rusersd-info.txt
+
+	mkdir -p Netauto/$IP/Protocols/Rusersd/rusers
+	rusers -l $IP | tee Netauto/$IP/Protocols/Rusersd/rusers/rusersd-ls.txt
+}
+
+socks_scan() {
+	mkdir -p Netauto/$IP/Protocols/SOCKS
+	mkdir -p Netauto/$IP/Protocols/SOCKS/nmap
+	nmap -p 1080 $IP --script socks-auth-info -oN Netauto/$IP/Protocols/SOCKS/nmap/socks-auth-info.txt
+	nmap --script socks-open-proxy -p 1080 $IP -oN Netauto/$IP/Protocols/SOCKS/nmap/socks-open-proxy.txt
+}
+
+java_rmi_scan() {
+	# Check over here
+	mkdir -p Netauto/$IP/Protocols/Java-RMI
+	mkdir -p Netauto/$IP/Protocols/Java-RMI/nmap/
+	nmap -p- $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-p.txt
+	nmap -Pn $IP -p- -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-pn.txt
+        nmap -n -v -sU -p- -T5 $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-udp-scan-a.txt
+        nmap -n -v -sU $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-udp-scan.txt
+        nmap -n -v -sT -p- -T5 $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-tcp.txt
+}
+
+ibm_mq_scan() {
+	mkdir -p Netauto/$IP/Protocols/IBM-MQ
+	mkdir -p Netauto/$IP/Protocols/IBM-MQ/nmap
+	nmap -sC -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/ibm-mq-sc.txt
+	nmap -sV -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/ibm-mq-sv.txt
+	nmap -sC -sV -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/ibm-mq-info.txt
+
+	mkdir -p Netauto/$IP/Protocols/IBM-MQ/docker
+	sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 discover name | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-queue-manager.txt
+	sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 --username admin --password passw0rd discover channels | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-channels.txt
+}
+
+pptp_scan() {
+	mkdir -p Netauto/$IP/Protocols/PPTP/
+	mkdir -p Netauto/$IP/Protocols/PPTP/nmap
+	nmap –Pn -sSV -p1723 $IP -oN Netauto/$IP/Protocols/PPTP/nmap/pptp-ports.txt
+	nmap --script pptp-version -p 1723 $IP -oN Netauto/$IP/Protocols/PPTP/nmap/pptp-version.txt
+}
+
+mqtt_scan() {
+	mkdir -p Netauto/$IP/Protocols/MQTT/
+	mkdir -p Netauto/$IP/Protocols/MQTT/nmap
+	nmap --script mqtt-subscribe -p 1883 $IP -oN Netauto/$IP/Protocols/MQTT/nmap/mqtt-subscribe.txt
+}
+
+nfs_scan() {
+	mkdir -p Netauto/$IP/Protocols/NFS/
+	mkdir -p Netauto/$IP/Protocols/NFS/nmap
+	nmap -sC -p2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-sc.txt
+	nmap --script nfs-ls -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
+	nmap --script nfs-showmount -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
+	nmap --script nfs-statfs -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
+	nmap --script=nfs-ls,nfs-statfs,nfs-showmount -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
+	sudo nmap -Pn -n --open -p111 --script=nfs-ls,nfs-showmount,nfs-statfs,rpcinfo $IP/24 -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
+	nmap -Pn -n -T4 -sV --script=rpcinfo -p111 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-rpcinfo-nmap-script.txt
+
+	mkdir -p Netauto/$IP/Protocols/NFS/showmount
+	showmount -e $IP | tee Netauto/$IP/Protocols/NFS/showmount/nfs-showmount.txt
+
+	mkdir -p Netauto/$IP/Protocols/NFS/rpcinfo
+	rpcinfo -p $IP | tee Netauto/$IP/Protocols/NFS/showmount/rpcinfo/nfs-rpcinfo.txt
+}
+
+compaq_scan() {
+	mkdir -p Netauto/$IP/Protocols/compaq/
+	mkdir -p Netauto/$IP/Protocols/compaq/nmap/
+	nmap -p- $IP -oN Netauto/$IP/Protocols/compaq/nmap/compaq-p.txt
+	nmap -Pn $IP -p- -oN Netauto/$IP/Protocols/compaq/nmap/compaq-pn.txt
+        nmap -n -v -sU -p- -T5 $IP -oN Netauto/$IP/Protocols/compaq/nmap/compaq-a.txt
+        nmap -n -v -sU $IP -oN Netauto/$IP/Protocols/compaq/nmap/compaq-udp-scan.txt
+        nmap -n -v -sT -p- -T5 $IP -oN Netauto/$IP/Protocols/compaq/nmap/compaq-tcp.txt
+}
+
+docker_scan() {
+	mkdir -p Netauto/$IP/Protocols/Docker/
+	mkdir -p Netauto/$IP/Protocols/Docker/nmap
+	map --script docker-version -p 2375,2376 $IP -oN Netauto/$IP/Protocols/Docker/nmap/docker-version.txt
+	nmap -sV --script "docker-* and not brute" -p 2375,2376 $IP -oN Netauto/$IP/Protocols/Docker/nmap/docker-script.txt
+}
+
+squid_scan() {
+	mkdir -p Netauto/$IP/Protocols/Squid/
+	curl --proxy http://$IP:3128 http://$IP | tee Netauto/$IP/Protocols/Squid/squid-curl-proxy.txt
+
+	python /opt/tools/Squid/spose/spose.py --proxy http://$IP:3128 --target $IP | tee Netauto/$IP/Protocols/Squid/squid-spose.txt
+}
+
+iscsi_scan() {
+	mkdir -p Netauto/$IP/Protocols/ISCSI/
+	mkdir -p Netauto/$IP/Protocols/ISCSI/nmap
+	nmap -sV --script=iscsi-info -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/iscsi-info.txt
+	nmap --script "iscsi-* and not brute" -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/iscsi-all.txt
+}
+
+rdp_scan() {
+	mkdir -p Netauto/$IP/Protocols/RDP/
+	mkdir -p Netauto/$IP/Protocols/RDP/nmap
+	nmap --script rdp-enum-encryption -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-enum-encryption.txt
+	nmap --script rdp-ntlm-info -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-ntlm-info.txt
+	nmap --script rdp-vuln-ms12-020 -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-vuln-ms12-020.txt
+	nmap --script "rdp* and not brute" -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-all.txt
+	nmap --script "rdp-enum-encryption or rdp-vuln-ms12-020 or rdp-ntlm-info" -p 3389 -T4 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-aggressive-scan.txt
+	sudo nmap -Pn -n --open -p3389 --script=rdp-vuln-ms12-020,rdp-enum-encryption $IP/24 -oN Netauto/$IP/Protocols/RDP/nmap/rdp-ip-scan.txt
+}
+
+saprouter_scan() {
+	mkdir -p Netauto/$IP/Protocols/SAPRouter/
+	mkdir -p Netauto/$IP/Protocols/SAPRouter/nmap
+	nmap -sC -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/saprouter-sc.txt
+	nmap -sV -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/saprouter-sv.txt
+	nmap -sC -sV -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/saprouter-info.txt
+}
+
+distcc_scan() {
+	mkdir -p Netauto/$IP/Protocols/distcc/
+	mkdir -p Netauto/$IP/Protocols/distcc/nmap
+	nmap -p 3632 $IP --script distcc-cve2004-2687 --script-args="distcc-exec.cmd='id'" -oN Netauto/$IP/Protocols/distcc/nmap/distcc-nmap.txt
+}
+
+subversion_scan() {
+	mkdir -p Netauto/$IP/Protocols/subversion/
+	mkdir -p Netauto/$IP/Protocols/subversion/nc
+	nc $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/subversion-nc.txt
+	nc -vn $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/subversion-vn.txt
+
+	mkdir -p Netauto/$IP/Protocols/subversion/svn
+	svn ls svn://$IP | tee Netauto/$IP/Protocols/subversion/svn/subversion-ls.txt
+	svn log svn://$IP | tee Netauto/$IP/Protocols/subversion/svn/subversion-history.txt
+}
+
+ws-discovery_scan() {
+	mkdir -p Netauto/$IP/Protocols/ws-discovery/
+	mkdir -p Netauto/$IP/Protocols/ws-discovery/nmap
+	nmap -sC -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/ws-scan.txt
+	nmap -sV -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/ws-version.txt
+	nmap -sC -sV -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/ws-all.txt
+}
+
+epmd_scan() {
+	mkdir -p Netauto/$IP/Protocols/epmd/
+	mkdir -p Netauto/$IP/Protocols/epmd/nc
+	nc $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/epmd-nc.txt
+	nc -vn $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/epmd-vn.txt
+
+	mkdir -p Netauto/$IP/Protocols/epmd/nmap
+	nmap -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/epmd-info.txt
+	nmap -sV -Pn -n -T4 -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/epmd-info-aggressive.txt
+}
+
+cisco_smart_install_scan() {
+	mkdir -p Netauto/$IP/Protocols/CSIS
+	sudo python3 /opt/tools/CISCO_Smart_Install/SIETpy3/siet.py -g -i $IP | tee Netauto/$IP/Protocols/CSIS/siet.txt
+}
+
+opc_scan() {
+	mkdir -p Netauto/$IP/Protocols/OPC
+	mkdir -p Netauto/$IP/nmap/Protocols/OPC/nmap
+	nmap -sC -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/opc-scan.txt
+	nmap -sV -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/opc-version.txt
+	nmap -sC -sV -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/opc-all.txt
+
+	opalopc -vv opc.tcp://$IP:4840 | tee Netauto/$IP/Protocols/OPC/opc-opalopc.txt
+}
+
+docker_registry_scan() {
+	mkdir -p Netauto/$IP/Protocols/docker_registry/
+	mkdir -p Netauto/$IP/Protocols/docker_registry/nmap
+	nmap -sC -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/dr-scan.txt
+	nmap -sV -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/dr-version.txt
+	nmap -sC -sV -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/dr-all.txt
+
+	mkdir -p Netauto/$IP/nmap/Protocols/docker_registry/curl
+	curl -s http://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/curl/dr-curl-http-catalog.txt
+	curl -s https://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/curl/dr-curl-https-catalog.txt
+	curl -k http://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/dr-curl-http-authentication.txt
+	curl -k https://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/dr-curl-https-authentication.txt
+
+	mkdir -p Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber
+	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --list | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/list.txt
+	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --dump linux | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/dump.txt
+	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --dump_all | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/dump_all.txt
+}
+
+mdns_scan() {
+	mkdir -p Netauto/$IP/Protocols/mDNS/
+	mkdir -p Netauto/$IP/Protocols/mDNS/nmap
+	nmap --script dns-service-discovery -p 5353 $IP -oN Netauto/$IP/Protocols/mDNS/nmap/mdns-service-discovery.txt
+	nmap -sU --script dns-service-discovery -p 5353 $IP -oN Netauto/$IP/Protocols/mDNS/nmap/mdns-service-discovery-udp.txt
+}
+
+redshift_scan() {
+	mkdir -p Netauto/$IP/Protocols/redshift/
+	mkdir -p Netauto/$IP/Protocols/redshift/nmap
+	nmap -sC -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/redshift-scan.txt
+	nmap -sV -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/redshift-version.txt
+	nmap -sC -sV -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/redshift-all.txt
+}
+
+android_debug_bridge_scan() {
+	mkdir -p Netauto/$IP/Protocols/ADB
+	mkdir -p Netauto/$IP/Protocols/ADB/nmap
+	nmap -sC -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/adb-scan.txt
+	nmap -sV -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/adb-version.txt
+	nmap -sC -sV -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/adb-all.txt
+}
+
+kibana_scan() {
+	mkdir -p Netauto/$IP/Protocols/Kibana/
+	mkdir -p Netauto/$IP/Protocols/Kibana/nmap
+	nmap -sC -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/kibana-scan.txt
+	nmap -sV -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/kibana-version.txt
+	nmap -sC -sV -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/kibana-all.txt
+}
+
+amqp_scan() {
+	mkdir -p Netauto/$IP/Protocols/AMQP/
+	mkdir -p Netauto/$IP/Protocols/AMQP/nmap
+	nmap -p 5672 --script amqp-info $IP -oN Netauto/$IP/Protocols/AMQP/nmap/amqp-info.txt
+	nmap -sV -Pn -n -T4 -p 5672 --script amqp-info $IP -oN Netauto/$IP/Protocols/AMQP/nmap/amqp-info-extend.txt
+}
+
+vnc_scan() {
+	mkdir -p Netauto/$IP/Protocols/VNC
+	mkdir -p Netauto/$IP/Protocols/VNC/nmap
+	nmap -p 5900 --script vnc-title $IP -oN Netauto/$IP/Protocols/VNC/nmap/vnc-title.txt
+	nmap -p 5900 --script vnc-info $IP -oN Netauto/$IP/Protocols/VNC/nmap/vnc-info.txt
+	nmap --script realvnc-auth-bypass -p 5900 $IP -oN Netauto/$IP/Protocols/VNC/nmap/realvnc-auth-bypass.txt
+	nmap -sV --script vnc-info,realvnc-auth-bypass,vnc-title -p 5900 $IP -oN Netauto/$IP/Protocols/VNC/nmap/vnc-all.txt
+	sudo nmap -Pn -n --open -p5900 --script=realvnc-auth-bypass,vnc-info $IP/24 -oN Netauto/$IP/Protocols/VNC/vnc-all-extended.txt
+	nmap -p 5900 --script "vnc-* and not brute" $IP -oN Netauto/$IP/Protocols/VNC/nmap/vnc-info.txt
+}
+
+winrm_scan() {
+	mkdir -p Netauto/$IP/Protocols/WinRM/
+	mkdir -p Netauto/$IP/Protocols/WinRM/nmap
+	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/winrm-scan.txt
+	nmap -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/winrm-version.txt
+	nmap -sC -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/winrm-all.txt
+}
+
+omi_scan() {
+	mkdir -p Netauto/$IP/Protocols/OMI/
+	mkdir -p Netauto/$IP/Protocols/OMI/nmap
+	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/omi-scan.txt
+	nmap -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/omi-version.txt
+	nmap -sC -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/omi-all.txt
+}
+
+x11_scan() {
+	mkdir -p Netauto/$IP/Protocols/X11/
+	mkdir -p Netauto/$IP/Protocols/X11/nmap
+	nmap --script x11-access -p 6000 $IP -oN Netauto/$IP/Protocols/X11/nmap/x11-access.txt
+	nmap -sV --script x11-access -p 6000 $IP -oN Netauto/$IP/Protocols/X11/nmap/x11-access-version.txt
+	sudo nmap -Pn -n --open -p6000-6005 --script=x11-access $IP/24 -oN Netauto/$IP/Protocols/X11/nmap/x11-extended.txt
+}
+
+ajp_scan() {
+	mkdir -p Netauto/$IP/Protocols/AJP/
+	mkdir -p Netauto/$IP/Protocols/AJP/nmap
+	nmap --script ajp-auth -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-auth.txt
+	nmap --script ajp-auth --script-args ajp-auth.path=/login -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-auth-login.txt
+	nmap --script ajp-headers -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-headers.txt
+	nmap --script ajp-methods -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-methods.txt
+	nmap --script ajp-request -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-request.txt
+	nmap -sV --script ajp-auth,ajp-headers,ajp-methods,ajp-request -n -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-all.txt
+}
+
+splunk_scan() {
+	mkdir -p Netauto/$IP/Protocols/Splunk/
+	mkdir -p Netauto/$IP/Protocols/Splunk/nmap
+	nmap -sC -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/splunk-scan.txt
+	nmap -sV -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/splunk-version.txt
+	nmap -sC -sV -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/splunk-all.txt
+}
+
+bitcoin_scan() {
+	mkdir -p Netauto/$IP/Protocols/Bitcoin/
+	mkdir -p Netauto/$IP/Protocols/Bitcoin/nmap
+	sudo nmap -p 8333 --script bitcoin-info $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-info.txt
+	sudo nmap -p 8333 --script bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-getaddr.txt
+	sudo nmap -p 8333 --script bitcoin-info --script bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-info.txt
+	sudo nmap -p 8333,18333,38333,18444 --script bitcoin-info,bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-all-info.txt
+	sudo nmap -sV -p 8333,18333,38333,18444 --script bitcoin-info,bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-all-extended.txt
+}
+
+fastcgi_scan() {
+	mkdir -p Netauto/$IP/Protocols/FastCGI/
+	mkdir -p Netauto/$IP/Protocols/FastCGI/nmap
+	nmap -sC -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/fastcgi-scan.txt
+	nmap -sV -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/fastcgi-version.txt
+	nmap -sC -sV -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/fastcgi-all.txt
+}
+
+hsqldb_scan() {
+	mkdir -p Netauto/$IP/Protocols/HSQLDB/
+	mkdir -p Netauto/$IP/Protocols/HSQLDB/nmap
+	nmap -sC -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/hsqldb-scan.txt
+	nmap -sV -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/hsqldb-version.txt
+	nmap -sC -sV -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/hsqldb-all.txt
+}
+
+cassandra_scan() {
+	mkdir -p Netauto/$IP/Protocols/Cassandra/
+	mkdir -p Netauto/$IP/Protocols/Cassandra/nmap
+	nmap --script cassandra-info -p 9042,9160 $IP -oN Netauto/$IP/Protocols/Cassandra/nmap/cassandra-info.txt
+	nmap -sV --script cassandra-info -p 9042,9160 $IP -oN Netauto/$IP/Protocols/Cassandra/nmap/cassandra-info-version.txt
+}
+
+raw_printing_scan() {
+	mkdir -p Netauto/$IP/Protocols/raw_printing/
+	mkdir -p Netauto/$IP/Protocols/raw_printing/nmap
+	nmap --script pjl-ready-message -p 9100 $IP -oN Netauto/$IP/Protocols/raw_printing/nmap/pjl-ready-message.txt
+	nmap -sV --script pjl-ready-message -p 9100 $IP -oN Netauto/$IP/Protocols/raw_printing/nmap/pjl-ready-message-version.txt
+}
+
+elasticsearch_scan() {
+	mkdir -p Netauto/$IP/Protocols/Elasticsearch/
+	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl
+	curl -X GET "$IP:9200/_xpack/security/user" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-security-user.txt
+	curl -X GET "$IP:9200/_security/role" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-role.txt
+	curl -X GET "$IP:9200/_security/user" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-user.txt
+
+	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat
+	curl -X GET "$IP:9200/_cat/segments" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-segments.txt
+	curl -X GET "$IP:9200/_cat/shards" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-shards.txt
+	curl -X GET "$IP:9200/_cat/repositories" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-repositories.txt
+	curl -X GET "$IP:9200/_cat/recovery" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-recovery.txt
+	curl -X GET "$IP:9200/_cat/plugins" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-plugins.txt
+	curl -X GET "$IP:9200/_cat/pending_tasks" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-pending_tasks.txt
+	curl -X GET "$IP:9200/_cat/nodes" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-nodes.txt
+	curl -X GET "$IP:9200/_cat/tasks" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-tasks.txt
+	curl -X GET "$IP:9200/_cat/templates" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-templates.txt
+	curl -X GET "$IP:9200/_cat/thread_pool" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-thread_pool.txt
+
+	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml
+	curl -X GET "$IP:9200/_cat/ml/trained_models" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-ml_trained_models.txt
+	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat/transforms
+	curl -X GET "$IP:9200/_cat/transforms/_all" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-transforms_-all.txt
+	curl -X GET "$IP:9200/_cat/aliases" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-aliases.txt
+	curl -X GET "$IP:9200/_cat/allocation" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-allocation.txt
+	curl -X GET "$IP:9200/_cat/ml/anomaly_detectors" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-ml-_anomaly_detectors.txt
+	curl -X GET "$IP:9200/_cat/count" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-count.txt
+	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml/data_frame
+	curl -X GET "$IP:9200/_cat/ml/data_frame/analytics" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-ml-_data_frame-analytics.txt
+	curl -X GET "$IP:9200/_cat/ml/datafeeds" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-ml_datafeeds.txt
+	curl -X GET "$IP:9200/_cat/fielddata" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-fielddata.txt
+	curl -X GET "$IP:9200/_cat/health" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-health.txt
+	curl -X GET "$IP:9200/_cat/indices" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-indices.txt
+	curl -X GET "$IP:9200/_cat/master" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-master.txt
+	curl -X GET "$IP:9200/_cat/nodeattrs" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-nodeattrs.txt
+	curl -X GET "$IP:9200/_cat/nodes" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-nodes.txt
+
+	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cluster
+	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cluster/allocation
+	curl -X GET "$IP:9200/_cluster/allocation/explain" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_user-_explain.txt
+	curl -X GET "$IP:9200/_cluster/settings" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-settings.txt
+	curl -X GET "$IP:9200/_cluster/health" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-health.txt
+	curl -X GET "$IP:9200/_cluster/state" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-state.txt
+	curl -X GET "$IP:9200/_cluster/stats" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-stats.txt
+	curl -X GET "$IP:9200/_cluster/pending_tasks" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-pending_tasks.txt
+	curl -X GET "$IP:9200/_nodes" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_nodes.txt
+	curl -X GET "$IP:9200/_nodes/usage" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster--nodes-usage.txt
+	curl -X GET "$IP:9200/_nodes/hot_threads" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_nodes-hot_threads.txt
+	curl -X GET "$IP:9200/_nodes/stats" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_nodes-stats.txt
+	curl -X GET "$IP:9200/_tasks/allocation/explain" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-tasks-allocation-explain.txt
+	curl -X GET "$IP:9200/_remote/info" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_remote-info.txt
+
+	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_security
+	curl -X GET "$IP:9200/_security/user" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-user.txt
+	curl -X GET "$IP:9200/_security/privilege" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-privilege.txt
+	curl -X GET "$IP:9200/_security/role_mapping" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-role_mapping.txt
+	curl -X GET "$IP:9200/_security/role" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-role.txt
+	curl -X GET "$IP:9200/_security/api_key" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-api_key.txt
+}
+
+ndmp_scan() {
+	mkdir -p Netauto/$IP/Protocols/NDMP/
+	mkdir -p Netauto/$IP/Protocols/NDMP/nmap
+	nmap --script ndmp-version -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/ndmp-version.txt
+	nmap --script ndmp-fs-info -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/ndmp-fs-info.txt
+	nmap -n -sV --script "ndmp-fs-info or ndmp-version" -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/ndmp-all.txt
+}
+
+memcached_scan() {
+	mkdir -p Netauto/$IP/Protocols/Memcached/
+	mkdir -p Netauto/$IP/Protocols/Memcached/nc
+	nc $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/memcached-nc.txt
+	nc -vn $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/memcached-vn.txt
+
+	mkdir -p Netauto/$IP/Protocols/Memcached/nc
+	nc -vn -w 1 $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/memcached-w.txt
+	mkdir -p Netauto/$IP/Protocols/Memcached/memcstat
+	memcstat --servers=$IP | tee Netauto/$IP/Protocols/Memcached/memcstat/stats.txt
+	mkdir -p Netauto/$IP/Protocols/Memcached/memcdump
+	memcdump --servers=$IP | tee Netauto/$IP/Protocols/Memcached/memcdump/all-items.txt
+
+	mkdir -p Netauto/$IP/Protocols/Memcached/nmap
+	nmap -n -sV --script memcached-info -p 11211 $IP | tee Netauto/$IP/Protocols/Memcached/nmap/memcached-info.txt
+}
+
+rabbitmq_scan() {
+	mkdir -p Netauto/$IP/Protocols/RabbitMQ/
+	mkdir -p Netauto/$IP/Protocols/RabbitMQ/nmap
+	nmap -sC -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/rabbitmq-scan.txt
+	nmap -sV -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/rabbitmq-version.txt
+	nmap -sC -sV -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/rabbitmq-all.txt
+}
+
+glusterfs_scan() {
+	mkdir -p Netauto/$IP/Protocols/GlusterFS/
+	mkdir -p Netauto/$IP/Protocols/GlusterFS/nmap
+	nmap -sC -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/glusterfs-scan.txt
+	nmap -sV -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/glusterfs-version.txt
+	nmap -sC -sV -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/glusterfs-all.txt
+
+	mkdir -p Netauto/$IP/Protocols/GlusterFS/gluster
+	sudo gluster --remote-host=$IP volume list | tee Netauto/$IP/Protocols/GlusterFS/gluster/volume-list.txt
+}
+
+tiller_scan() {
+	mkdir -p Netauto/$IP/Protocols/Tiller/
+	mkdir -p Netauto/$IP/Protocols/Tiller/nmap
+	nmap -sC -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/tiller-scan.txt
+	nmap -sV -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/tiller-version.txt
+	nmap -sC -sV -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/tiller-all.txt
+	sudo nmap -sS -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/tiller-stealth-scan.txt
+}
+
+ethernetip_scan() {
+	mkdir -p Netauto/$IP/Protocols/EthernetIP/
+	mkdir -p Netauto/$IP/Protocols/EthernetIP/nmap
+	nmap -sC -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-scan.txt
+	nmap -sV -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-version.txt
+	nmap -sC -sV -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-all.txt
+	nmap --script enip-info -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-info.txt
+	nmap -n -sV --script enip-info -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-info-extended.txt
+}
+
+bacnet_scan() {
+	mkdir -p Netauto/$IP/Protocols/BACNet/
+	mkdir -p Netauto/$IP/Protocols/BACNet/nmap
+	nmap -sC -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/bacnet-scan.txt
+	nmap -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/bacnet-version.txt
+	nmap -sC -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/bacnet-all.txt
+	nmap --script bacnet-info --script-args full=yes -sU -n -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/bacnet-full-scan.txt
+}
+
+hadoop_scan() {
+	mkdir -p Netauto/$IP/Protocols/Hadoop/
+	mkdir -p Netauto/$IP/Protocols/Hadoop/nmap
+	nmap --script hadoop-jobtracker-info -p 50030 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-jobtracker-info.txt
+	nmap --script hadoop-tasktracker-info -p 50060 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-tasktracker-info.txt
+	nmap --script hadoop-namenode-info -p 50070 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-namenode-info.txt
+	nmap --script hadoop-datanode-info -p 50075 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-datanode-info.txt
+	nmap --script hadoop-secondary-namenode-info -p 50090 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-secondary-namenode-info.txt
+	nmap --script "hadoop-* and not brute" -p 50030,50060,50070,50075,50090 -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-secondary-namenode-info.txt
+	nmap -sV --script "hadoop-* and not brute" -p 50030,50060,50070,50075,50090 -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-all.txt
+}
+
+http_scan() {
+	mkdir -p Netauto/$IP/Protocols/HTTP/
+	mkdir -p Netauto/$IP/Protocols/HTTP/nmap
+	nmap --script http-auth --script-args http-auth.path=/login -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-auth.txt
+	nmap --script http-devframework -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-devframework.txt
+	nmap --script http-enum -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-enum.txt
+	nmap --script http-headers -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-headers.txt
+	nmap --script http-methods -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-methods.txt
+	nmap --script http-waf-detect -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-waf-detect.txt
+	nmap --script http-wordpress-enum --script-args type="plugins",search-limit=1500 -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-wordpress-enum.txt
+	nmap --script http-wordpress-users -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-wordpress-users.txt
+	nmap --script "http-wordpress-* and not brute" -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-wordpress-all.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners
+
+	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto
+	nikto -h http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto/http-nikto.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb
+	whatweb http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/http-whatweb.txt
+	whatweb -a 1 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/http-whatweb-stealthy.txt
+	whatweb -a 3 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/http-whatweb-aggressive.txt
+	whatweb -a 4 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/http-whatweb-extreme.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech
+	webtech -u $IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech/http-webtech.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze
+	webanalyze -host $IP -crawl 2 | tee Netauto/$IP/Protocols/HTTP/webanalyze/http-webanalyze.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti
+	wapiti -u http://$IP -o Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti/http-wapiti.txt | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/waipti/http-webanalyze.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTP/Firewall
+	wafw00f http://$IP | tee Netauto/$IP/Protocols/HTTP/Firewall/http-wafw00f.txt
+	python3 /opt/tools/HTTP/WhatWaf/whatwaf --url http://$IP | tee Netauto/$IP/Protocols/HTTP/Firewall/http-whatwaf.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTP/CMSScan
+	cmsmap  -F -d http://$IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-cms.txt
+	wpscan --force update -e --url $IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-wpscan.txt
+	joomscan --ec -u $IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-joomscan.txt
+	python3 /opt/tools/HTTP/CMSeek/cmseek.py -u http://$IP | tee Netauto/$IP/nmap/Protocols/HTTP/CMSScan/http-cmseek.txt
+}
+
+https_scan() {
+	mkdir -p Netauto/$IP/Protocols/HTTPS/
+	mkdir -p Netauto/$IP/Protocols/HTTPS/nmap
+	nmap --script http-auth --script-args http-auth.path=/login -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-auth.txt
+	nmap --script http-devframework -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-devframework.txt
+	nmap --script http-enum -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-enum.txt
+	nmap --script http-headers -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-headers.txt
+	nmap --script http-methods -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-methods.txt
+	nmap --script http-waf-detect -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-waf-detect.txt
+	nmap --script http-wordpress-enum --script-args type="plugins",search-limit=1500 -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-wordpress-enum.txt
+	nmap --script http-wordpress-users -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-wordpress-users.txt
+	nmap --script "http-wordpress-* and not brute" -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-wordpress-all.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners
+
+	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto
+	nikto -h https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto/https-nikto.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb
+	whatweb https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/https-whatweb.txt
+	whatweb -a 1 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/https-whatweb-stealthy.txt
+	whatweb -a 3 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/https-whatweb-aggression.txt
+	whatweb -a 4 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/https-whatweb-aggression.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech
+	webtech -u $IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech/https-webtech.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/webanalyze
+	webanalyze -host $IP -crawl 2 | tee Netauto/$IP/Protocols/HTTPS/webanalyze/https-webanalyze.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/waipti
+	wapiti -u https://$IP -o Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti/http-wapiti.txt | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/waipti/http-webanalyze.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTPS/Firewall
+	wafw00f https://$IP | tee Netauto/$IP/Protocols/HTTPS/Firewall/https-wafw00f.txt
+	whatwaf -u https://$IP | tee Netauto/$IP/Protocols/HTTPS/Firewall/https-whatwaf.txt
+
+	mkdir -p Netauto/$IP/Protocols/HTTPS/CMSScan
+	cmsmap  -F -d https://$IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-cms.txt
+	wpscan --force update -e --url $IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-wpscan.txt
+	joomscan --ec -u $IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-joomscan.txt
+	python3 /opt/tools/HTTP/CMSeek/cmseek.py -u https://$IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-cmseek.txt
+}
+
+###############################################################
+# Database Scans                           		      #
+###############################################################
+mysql_scan() {
+	mkdir -p Netauto/$IP/Databases/MySQL
+	mkdir -p Netauto/$IP/Databases/MySQL/nmap
+	nmap --script mysql-info -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_info.txt
+	nmap --script mysql-audit -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_audit.txt
+	nmap --script mysql-query -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_query.txt
+	nmap --script mysql-enum -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_enum.txt
+	nmap --script mysql-dump-hashes -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_dump_hashes.txt
+	nmap --script mysql-empty-password -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_empty_password.txt
+	nmap --script mysql-variables -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_variables.txt
+	nmap --script mysql-vuln-cve2012-2122 -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_vuln.txt
+	nmap --script mysql-databases -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_databases.txt
+	nmap --script mysql-users -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_users.txt
+	nmap --script "mysql-* and not brute" -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_all.txt	
+	nmap -sV -p 3306 --script mysql-audit,mysql-databases,mysql-dump-hashes,mysql-empty-password,mysql-enum,mysql-info,mysql-query,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_all_extended.txt	
+}
+
+couchdb_scan() {
+	mkdir -p Netauto/$IP/Databases/CouchDB
+	mkdir -p Netauto/$IP/Databases/CouchDB/nmap
+	nmap --script couchdb-databases -p 5984,6384 $IP -oN Netauto/$IP/Databases/CouchDB/nmap/couchdb_databases.txt
+	nmap --script couchdb-stats -p 5984,6384 $IP -oN Netauto/$IP/Databases/CouchDB/nmap/couchdb_stats.txt
+}
+
+influxdb_scan() {
+	mkdir -p Netauto/$IP/Databases/InfluxDB
+	curl http://$IP:8086/debug/requests | tee Netauto/$IP/Databases/InfluxDB/influxdb_user_enumeration.txt
+}
+
+mongodb_scan() {
+	mkdir -p Netauto/$IP/Databases/MongoDB
+	mkdir -p Netauto/$IP/Databases/MongoDB/nmap
+	nmap --script mongodb-info -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/mongodb_info.txt
+	nmap --script mongodb-databases -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/mongodb_databases.txt
+	nmap --script "mongodb-* and not brute" -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/mongodb_all.txt
+}
+
+mssql_scan() {
+	mkdir -p Netauto/$IP/Databases/MSSQL
+	mkdir -p Netauto/$IP/Databases/MSSQL/nmap
+	nmap --script broadcast-ms-sql-discover -p 1433 $IP  -oN Netauto/$IP/Databases/MSSQL/nmap/broadcast-ms-sql-discover.txt
+	nmap --script ms-sql-info -p 1433 $IP  -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-info.txt
+	nmap --script ms-sql-config -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-config.txt
+	nmap --script ms-sql-dac -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-dac.txt
+	nmap --script ms-sql-dump-hashes -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-dump-hashes.txt
+	nmap --script ms-sql-empty-password -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-empty-password.txt
+	nmap --script ms-sql-hasdbaccess -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-hasdbaccess.txt
+	nmap --script ms-sql-ntlm-info -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-ntlm-info.txt
+	nmap --script ms-sql-query -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-query.txt
+	nmap --script ms-sql-tables -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-tables.txt
+	nmap --script ms-sql-empty-password,ms-sql-xp-cmdshell -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql_empty_pwd_xp_cmdshell.txt
+	nmap --script "ms-sql-* and not brute" -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql_all.txt
+	nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql_all_extended.txt
+}
+
+postgresql_scan() {
+	mkdir -p Netauto/$IP/Databases/PostgreSQL
+	mkdir -p Netauto/$IP/Databases/PostgreSQL/nmap
+	nmap -sC -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/psql_scan.txt
+	nmap -sV -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/psql_version.txt
+	nmap -sC -sV -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/psql_info.txt
+}
+
+redis_scan() {
+	mkdir -p Netauto/$IP/Databases/Redis
+	mkdir -p Netauto/$IP/Databases/Redis/nc
+	nc $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/redis_nc.txt
+	nc -nv $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/redis_nc.txt
+	mkdir -p Netauto/$IP/Databases/Redis/nmap
+	nmap --script redis-info -p 6379 $IP -oN Netauto/$IP/Databases/Redis/nmap/redis_info.txt
+	nmap --script redis-info -sV -p 6379 $IP -oN Netauto/$IP/Databases/Redis/nmap/redis_info_extended.txt
+	mkdir -p Netauto/$IP/Databases/Redis/redis-cli
+	redis-cli -h $IP | tee Netauto/$IP/Databases/Redis/redis-cli/redis-cli.txt
+}
+
+oracledb_scan() {
+	mkdir -p Netauto/$IP/Databases/OracleDB
+	mkdir -p Netauto/$IP/Databases/OracleDB/nmap
+	nmap --script oracle-tns-version -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/oracledb_tns.txt
+	nmap --script oracle-sid-brute -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/oracledb_sid_brute.txt
+	nmap --script oracle-enum-users -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/oracledb_enum_users.txt
+
+	mkdir -p Netauto/$IP/Databases/OracleDB/oscanner
+	oscanner -s $IP -P 1521 | tee Netauto/$IP/Databases/OracleDB/oscanner/oracledb_oscanner.txt
+	mkdir -p Netauto/$IP/Databases/OracleDB/tnscmd10g
+	tnscmd10g version -h $IP | tee Netauto/$IP/Databases/OracleDB/tnscmd10g/oracledb_tnscmd10g.txt
+
+	mkdir -p Netauto/$IP/Databases/OracleDB/ODAT
+	odat sidguesser -s $IP | tee Netauto/$IP/Databases/OracleDB/ODAT/oracledb_odat.txt
+	odat-libc2.12-x86_64 passwordguesser -s $IP -d XE --accounts-file accounts/default.txt | tee Netauto/$IP/Databases/OracleDB/ODAT/passwordguesser.txt
+}
+
+###############################################################
+# Port Detection                                              #
+###############################################################
+handle_ports() {
+	# Check if folder exists 
+	DEFAULT_DIRECTORY=Netauto/$IP/Protocols/
+
+	local ports=$1
+
+	IFS=',' read -ra port_array <<< "$ports"
+	echo "$IFS"
+
+	for port in "${port_array[@]}"; do
+		case "$port" in
+			7) echo_scan ;;
+			21) ftp_scan ;;
+			22) ssh_scan ;;
+			23) telnet_scan ;;
+			25) smtp_scan ;;
+			465) smtp_scan ;;
+			587) smtp_scan ;;
+			43) whois_scan ;;
+			49) tacacs_scan ;;
+			53) dns_scan ;;
+			69) tftp_scan ;;
+			79) finger_scan ;;
+			88) kerberos_scan ;;
+			110) pop_scan ;;
+			111) portmapper_scan ;;
+			113) ident_scan ;;
+			123) ntp_scan ;;
+			135) msrpc_scan ;;
+			593) msrpc_scan ;;
+			137) netbios_scan ;;
+			138) netbios_scan ;;
+			139) smb_scan ;;
+			445) smb_scan ;;
+			143) imap_scan ;;
+			993) imap_scan ;;
+			161) snmp_scan ;;
+			162) snmp_scan ;;
+			10161) snmp_scan ;;
+			10162) snmp_scan ;;
+			194) irc_scan ;;
+			264) check_point_firewall_scan ;;
+			389) ldap_scan ;;
+			636) ldap_scan ;;
+			3268) ldap_scan ;;
+			3269) ldap_scan ;;
+			500) ipsec_scan ;;
+			502) modbus_scan ;;
+			512) rexec_scan ;;
+			513) rlogin_scan ;;
+			514) rsh_scan ;;
+			515) lpd_scan ;;
+			548) afp_scan ;;
+			554) rtsp_scan ;;
+			8554) rtsp_scan ;;
+			623) ipmi_scan ;;
+			631) ipp_scan ;;
+			700) epp_scan ;;
+			873) rsync_scan ;;
+			1026) rusersd_scan ;;
+			1080) socks_scan ;;
+			1098) java_rmi_scan ;;
+			1099) java_rmi_scan ;;
+			1050) java_rmi_scan ;;
+			1414) ibm_mq_scan ;;
+			1521) oracledb_scan ;;
+			1723) pptp_scan ;;
+			1883) mqtt_scan ;;
+			2049) nfs_scan ;;
+			2301) compaq_scan ;;
+			2381) compaq_scan ;;
+			2375) docker_scan ;;
+			2376) docker_scan ;;
+			3128) squid_scan ;; 
+			3260) iscsi_scan ;;
+			3289) rdp_scan ;;
+			3299) saprouter_scan ;;
+			3632) distcc_scan ;;
+			3690) subversion_scan ;;
+			3702) ws-discovery_scan ;;
+			4369) epmd_scan ;;
+			4786) cisco_smart_install_scan ;;
+			4840) opc_scan ;;
+			5000) docker_registry_scan ;;
+			5353) mdns_scan ;;
+			5439) redshift_scan ;;
+			5555) android_debug_bridge_scan ;;
+			5601) kibana_scan ;;
+			5671) amqp_scan ;;
+			5672) amqp_scan ;;
+			5800) vnc_scan ;;
+			5801) vnc_scan ;;
+			5900) vnc_scan ;;
+			5901) vnc_scan ;;
+			5985) winrm_scan ;;
+			5986) omi_scan ;;
+			6000) x11_scan ;;
+			8009) ajp_scan ;;
+			8089) splunk_scan ;;
+			8333) bitcoin_scan ;;
+			18333) bitcoin_scan ;;
+			38333) bitcoin_scan ;;
+			18444) bitcoin_scan ;;
+			9000) fastcgi_scan ;;
+			9001) hsqldb_scan ;;
+			9042) cassandra_scan ;;
+			9160) cassabdra_scan ;;
+			9100) raw_printing_scan ;;
+			9200) elasticsearch_scan ;;
+			10000) ndmp_scan ;;
+			11211) memcached_scan ;;
+			15672) rabbitmq_scan ;;
+			24007) glusterfs_scan ;;
+			24008) glusterfs_scan ;;
+			24009) glusterfs_scan ;;
+			49152) glusterfs_scan ;;
+			44134) tiller_helm ;;
+			44818) ethernetip_scan ;;
+			47808) bacnet_scan ;;
+			50030) hadoop_scan ;;
+			50060) hadoop_scan ;;
+			50070) hadoop_scan ;;
+			50075) hadoop_scan ;;
+			50090) hadoop_scan ;;
+			80) http_scan ;;
+			443) https_scan ;;
+			1443) https_scan ;;
+			*) ;;  # Default case if no specific action is needed for a port
+		esac
+	done
+}
+
+###############################################################
+# Help                                                        #
+###############################################################
+usage() {
+        echo "Network Enumeration Automator with Nmap, Rustscan & Masscan"
+        echo "Usage: Netauto -i <ip_address> [options]"
+        echo " "
+        echo "Arguments" 
+        echo "  ip_address              Target internet protocol address of the identified device"
+        echo " "
+        echo "Options:"
+        echo "  -i              	  Scan IP address of the target device"
+        echo "  -p              	  Scan ports of the targets device"
+        echo " "
+        echo "Timing options:"
+        echo "  -T0              	  Paranoid"
+        echo "  -T1              	  Sneaky"
+        echo "  -T2              	  Polite"
+	echo "  -T3              	  Normal (Default)"
+        echo "  -T4              	  Aggressive"
+        echo "  -T5              	  Insane"
+}
+
+###############################################################
+# Arguments                                                   #
+###############################################################
+if [ $# -eq 0 ];
+then 
+        usage
+        exit 1
+fi
+
+MINRATE=""
+
+while getopts ":i:p:" flag
+do
+    case "${flag}" in
+        i) IP=${OPTARG};;
+	p) 
+		PORTS=${OPTARG}
+		handle_ports "${PORTS}"
+		;;
+    esac
+done
+
+if [ -z "$IP" ]; then
+        echo "Missing IP address. Please specify an IP using the -i option."
+        exit 1
+fi
+
+echo "IP: $IP";
+echo "PORT(S): $PORTS"
+
+###############################################################
+# Network                                                     #
+###############################################################
+# Nmap
+default_nmap() {
+	# Prompt for selecting minrate
+	PS3='Please enter the min-rate of your choice: '
+        options=("default" "-T1" "-T2" "-T3" "-T4" "-T5" "Quit")
+        # MINRATE=""
+        select opt in "${options[@]}"; do
+                case $opt in 
+                        "default")
+                                echo "default"
+                                break
+                                ;;
+                        "-T1")
+                                echo "-T1"
+                                MINRATE="-T1"
+                                break
+                                ;;
+                        "-T2")
+                                echo "-T2"
+                                MINRATE="-T2"
+                                break
+                                ;;
+                        "-T3")
+                                echo "-T3"
+                                NMINRATE="-T3"
+                                break
+                                ;;
+                        "-T4")
+                                echo "-T4"
+                                MINRATE="-T4"
+                                break
+                                ;;
+                        "-T5")
+                                echo "-T5"
+                                MINRATE="-T5"
+                                break
+                                ;;
+                        "Quit")
+                                exit 1
+                                break
+                                ;;
+                        *) echo "Invalid option $REPLY";;
+                esac
+        done
+
+	# Creating output directory of our target
+	mkdir -p Netauto/$IP/
+	
+	# Create directories inside the target folder based on the user's flag.
+	mkdir -p Netauto/$IP/DEFAULT
+
+        # Scans ports only and no host discovery
+        # Scans for all ports available
+	if [ "$MINRATE" == "" ]; then
+		echo "nmap -Pn $IP -p-"
+		nmap -Pn $IP -p- -oN Netauto/$IP/DEFAULT/port_scans.txt
+	else 
+		echo "nmap $MINRATE -Pn $IP -p-"
+		nmap $MINRATE -Pn $IP -p- -oN Netauto/$IP/DEFAULT/port_scans.txt
+	fi
+
+        echo " "
+
+        # Runs "Script Scan" to discover additional information about the target host
+        # This is to potentially identify vulnerabilities and/or misconfigurations
+        # Scans vendor and service version for each open port (Service Version Detection)
+        # Useful for attempting to identify outdated version of service
+	if [ "$MINRATE" == "" ]; then
+		echo "nmap -sC -sV $IP"
+		nmap -sC -sV $IP -oN Netauto/$IP/DEFAULT/script_scan.txt
+	else 
+		echo "nmap $MINRATE -sC -sV $IP"
+		nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/DEFAULT/script_scan.txt
+	fi
+
+        echo " "
+
+        # Performs "TCP SYN Scan" by conducting TCP scan of target host by sending SYN packets
+        # Also known as "Stealth Scan" as it is designed to be less intrusive and more discreet
+        # Scans ports only and no host discovery
+	if [ "$MINRATE" == "" ]; then
+		echo "sudo nmap -sS -Pn -n $IP"
+		sudo nmap -sS -Pn -n $IP -oN Netauto/$IP/DEFAULT/stealth_scan.txt
+	else 
+		echo "sudo nmap $MINRATE -sS -Pn -n $IP"
+		sudo nmap $MINRATE -sS -Pn -n $IP -oN Netauto/$IP/DEFAULT/stealth_scan.txt
+	fi
+
+        echo " "
+
+        # Enables aggressive and/or advanced scanning techniques 
+        # This involves such as OS/Version Detection, Script Scanning and Traceroute
+        # This provides wealth of information about the target system 
+        # Useful for detailed reconnaissane and vulnerability assessment
+	if [ "$MINRATE" == "" ]; then
+		echo "nmap -p- -A $IP"
+		nmap -p- -A $IP -oN Netauto/$IP/DEFAULT/aggressive_scan.txt
+	else 
+		echo "nmap $MINRATE -p- -A $IP"
+		nmap $MINRATE -p- -A $IP -oN Netauto/$IP/DEFAULT/aggressive_scan.txt
+	fi
+
+        echo " "
+
+
+        # Scans all standard ports to establish connection system call using TCP Connection Scan
+        # runs all the scripts and checks on them
+        echo "nmap -n -v -sT -A $IP"
+	if [ "$MINRATE" == "" ]; then
+		echo "nmap -n -v -sT -A $IP"
+		nmap -n -v -sT -A $IP -oN Netauto/$IP/DEFAULT/TCP_scan.txt
+	else
+		echo "nmap $MINRATE -n -v -sT -A $IP"
+		nmap $MINRATE -n -v -sT -A $IP -oN Netauto/$IP/DEFAULT/TCP_scan.txt
+	fi
+
+        echo " "
+
+
+        # Run Vulnerability Script to perform NSE Vulnerability Scan
+        echo "nmap -sV --script vuln $IP"
+	if [ "$MINRATE" == "" ]; then
+		echo "nmap -sV --script vuln $IP"
+		nmap -sV --script vuln $IP -oN Netauto/$IP/DEFAULT/vulnerability_scan.txt
+	else
+		echo "nmap $MINRATE -sV --script vuln $IP"
+		nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/DEFAULT/vulnerability_scan.txt
+	fi
+
+        echo " "
+}
+
+scan_unknown_ports_nmap() {
+        read -p "Enter the following unknown ports: " word
+
+	# Check if the following 'word' parameter contains the following characters
+	if [[ ! $word =~ ^[123456789,]+$ ]]; then
+	        echo "Invalid input. Please enter only the characters 1, 2, 3, 4, 5, 6, 7, 8, 9, and , (comma)."
+		return 1	
+	fi 
+
+        # Scans specified port unknown to the user
+        nmap -p$word $IP
+}
+
+deep_nmap() {
+        tcp_nmap
+        udp_nmap
+}
+
+tcp_nmap() {
+	# Check if directory exists
+	DEFAULT_DIRECTORY=Netauto/$IP/DEFAULT/
+
+	if [ ! -d "$DEFAULT_DIRECTORY" ]; then
+		mkdir -p $DEFAULT_DIRECTORY
+	fi
+
+        # Full TCP Scan
+	echo "nmap -n -v -sT -p- -T5 $IP"
+	nmap -n -v -sT -p- -T5 -oN Netauto/$IP/DEFAULT/TCP_Full_Scan_1.txt $IP
+	echo "sudo nmap -T4 -F -sV -sC -oX valley.xml --reason --stats-every 5s -p- $IP"
+	sudo nmap -T4 -F -sV -sC -oN Netauto/$IP/DEFAULT/TCP_Full_Scan_1.txt --reason --stats-every 5s -p- $IP
+}
+
+udp_nmap() {
+	# Check if directory exists
+	DEFAULT_DIRECTORY=Netauto/$IP/DEFAULT/
+
+	if [ ! -d "$DEFAULT_DIRECTORY" ]; then
+		mkdir -p $DEFAULT_DIRECTORY
+	fi
+
+        # Full UDP Scan
+        echo "nmap -n -v -sU $IP"
+        sudo nmap -n -v -sU -oN Netauto/$IP/DEFAULT/Full_UDP_Scan_1.txt $IP
+
+        echo ""
+
+        echo "nmap -n -v -sU -p- -T5 $IP"
+        sudo nmap -n -v -sU -p- -T5 -oN Netauto/$IP/DEFAULT/Full_UDP_Scan_2.txt $IP
+}
+
+###############################################################
+# Main - Network Scanner Selection Option                            #
+###############################################################
+PS3='Select an option in Nmap (enter the number): '
+options=("Network Scan" "Scan Unknown Ports" "UDP/TCP Scan" "Quit")
+select opt in "${options[@]}"; do
+	case $opt in
+		"Network Scan")
+			echo "Default "
+			default_nmap
+			break
+			;;
+		"Scan Unknown Ports")
+			echo "Scan Unknown Ports"
+			scan_unknown_ports_nmap
+			break
+			;;
+		"UDP/TCP Scan")
+			echo "UDP / TCP Scan"
+			deep_nmap
+			break
+			;;
+		"Quit")
+			exit 1
+			break
+			;;
+		*) echo "Invalid option, please try again." ;;
+	esac
+done

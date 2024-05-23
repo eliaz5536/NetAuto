@@ -96,6 +96,11 @@ You can utilize the bash script by donwloading the git clone by the following:
 git clone <INSERT URL HERE>
 ```
 
+Launch NetAuto bash script file by doing the following
+```shell
+./netauto -i <TARGET_IP_ADDRESS>
+```
+
 
 # Usage 
 ```

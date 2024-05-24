@@ -42,8 +42,6 @@ snmp_scan() {
 	nmap -sU --script snmp-win32-software -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-software.txt
 	nmap -sU --script snmp-win32-users -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-users.txt
 	nmap -sU --script snmp-hh3c-logins -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-hh3c-logins.txt
-	# nmap -sU --script snmp-brute -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-brute.txt
-	# nmap -sU --script snmp* -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp_all.txt
 	nmap -sU --script "snmp* and not brute" -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp_all.txt
 
 	onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp.txt $IP | tee Netauto/$IP/Protocols/SNMP/onsixtyone-bruteforce.txt
@@ -1405,107 +1403,12 @@ handle_ports() {
 	done
 }
 
-###############################################################
-# Help                                                        #
-###############################################################
-usage() {
-        echo "Network Enumeration Automator with Nmap, Rustscan & Masscan"
-        echo "Usage: Netauto -i <ip_address> [options]"
-        echo " "
-        echo "Arguments" 
-        echo "  ip_address              Target internet protocol address of the identified device"
-        echo " "
-        echo "Options:"
-        echo "  -i              	  Scan IP address of the target device"
-        echo "  -p              	  Scan ports of the targets device"
-        echo " "
-        echo "Timing options:"
-        echo "  -T0              	  Paranoid"
-        echo "  -T1              	  Sneaky"
-        echo "  -T2              	  Polite"
-	echo "  -T3              	  Normal (Default)"
-        echo "  -T4              	  Aggressive"
-        echo "  -T5              	  Insane"
-}
-
-###############################################################
-# Arguments                                                   #
-###############################################################
-if [ $# -eq 0 ];
-then 
-        usage
-        exit 1
-fi
-
-MINRATE=""
-
-while getopts ":i:p:" flag
-do
-    case "${flag}" in
-        i) IP=${OPTARG};;
-	p) 
-		PORTS=${OPTARG}
-		handle_ports "${PORTS}"
-		;;
-    esac
-done
-
-if [ -z "$IP" ]; then
-        echo "Missing IP address. Please specify an IP using the -i option."
-        exit 1
-fi
-
-echo "IP: $IP";
-echo "PORT(S): $PORTS"
 
 ###############################################################
 # Network                                                     #
 ###############################################################
 # Nmap
 default_nmap() {
-	# Prompt for selecting minrate
-	PS3='Please enter the min-rate of your choice: '
-        options=("default" "-T1" "-T2" "-T3" "-T4" "-T5" "Quit")
-        # MINRATE=""
-        select opt in "${options[@]}"; do
-                case $opt in 
-                        "default")
-                                echo "default"
-                                break
-                                ;;
-                        "-T1")
-                                echo "-T1"
-                                MINRATE="-T1"
-                                break
-                                ;;
-                        "-T2")
-                                echo "-T2"
-                                MINRATE="-T2"
-                                break
-                                ;;
-                        "-T3")
-                                echo "-T3"
-                                NMINRATE="-T3"
-                                break
-                                ;;
-                        "-T4")
-                                echo "-T4"
-                                MINRATE="-T4"
-                                break
-                                ;;
-                        "-T5")
-                                echo "-T5"
-                                MINRATE="-T5"
-                                break
-                                ;;
-                        "Quit")
-                                exit 1
-                                break
-                                ;;
-                        *) echo "Invalid option $REPLY";;
-                esac
-        done
-
 	# Creating output directory of our target
 	mkdir -p Netauto/$IP/
 	
@@ -1593,24 +1496,6 @@ default_nmap() {
         echo " "
 }
 
-scan_unknown_ports_nmap() {
-        read -p "Enter the following unknown ports: " word
-
-	# Check if the following 'word' parameter contains the following characters
-	if [[ ! $word =~ ^[123456789,]+$ ]]; then
-	        echo "Invalid input. Please enter only the characters 1, 2, 3, 4, 5, 6, 7, 8, 9, and , (comma)."
-		return 1	
-	fi 
-
-        # Scans specified port unknown to the user
-        nmap -p$word $IP
-}
-
-deep_nmap() {
-        tcp_nmap
-        udp_nmap
-}
-
 tcp_nmap() {
 	# Check if directory exists
 	DEFAULT_DIRECTORY=Netauto/$IP/DEFAULT/
@@ -1645,31 +1530,118 @@ udp_nmap() {
 }
 
 ###############################################################
-# Main - Network Scanner Selection Option                            #
+# Help                                                        #
 ###############################################################
-PS3='Select an option in Nmap (enter the number): '
-options=("Network Scan" "Scan Unknown Ports" "UDP/TCP Scan" "Quit")
-select opt in "${options[@]}"; do
-	case $opt in
-		"Network Scan")
-			echo "Default "
-			default_nmap
-			break
-			;;
-		"Scan Unknown Ports")
-			echo "Scan Unknown Ports"
-			scan_unknown_ports_nmap
-			break
-			;;
-		"UDP/TCP Scan")
-			echo "UDP / TCP Scan"
-			deep_nmap
-			break
-			;;
-		"Quit")
-			exit 1
-			break
-			;;
-		*) echo "Invalid option, please try again." ;;
-	esac
+usage() {
+        echo "Network Enumeration Automator with Nmap"
+        echo "Usage: Netauto -i <ip_address> [options]"
+        echo "Options:"
+        echo "  -h, --help              	  Help & Usage"
+        echo "  -i, --ip              	  	  Scan IP address of the target device"
+        echo "  -p, --ports              	  Scan ports of the targets device"
+        echo "  -t, --timing              	  Set NMAP timing minrate option"
+        echo " "
+        echo "Timing minrate options:"
+        echo "  -T0              	  Paranoid"
+        echo "  -T1              	  Sneaky"
+        echo "  -T2              	  Polite"
+	echo "  -T3              	  Normal (Default)"
+        echo "  -T4              	  Aggressive"
+        echo "  -T5              	  Insane"
+        echo " "
+        echo "Perform reconnaissance: "
+	echo "netauto -i 192.168.69.10"
+        echo " "
+        echo "Perform reconnaissance with timing: "
+	echo "netauto -i 192.168.69.10 -t5"
+        echo " "
+        echo "Perform protocols, port and service scan: "
+	echo "netauto -i 192.168.69.10 -p 40,60,80"
+
+}
+
+###############################################################
+# Arguments                                                   #
+###############################################################
+if [ $# -eq 0 ];
+then 
+        usage
+        exit 1
+fi
+
+IP=""
+PORTS=""
+MINRATE=""
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -h|--help) usage ;;
+        -i|--ip) IP="$2"; shift ;;
+        -p|--ports) PORTS="$2"; shift ;;
+        -m|--minrate) MINRATE="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
 done
+
+# ===============================================================
+# Checking Conditions...
+# ===============================================================
+
+# --------------------------------------------------------------
+# IP
+# --------------------------------------------------------------
+if [ -z "$IP" ]; then
+        echo "Missing IP address. Please specify an IP using the -i option."
+        exit 1
+fi
+
+# --------------------------------------------------------------
+# MINRATE
+# --------------------------------------------------------------
+if [[ -n "$MINRATE" ]]; then
+	# Check if the user selected only one timing option
+	if [ -z "$MINRATE" ]; then
+		$MINRATE=3
+	fi
+
+	# Check if the input is an integer
+	if ! [[ $MINRATE =~ ^[0-9]+$ ]]; then
+	    echo "Error: Input must be an integer"
+	    exit 1
+	fi
+
+
+	# Check if the input is a single character
+	if [ $MINRATE -ne 1 ]; then
+	    echo "Error: Input must be a single character"
+	    exit 1
+	fi
+
+	# Check if the integer is not higher than 5
+	if [ $MINRATE -gt 5 ]; then
+	    echo "Error: Input must not be higher than 5"
+	    exit 1
+	fi
+fi 
+
+# --------------------------------------------------------------
+# Printing output options...
+# --------------------------------------------------------------
+echo "IP: $IP";
+
+if [[ -n "$PORTS" ]]; then
+	echo "PORT(S): $PORTS"
+fi
+if [[ -n "$MINRATE" ]]; then
+	echo "MINRATE: $MINRATE"
+fi
+
+if [ -z "$PORTS" ]; then
+	default_nmap
+        exit 1
+else 
+	handle_ports $PORTS
+	exit 1
+fi
+

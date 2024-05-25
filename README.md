@@ -30,9 +30,9 @@ If you want to ensure that all of these packages are installed, perform those fo
 sudo apt-get install python python2 python3 python3-pip pip pipx
 ```
 
+The following tools that are utilized for pure port scanning and service discovery requires installation
 These following tools need to be installed and put in /opt directory in order to utilize the following script:
 ```
-
 nmap
 onesixtyone
 snmpwalk
@@ -85,6 +85,17 @@ tnscmd10g
 odat sidguesser
 odat-libc2.12-x86_64 passwordguesser -s $IP -d XE --accounts-file accounts/default.txt 
 ```
+
+You can install most of the packages through apt package by doing the following 
+```
+sudo apt-get install nmap snmpwalk snmpcheck openssl ssh-audit ssh-keyscan dif finger ntpq impacket-rdcdump nmblookup nbtscan enum4linux rpcclient netexec smbmap crackmapexec impacket-looksupid ldapsearch ike-scan curl rsync rusers rpcinfo svn opalopc nikto whatweb webtech webanalyze apiti wafw00f cmsmap wpscan redis-cli oscanner tnscmd10g  
+```
+
+Several third-party require cloning repositories to be cloned into a specified directory 
+```
+git clone <repositories over here>
+```
+
 
 Perform those following commands if you want to install simultaneously:
 ```

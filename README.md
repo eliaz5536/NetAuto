@@ -32,26 +32,26 @@ sudo apt-get install python python2 python3 python3-pip pip pipx
 
 The following tools that are utilized for pure port scanning and service discovery requires installation
 These following tools need to be installed and put in /opt directory in order to utilize the following script:
+| **General**             | Nmap                  | OpenSSL  | Netcat     |               |         |         |              |           |                    |          |        |
+|-------------------------|-----------------------|----------|------------|---------------|---------|---------|--------------|-----------|--------------------|----------|--------|
+| **SNMP**                | onesixtyone           | snmpwalk | snmp-check |               |         |         |              |           |                    |          |        |
+| **SMTP**                | dif                   |          |            |               |         |         |              |           |                    |          |        |
+| **Finger**              | finger                |          |            |               |         |         |              |           |                    |          |        |
+| **NTP**                 | ntpq                  |          |            |               |         |         |              |           |                    |          |        |
+| **MSRPC**               | impacket-rpcdump      | rpcdump  | rpcmap     | IOXIDResolver |         |         |              |           |                    |          |        |
+| **NetBios**             | nmblookup             | nbtscan  | enum4linux | rpcclient     |         |         |              |           |                    |          |        |
+| **SMB**                 | nmblookup             | nbtscan  | enum4linux | enum4linux-ng | netexec | smbmap  | crackmapexec | smbclient | impacket-looksupid |          |        |
+| **IPSec**               | IKE-Scan              |          |            |               |         |         |              |           |                    |          |        |
+| **IPP**                 | PRET                  |          |            |               |         |         |              |           |                    |          |        |
+| **RSync**               | rsync                 |          |            |               |         |         |              |           |                    |          |        |
+| **NFS**                 | rpcinfo               |          |            |               |         |         |              |           |                    |          |        |
+| **Squid**               | spose                 |          |            |               |         |         |              |           |                    |          |        |
+| **Subversion**          | svn                   |          |            |               |         |         |              |           |                    |          |        |
+| **CISCO Smart Install** | SIETpy3               |          |            |               |         |         |              |           |                    |          |        |
+| **OPC**                 | OpalOPC               |          |            |               |         |         |              |           |                    |          |        |
+| **Docker Registry**     | DockerRegistryGrabber |          |            |               |         |         |              |           |                    |          |        |
+| **HTTP / HTTPS**        | Nikto                 | WhatWeb  | WebTech    | WebAnalyze    | Wapiti  | wafw00f | WhatWaf      | CMSMap    | WPScan             | JoomScan | CMSeeK |
 
-| General             | Nmap                  | OpenSSL  | Netcat     |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-|---------------------|-----------------------|----------|------------|---------------|---------|---------|--------------|-----------|--------------------|----------|--------|---|---|---|---|---|
-| SNMP                | onesixtyone           | snmpwalk | snmp-check |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| SMTP                | dif                   |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| Finger              | finger                |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| NTP                 | ntpq                  |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| MSRPC               | impacket-rpcdump      | rpcdump  | rpcmap     | IOXIDResolver |         |         |              |           |                    |          |        |   |   |   |   |   |
-| NetBios             | nmblookup             | nbtscan  | enum4linux | rpcclient     |         |         |              |           |                    |          |        |   |   |   |   |   |
-| SMB                 | nmblookup             | nbtscan  | enum4linux | enum4linux-ng | netexec | smbmap  | crackmapexec | smbclient | impacket-looksupid |          |        |   |   |   |   |   |
-| IPSec               | IKE-Scan              |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| IPP                 | PRET                  |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| RSync               | rsync                 |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| NFS                 | rpcinfo               |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| Squid               | spose                 |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| Subversion          | svn                   |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| CISCO Smart Install | SIETpy3               |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| OPC                 | OpalOPC               |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| Docker Registry     | DockerRegistryGrabber |          |            |               |         |         |              |           |                    |          |        |   |   |   |   |   |
-| HTTP / HTTPS        | Nikto                 | WhatWeb  | WebTech    | WebAnalyze    | Wapiti  | wafw00f | WhatWaf      | CMSMap    | WPScan             | JoomScan | CMSeeK |   |   |   |   |   |
 
 
 You can install most of the packages through apt package by doing the following 

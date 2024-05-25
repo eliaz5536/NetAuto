@@ -1,13 +1,5 @@
 ![automated_network_enumerator](https://github.com/eliaz5536/NetAuto/assets/5835036/55eafde0-f387-49fa-913a-bb4436bb797e)
 
-
-![github_project_logo_transparent](https://github.com/eliaz5536/NetAuto/assets/5835036/01c8bc56-3733-43d0-ba35-5e6195def64d)
-
-
-
-![white_transparent_logo](https://github.com/eliaz5536/NetAuto/assets/5835036/b3821c5d-a769-493e-8829-c42d02fd6363)
-
-
 # NetAuto
 NetAuto is a basic network reconnaissance tools that automates enumeration of services, protocols and ports, ideal for penetration testing environments and network scanning.
 

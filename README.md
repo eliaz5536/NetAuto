@@ -192,5 +192,100 @@ Netauto
 
 ## Port and Service Scanning
 ```
+Netauto
+└── 192.168.69.10
+    └── Protocols
+        ├── DNS
+        │   └── nmap
+        │       ├── broadcast-dns-service-discovery.txt
+        │       ├── dns-all.txt
+        │       ├── dns-blacklist.txt
+        │       ├── dns-cache-snoop.txt
+        │       ├── dns-check-zone.txt
+        │       ├── dns-client-subnet-scan.txt
+        │       ├── dns-fuzz.txt
+        │       ├── dns-ip6-arpa-scan.txt
+        │       ├── dns-nsec-enum.txt
+        │       ├── dns-nsec3-enum.txt
+        │       ├── dns-nsid-extended.txt
+        │       ├── dns-nsid.txt
+        │       ├── dns-random-srcport.txt
+        │       ├── dns-random-txid.txt
+        │       ├── dns-recursion.txt
+        │       ├── dns-service-discovery.txt
+        │       ├── dns-srv-enum.txt
+        │       ├── dns-update.txt
+        │       ├── dns-zeustracker.txt
+        │       └── dns-zone-transfer.txt
+        ├── HTTP
+        │   ├── CMSScan
+        │   │   ├── http-cms.txt
+        │   │   ├── http-cmseek.txt
+        │   │   ├── http-joomscan.txt
+        │   │   └── http-wpscan.txt
+        │   ├── Firewall
+        │   │   ├── http-wafw00f.txt
+        │   │   └── http-whatwaf.txt
+        │   ├── automatic_scanners
+        │   │   ├── nikto
+        │   │   │   └── http-nikto.txt
+        │   │   ├── wapiti
+        │   │   │   └── http-wapiti.txt
+        │   │   │       ├── 192.168.69.10_05252024_1416.html
+        │   │   │       ├── css
+        │   │   │       │   ├── kube.min.css
+        │   │   │       │   └── master.css
+        │   │   │       ├── logo_clear.png
+        │   │   │       └── report.html
+        │   │   ├── webanalyze
+        │   │   │   └── http-webanalyze.txt
+        │   │   ├── webtech
+        │   │   │   └── http-webtech.txt
+        │   │   └── whatweb
+        │   │       ├── http-whatweb-aggressive.txt
+        │   │       ├── http-whatweb-extreme.txt
+        │   │       ├── http-whatweb-stealthy.txt
+        │   │       └── http-whatweb.txt
+        │   └── nmap
+        │       ├── http-auth.txt
+        │       ├── http-devframework.txt
+        │       ├── http-enum.txt
+        │       ├── http-headers.txt
+        │       ├── http-methods.txt
+        │       ├── http-waf-detect.txt
+        │       ├── http-wordpress-all.txt
+        │       ├── http-wordpress-enum.txt
+        │       └── http-wordpress-users.txt
+        ├── SSH
+        │   ├── nc
+        │   │   ├── ssh-nc-nv.txt
+        │   │   └── ssh-nc.txt
+        │   ├── nmap
+        │   │   ├── ssh-all.txt
+        │   │   ├── ssh-auth-methods-default.txt
+        │   │   ├── ssh-auth-methods.txt
+        │   │   ├── ssh-hostkey.txt
+        │   │   ├── ssh-publickey-acceptance.txt
+        │   │   ├── ssh-run.txt
+        │   │   └── ssh2-enum-algos.txt
+        │   ├── ssh-audit
+        │   │   └── ssh-audit.txt
+        │   └── ssh-keyscan
+        │       └── ssh-keyscan-public-key.txt
+        └── ftp
+            ├── ftp_nc.txt
+            ├── ftp_nc_nv.txt
+            ├── nc
+            ├── nmap
+            │   ├── ftp-all.txt
+            │   ├── ftp-anon.txt
+            │   ├── ftp-bounce.txt
+            │   ├── ftp-libopie.txt
+            │   ├── ftp-proftpd-backdoor.txt
+            │   ├── ftp-syst.txt
+            │   ├── ftp-vuln-all.txt
+            │   └── ftp-vuln-cve2010-4221.txt
+            └── openssl
+                └── ftp-openssl.txt
 
 ```

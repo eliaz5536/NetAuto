@@ -124,6 +124,12 @@ by performing this following command:
 ./netauto -i <TARGET_IP_ADDRESS> -p <TARGET_PORTS>
 ```
 
+## Symlink Integration
+You can add symlink to call the following program without using 
+```
+
+```
+
 # Usage 
 ```
 

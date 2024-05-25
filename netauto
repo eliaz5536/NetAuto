@@ -1113,10 +1113,10 @@ http_scan() {
 	webtech -u $IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech/http-webtech.txt
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze
-	webanalyze -host $IP -crawl 2 | tee Netauto/$IP/Protocols/HTTP/webanalyze/http-webanalyze.txt
+	webanalyze -host $IP -crawl 2 | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze/http-webanalyze.txt
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti
-	wapiti -u http://$IP -o Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti/http-wapiti.txt | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/waipti/http-webanalyze.txt
+	wapiti -u http://$IP -o Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti/http-wapiti.txt
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/Firewall
 	wafw00f http://$IP | tee Netauto/$IP/Protocols/HTTP/Firewall/http-wafw00f.txt
@@ -1126,7 +1126,7 @@ http_scan() {
 	cmsmap  -F -d http://$IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-cms.txt
 	wpscan --force update -e --url $IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-wpscan.txt
 	joomscan --ec -u $IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-joomscan.txt
-	python3 /opt/tools/HTTP/CMSeek/cmseek.py -u http://$IP | tee Netauto/$IP/nmap/Protocols/HTTP/CMSScan/http-cmseek.txt
+	python3 /opt/tools/HTTP/CMSeeK/cmseek.py -u http://$IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-cmseek.txt
 }
 
 https_scan() {

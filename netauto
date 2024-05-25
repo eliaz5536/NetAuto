@@ -1,19 +1,59 @@
 #!/bin/bash
 
-echo "
-            ███╗   ██╗███████╗████████╗██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗              
-            ████╗  ██║██╔════╝╚══██╔══╝██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝              
-            ██╔██╗ ██║█████╗     ██║   ██║ █╗ ██║██║   ██║██████╔╝█████╔╝               
-            ██║╚██╗██║██╔══╝     ██║   ██║███╗██║██║   ██║██╔══██╗██╔═██╗               
-            ██║ ╚████║███████╗   ██║   ╚███╔███╔╝╚██████╔╝██║  ██║██║  ██╗              
-            ╚═╝  ╚═══╝╚══════╝   ╚═╝    ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝              
-███████╗███╗   ██╗██╗   ██╗███╗   ███╗███████╗██████╗  █████╗ ████████╗ ██████╗ ██████╗ 
-██╔════╝████╗  ██║██║   ██║████╗ ████║██╔════╝██╔══██╗██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
-█████╗  ██╔██╗ ██║██║   ██║██╔████╔██║█████╗  ██████╔╝███████║   ██║   ██║   ██║██████╔╝
-██╔══╝  ██║╚██╗██║██║   ██║██║╚██╔╝██║██╔══╝  ██╔══██╗██╔══██║   ██║   ██║   ██║██╔══██╗
-███████╗██║ ╚████║╚██████╔╝██║ ╚═╝ ██║███████╗██║  ██║██║  ██║   ██║   ╚██████╔╝██║  ██║
-╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
+# --- COLOR CODE ---
+BLACK="\e[30m"
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+MAGENTA="\e[35m"
+CYAN="\e[36m"
+LIGHT_GRAY="\e[37m"
+GRAY="\e[90m"
+LIGHT_RED="\e[91m"
+LIGHT_GREEN="\e[92m"
+LIGHT_YELLOW="\e[93m"
+LIGHT_BLUE="\e[94m"
+LIGHT_MAGENTA="\e[95m"
+LIGHT_CYAN="\e[96m"
+WHITE="\e[97m"
+ENDCOLOR="\e[0m"
 
+# --- BACKGROUND COLOR CODE ---
+BLACK_BG="\e[40m"
+RED_BG="\e[41m"
+GREEN_BG="\e[42m"
+YELLOW_BG="\e[43m"
+BLUE_BG="\e[44m"
+MAGENTA_BG="\e[45m"
+CYAN_BG="\e[46m"
+WHITE_BG="\e[47m"
+
+echo "
+                                                                                                                                                                                                
+                                                                                                                                                                                                
+                                                                                                                                                                                                
+                                                                                                                                                                                                
+                  ll                                                                                                   o           .                                                            
+                 0,,X                    ,W                                                 :K                        .M           lK.                                                          
+                :O  kd                   xM        ...          ...     ..        ....      ON        ...         ... .M        .Wc .M,                        .......                          
+                M    M.    .M      .M    dW      k.    x:   :Ml    kx;'   .0    :     cx    OK      x.    k'   .K    .kM      kc  Mc oM                 .'cdOKKXXXXXXXKKOdc'.                   
+               X,    'N    .M      .M    lW     N;      M;  :M     .M,     Ko          M.   xK     N,      M   M.     ,M   .o ,M. kM .M'             'lk0XNNXXKK00000KKXXNNK00l,.               
+              cM;....,Mk   .M      .M    lW    .M.      Kk  :M      M.     0x    .;cl  M.   xK    .M.         .M      .M      kM  NN 'M.         .,d0XNXKK0OkOOkkxxO00OOkk00KXNX0k:.            
+             .M        M.  .M      ;M    cW     M,      W:  :M      M.     0x  'O      M.   xK     M,          M.     'M         lM. XX        ,d0XXXK0KKX0O0OkkdclcokkO0OOXK00KXXXKx;.         
+             X;        'W   0x    ccM    .M      W,    k:   :M      M.     0x  ,N    .oM.   ,W      N,    o.   .X.   .lM         0  ON      .o0XNXKKKXNNNN0KK0Ox;cxc:oOO0K0XNNNNKKKXXX0d'       
+                                                                                                                                   X:      'OKK0OONNNNNNNNKKXK0Oc:c::xO0KKKNNNNNNNNOO00K0o      
+             l'     .          .                         '         l                                                                          ;kkO0KKXNNNNNKKKK00kkkO0KKKKXNNNNXKKKOkk;         
+             N c    ,.         K                         c         M                                                    ,,                           xOO00KXK0KKKKKKKKK0KXK000Ok.               
+             N  .'  ,. '.   ,  K  .c  :o   ; ;.   : .k   c ..      M;,,,,  N   ,. c    K  0.  ::   x  l   ;  W       d  :,  .,   l  W                    OO000OOOOOOOOO000OO.                   
+             N    c ,. N       0   c .. c d  M    N .:   K .;      M       k   .: c    K  0   .,   X .c      X   ..  k  ,.  o    o. K                        ,OOOOOOOOO;                        
+             N     .K.  c  .   X    kc  ,k   .:  '' .;   d   c     M       x   .: .c  'X  0   .,   K  l   '  K   O   X  .:   x   l  0                                                           
+                                                                                                                                                                                                
+                                                                                                                                                                                                
+                                                                                                                                                                                                
+                                                                                                                                                                                                
+                                                                                                                                                                                                
+                                                                                                                                                                                                
 "
 
 ###############################################################

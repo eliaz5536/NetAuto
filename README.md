@@ -130,24 +130,31 @@ by performing this following command:
 ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
 
 
-Network Enumeration Automator with Nmap, Rustscan & Masscan
+Network Enumeration Automator with Nmap
 Usage: Netauto -i <ip_address> [options]
- 
-Arguments
-  ip_address              Target internet protocol address of the identified device
- 
 Options:
-  -i                      Scan IP address of the target device
-  -p                      Scan ports of the targets device
+  -h, --help                      Help & Usage
+  -i, --ip                                Scan IP address of the target device
+  -p, --ports                     Scan ports of the targets device
+  -t, --timing                    Set NMAP timing minrate option
  
-Timing options:
+Timing minrate options:
   -T0                     Paranoid
   -T1                     Sneaky
   -T2                     Polite
   -T3                     Normal (Default)
   -T4                     Aggressive
   -T5                     Insane
-
+ 
+Perform reconnaissance: 
+netauto -i 192.168.69.10
+ 
+Perform reconnaissance with timing: 
+netauto -i 192.168.69.10 -t5
+ 
+Perform protocols, port and service scan: 
+netauto -i 192.168.69.10 -p 40,60,80
+                                                                                                                                                                                                                                           
 ```
 
 # Results

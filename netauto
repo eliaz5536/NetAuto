@@ -29,32 +29,32 @@ MAGENTA_BG="\e[45m"
 CYAN_BG="\e[46m"
 WHITE_BG="\e[47m"
 
-echo "
-                                                                                                                                                                                                
-                                                                                                                                                                                                
-                                                                                                                                                                                                
-                                                                                                                                                                                                
-                  ll                                                                                                   o           .                                                            
-                 0,,X                    ,W                                                 :K                        .M           lK.                                                          
-                :O  kd                   xM        ...          ...     ..        ....      ON        ...         ... .M        .Wc .M,                        .......                          
-                M    M.    .M      .M    dW      k.    x:   :Ml    kx;'   .0    :     cx    OK      x.    k'   .K    .kM      kc  Mc oM                 .'cdOKKXXXXXXXKKOdc'.                   
-               X,    'N    .M      .M    lW     N;      M;  :M     .M,     Ko          M.   xK     N,      M   M.     ,M   .o ,M. kM .M'             'lk0XNNXXKK00000KKXXNNK00l,.               
-              cM;....,Mk   .M      .M    lW    .M.      Kk  :M      M.     0x    .;cl  M.   xK    .M.         .M      .M      kM  NN 'M.         .,d0XNXKK0OkOOkkxxO00OOkk00KXNX0k:.            
-             .M        M.  .M      ;M    cW     M,      W:  :M      M.     0x  'O      M.   xK     M,          M.     'M         lM. XX        ,d0XXXK0KKX0O0OkkdclcokkO0OOXK00KXXXKx;.         
-             X;        'W   0x    ccM    .M      W,    k:   :M      M.     0x  ,N    .oM.   ,W      N,    o.   .X.   .lM         0  ON      .o0XNXKKKXNNNN0KK0Ox;cxc:oOO0K0XNNNNKKKXXX0d'       
-                                                                                                                                   X:      'OKK0OONNNNNNNNKKXK0Oc:c::xO0KKKNNNNNNNNOO00K0o      
-             l'     .          .                         '         l                                                                          ;kkO0KKXNNNNNKKKK00kkkO0KKKKXNNNNXKKKOkk;         
-             N c    ,.         K                         c         M                                                    ,,                           xOO00KXK0KKKKKKKKK0KXK000Ok.               
-             N  .'  ,. '.   ,  K  .c  :o   ; ;.   : .k   c ..      M;,,,,  N   ,. c    K  0.  ::   x  l   ;  W       d  :,  .,   l  W                    OO000OOOOOOOOO000OO.                   
-             N    c ,. N       0   c .. c d  M    N .:   K .;      M       k   .: c    K  0   .,   X .c      X   ..  k  ,.  o    o. K                        ,OOOOOOOOO;                        
-             N     .K.  c  .   X    kc  ,k   .:  '' .;   d   c     M       x   .: .c  'X  0   .,   K  l   '  K   O   X  .:   x   l  0                                                           
-                                                                                                                                                                                                
-                                                                                                                                                                                                
-                                                                                                                                                                                                
-                                                                                                                                                                                                
-                                                                                                                                                                                                
-                                                                                                                                                                                                
-"
+bash -c "printf '\e[49m                                                  \e[m
+\e[49m               \e[38;5;239;49m▄\e[38;5;238;49m▄\e[38;5;239;49m▄\e[38;5;239;48;5;238m▄\e[38;5;239;48;5;239m▄\e[48;5;239m  \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[38;5;239;48;5;240m▄\e[38;5;239;49m▄▄▄\e[49m               \e[m
+\e[49m            \e[38;5;238;49m▄\e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄▄\e[48;5;239m  \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;240m▄\e[38;5;239;49m▄\e[49m            \e[m
+\e[49m         \e[38;5;238;49m▄\e[38;5;238;48;5;238m▄▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄▄\e[49;38;5;238m▀▀▀\e[49m          \e[49;38;5;238m▀\e[49;38;5;239m▀▀\e[38;5;239;48;5;239m▄\e[48;5;239m  \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;49m▄\e[49m         \e[m
+\e[49m       \e[38;5;238;49m▄\e[38;5;238;48;5;238m▄▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[49;38;5;238m▀▀\e[49m   \e[38;5;238;49m▄▄▄\e[38;5;238;48;5;238m▄\e[38;5;238;48;5;239m▄\e[48;5;239m  \e[38;5;239;48;5;239m▄▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[38;5;239;49m▄▄▄\e[49m   \e[49;38;5;239m▀▀\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;49m▄\e[49m       \e[m
+\e[49m        \e[49;38;5;238m▀▀\e[38;5;238;48;5;238m▄\e[49;38;5;238m▀\e[49m   \e[38;5;238;49m▄\e[38;5;238;48;5;238m▄▄\e[48;5;238m \e[38;5;238;48;5;238m▄▄▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[38;5;238;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;49m▄\e[49m   \e[49;38;5;239m▀\e[38;5;239;48;5;239m▄\e[49;38;5;239m▀\e[49;38;5;238m▀\e[49m        \e[m
+\e[49m            \e[38;5;238;49m▄\e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[49;38;5;238m▀▀▀\e[49;38;5;239m▀\e[49m    \e[49;38;5;239m▀▀▀▀\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m  \e[38;5;239;49m▄\e[49m            \e[m
+\e[49m             \e[49;38;5;238m▀\e[38;5;238;48;5;238m▄▄\e[49;38;5;238m▀▀\e[49m     \e[38;5;238;49m▄▄▄▄\e[49m     \e[49;38;5;239m▀▀\e[38;5;239;48;5;239m▄▄\e[49;38;5;239m▀\e[49m             \e[m
+\e[49m                  \e[38;5;238;49m▄▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄▄\e[48;5;238m  \e[38;5;238;48;5;238m▄\e[38;5;238;49m▄▄\e[49m                  \e[m
+\e[49m                 \e[49;38;5;238m▀\e[38;5;238;48;5;238m▄▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;239;48;5;238m▄\e[49;38;5;238m▀▀\e[38;5;238;48;5;238m▄\e[48;5;238m     \e[49;38;5;239m▀\e[49m                 \e[m
+\e[49m                   \e[49;38;5;238m▀▀\e[49m        \e[49;38;5;238m▀▀\e[49m                   \e[m
+\e[49m                      \e[38;5;238;48;5;238m▄▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[49m                      \e[m
+\e[49m                       \e[49;38;5;238m▀▀▀▀\e[49m                       \e[m
+\e[49m                    \e[38;5;109;49m▄▄\e[38;5;110;49m▄▄▄▄▄▄▄\e[38;5;67;49m▄\e[49m                    \e[m
+\e[49m               \e[38;5;73;49m▄\e[38;5;109;49m▄\e[38;5;152;48;5;109m▄\e[38;5;195;48;5;110m▄\e[38;5;195;48;5;152m▄\e[38;5;195;48;5;254m▄\e[48;5;195m        \e[38;5;195;48;5;152m▄\e[38;5;195;48;5;110m▄▄\e[38;5;110;48;5;67m▄\e[38;5;109;49m▄▄\e[49m               \e[m
+\e[49m            \e[38;5;110;49m▄\e[38;5;152;48;5;109m▄\e[38;5;195;48;5;110m▄\e[38;5;253;48;5;254m▄\e[38;5;152;48;5;152m▄\e[38;5;255;48;5;152m▄\e[38;5;152;48;5;195m▄\e[38;5;110;48;5;195m▄\e[38;5;116;48;5;152m▄▄\e[38;5;116;48;5;110m▄\e[38;5;110;48;5;110m▄\e[38;5;74;48;5;110m▄▄\e[38;5;116;48;5;110m▄▄\e[38;5;116;48;5;152m▄\e[38;5;110;48;5;255m▄\e[38;5;110;48;5;195m▄\e[38;5;152;48;5;195m▄\e[38;5;195;48;5;152m▄\e[38;5;152;48;5;152m▄\e[38;5;255;48;5;152m▄\e[38;5;195;48;5;110m▄\e[38;5;152;48;5;109m▄\e[38;5;110;49m▄\e[49m            \e[m
+\e[49m         \e[38;5;73;49m▄\e[38;5;146;48;5;67m▄\e[38;5;195;48;5;110m▄\e[38;5;195;48;5;195m▄\e[38;5;152;48;5;255m▄\e[38;5;152;48;5;152m▄\e[38;5;116;48;5;254m▄\e[38;5;153;48;5;152m▄\e[38;5;153;48;5;116m▄\e[38;5;116;48;5;116m▄\e[38;5;152;48;5;110m▄\e[38;5;116;48;5;116m▄\e[38;5;110;48;5;116m▄\e[38;5;110;48;5;110m▄\e[38;5;110;48;5;74m▄\e[38;5;60;48;5;74m▄\e[38;5;60;48;5;110m▄\e[38;5;110;48;5;152m▄▄\e[38;5;110;48;5;116m▄\e[38;5;116;48;5;116m▄▄▄\e[38;5;153;48;5;116m▄\e[38;5;153;48;5;146m▄\e[38;5;152;48;5;152m▄▄\e[38;5;152;48;5;195m▄\e[38;5;195;48;5;255m▄\e[38;5;195;48;5;110m▄\e[38;5;110;48;5;67m▄\e[38;5;109;49m▄\e[49m         \e[m
+\e[49m      \e[38;5;109;49m▄\e[38;5;146;48;5;67m▄\e[38;5;195;48;5;109m▄\e[38;5;195;48;5;254m▄\e[38;5;152;48;5;195m▄\e[38;5;152;48;5;254m▄\e[38;5;152;48;5;152m▄\e[38;5;189;48;5;146m▄\e[38;5;189;48;5;153m▄▄▄\e[38;5;254;48;5;153m▄\e[38;5;152;48;5;116m▄\e[38;5;152;48;5;152m▄▄\e[38;5;110;48;5;110m▄\e[38;5;66;48;5;110m▄\e[38;5;241;48;5;59m▄\e[38;5;60;48;5;60m▄\e[38;5;242;48;5;60m▄\e[38;5;241;48;5;59m▄\e[38;5;66;48;5;110m▄\e[38;5;110;48;5;110m▄\e[38;5;152;48;5;152m▄▄\e[38;5;152;48;5;116m▄\e[38;5;254;48;5;153m▄\e[38;5;189;48;5;153m▄▄▄\e[38;5;189;48;5;110m▄\e[38;5;152;48;5;152m▄\e[38;5;152;48;5;253m▄\e[38;5;152;48;5;195m▄\e[38;5;195;48;5;253m▄\e[38;5;195;48;5;110m▄\e[38;5;109;48;5;67m▄\e[38;5;109;49m▄\e[49m      \e[m
+\e[49m     \e[38;5;110;48;5;109m▄\e[38;5;152;48;5;110m▄\e[38;5;254;48;5;195m▄\e[38;5;110;48;5;152m▄▄\e[38;5;110;48;5;146m▄\e[38;5;195;48;5;254m▄\e[38;5;195;48;5;195m▄▄▄▄▄\e[38;5;255;48;5;254m▄\e[38;5;152;48;5;152m▄\e[38;5;253;48;5;253m▄\e[38;5;152;48;5;152m▄\e[38;5;152;48;5;146m▄\e[38;5;152;48;5;67m▄\e[38;5;241;48;5;241m▄▄▄▄\e[38;5;152;48;5;103m▄\e[38;5;152;48;5;146m▄\e[38;5;152;48;5;152m▄\e[38;5;254;48;5;253m▄\e[38;5;152;48;5;152m▄\e[38;5;255;48;5;255m▄\e[38;5;195;48;5;195m▄▄▄▄▄▄\e[38;5;110;48;5;110m▄\e[38;5;110;48;5;254m▄\e[38;5;110;48;5;152m▄\e[38;5;189;48;5;195m▄\e[38;5;152;48;5;110m▄\e[38;5;152;48;5;109m▄\e[49m     \e[m
+\e[49m     \e[38;5;67;48;5;110m▄\e[38;5;110;48;5;110m▄\e[38;5;110;48;5;109m▄\e[38;5;110;48;5;152m▄\e[38;5;152;48;5;152m▄\e[38;5;153;48;5;110m▄\e[38;5;152;48;5;195m▄\e[38;5;110;48;5;195m▄\e[38;5;152;48;5;195m▄\e[38;5;195;48;5;195m▄▄▄▄\e[38;5;189;48;5;152m▄\e[38;5;152;48;5;253m▄\e[38;5;254;48;5;253m▄\e[38;5;152;48;5;152m▄▄▄\e[38;5;152;48;5;66m▄▄\e[38;5;152;48;5;152m▄▄▄\e[38;5;254;48;5;253m▄\e[38;5;152;48;5;253m▄\e[38;5;195;48;5;152m▄\e[38;5;195;48;5;195m▄▄▄\e[38;5;189;48;5;195m▄\e[38;5;110;48;5;195m▄▄\e[38;5;152;48;5;195m▄\e[38;5;153;48;5;110m▄\e[38;5;152;48;5;152m▄\e[38;5;110;48;5;152m▄\e[38;5;110;48;5;110m▄\e[38;5;110;48;5;116m▄\e[49;38;5;110m▀\e[49m     \e[m
+\e[49m         \e[49;38;5;67m▀\e[49;38;5;73m▀\e[49;38;5;110m▀\e[38;5;67;48;5;110m▄\e[38;5;73;48;5;153m▄\e[38;5;73;48;5;116m▄\e[38;5;153;48;5;110m▄\e[38;5;153;48;5;152m▄\e[38;5;110;48;5;195m▄▄\e[38;5;189;48;5;152m▄\e[38;5;152;48;5;152m▄▄▄\e[38;5;153;48;5;152m▄\e[38;5;152;48;5;152m▄▄\e[38;5;153;48;5;152m▄\e[38;5;152;48;5;152m▄▄▄\e[38;5;153;48;5;152m▄\e[38;5;110;48;5;195m▄▄\e[38;5;153;48;5;152m▄\e[38;5;153;48;5;110m▄\e[38;5;73;48;5;152m▄\e[38;5;73;48;5;153m▄\e[38;5;66;48;5;110m▄\e[49;38;5;110m▀\e[49;38;5;73m▀\e[49;38;5;66m▀\e[49m         \e[m
+\e[49m              \e[49;38;5;67m▀\e[49;38;5;73m▀\e[38;5;67;48;5;74m▄\e[38;5;74;48;5;116m▄\e[38;5;116;48;5;153m▄\e[38;5;153;48;5;116m▄\e[38;5;153;48;5;110m▄▄▄\e[38;5;116;48;5;152m▄▄▄\e[38;5;116;48;5;116m▄\e[38;5;153;48;5;110m▄▄▄\e[38;5;153;48;5;116m▄\e[38;5;110;48;5;153m▄\e[38;5;74;48;5;153m▄\e[38;5;67;48;5;73m▄\e[49;38;5;73m▀\e[49;38;5;66m▀\e[49m              \e[m
+\e[49m                  \e[49;38;5;74m▀▀▀\e[38;5;74;48;5;110m▄\e[38;5;74;48;5;117m▄\e[38;5;73;48;5;117m▄\e[38;5;67;48;5;117m▄▄\e[38;5;73;48;5;117m▄\e[38;5;74;48;5;116m▄\e[38;5;73;48;5;110m▄\e[49;38;5;74m▀▀\e[49;38;5;73m▀\e[49m                  \e[m
+\e[49m                                                  \e[m
+\e[49m                                                  \e[m
+';"
 
 ###############################################################
 # Protocols Scans 				 	      # 
@@ -1312,7 +1312,6 @@ oracledb_scan() {
 # Port Detection                                              #
 ###############################################################
 handle_ports() {
-	# Check if folder exists 
 	DEFAULT_DIRECTORY=Netauto/$IP/Protocols/
 
 	local ports=$1
@@ -1449,6 +1448,11 @@ handle_ports() {
 ###############################################################
 # Nmap
 default_nmap() {
+	# Add Progress Bar to this script over here!!!
+	#
+
+	echo -e "${YELLOW}============================= Full Reconnaissance Scan =============================${ENDCOLOR}"
+
 	# Creating output directory of our target
 	mkdir -p Netauto/$IP/
 	
@@ -1457,6 +1461,7 @@ default_nmap() {
 
         # Scans ports only and no host discovery
         # Scans for all ports available
+	echo -e "${GRAY}------------------------------------ Port Scan -------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
 		echo "nmap -Pn $IP -p-"
 		nmap -Pn $IP -p- -oN Netauto/$IP/DEFAULT/port_scans.txt
@@ -1471,6 +1476,7 @@ default_nmap() {
         # This is to potentially identify vulnerabilities and/or misconfigurations
         # Scans vendor and service version for each open port (Service Version Detection)
         # Useful for attempting to identify outdated version of service
+	echo -e "${GRAY}----------------------------------- Script Scan ------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
 		echo "nmap -sC -sV $IP"
 		nmap -sC -sV $IP -oN Netauto/$IP/DEFAULT/script_scan.txt
@@ -1484,6 +1490,7 @@ default_nmap() {
         # Performs "TCP SYN Scan" by conducting TCP scan of target host by sending SYN packets
         # Also known as "Stealth Scan" as it is designed to be less intrusive and more discreet
         # Scans ports only and no host discovery
+	echo -e "${GRAY}--------------------------------- Stealth Scan -------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
 		echo "sudo nmap -sS -Pn -n $IP"
 		sudo nmap -sS -Pn -n $IP -oN Netauto/$IP/DEFAULT/stealth_scan.txt
@@ -1498,6 +1505,7 @@ default_nmap() {
         # This involves such as OS/Version Detection, Script Scanning and Traceroute
         # This provides wealth of information about the target system 
         # Useful for detailed reconnaissane and vulnerability assessment
+	echo -e "${GRAY}--------------------------------- Aggressive Scan -------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
 		echo "nmap -p- -A $IP"
 		nmap -p- -A $IP -oN Netauto/$IP/DEFAULT/aggressive_scan.txt
@@ -1511,7 +1519,7 @@ default_nmap() {
 
         # Scans all standard ports to establish connection system call using TCP Connection Scan
         # runs all the scripts and checks on them
-        echo "nmap -n -v -sT -A $IP"
+	echo -e "${GRAY}------------------------------------ TCP Scan -----------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
 		echo "nmap -n -v -sT -A $IP"
 		nmap -n -v -sT -A $IP -oN Netauto/$IP/DEFAULT/TCP_scan.txt
@@ -1522,9 +1530,8 @@ default_nmap() {
 
         echo " "
 
-
         # Run Vulnerability Script to perform NSE Vulnerability Scan
-        echo "nmap -sV --script vuln $IP"
+	echo -e "${GRAY}----------------------------- NSE Vulnerability Scan ----------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
 		echo "nmap -sV --script vuln $IP"
 		nmap -sV --script vuln $IP -oN Netauto/$IP/DEFAULT/vulnerability_scan.txt
@@ -1580,6 +1587,8 @@ usage() {
         echo "  -i, --ip              	  	  Scan IP address of the target device"
         echo "  -p, --ports              	  Scan ports of the targets device"
         echo "  -t, --timing              	  Set NMAP timing minrate option"
+        echo "  -m, --mode              	  Set type of scan to perform"
+
         echo " "
         echo "Timing minrate options:"
         echo "  -T0              	  Paranoid"
@@ -1588,6 +1597,16 @@ usage() {
 	echo "  -T3              	  Normal (Default)"
         echo "  -T4              	  Aggressive"
         echo "  -T5              	  Insane"
+	echo " "
+	echo "Mode options: "
+	echo " recon			  Full Reconnaissance Scan"
+	echo " tcp			  TCP Scan"
+	echo " udp			  UDP Scan"
+	echo " script			  Script Scan"
+	echo " vuln			  Vulnerability Scan"
+	echo " "
+	echo "If you input only the IP, it will perform default reconnaissance scan."
+	echo "If you input ports for scanning, it will perform a complete full reconnaissance scan."
         echo " "
         echo "Perform reconnaissance: "
 	echo "netauto -i 192.168.69.10"
@@ -1595,9 +1614,8 @@ usage() {
         echo "Perform reconnaissance with timing: "
 	echo "netauto -i 192.168.69.10 -t5"
         echo " "
-        echo "Perform protocols, port and service scan: "
+        echo "Perform protocols, port and service scan as default: "
 	echo "netauto -i 192.168.69.10 -p 40,60,80"
-
 }
 
 ###############################################################
@@ -1668,7 +1686,7 @@ fi
 # --------------------------------------------------------------
 # Printing output options...
 # --------------------------------------------------------------
-echo "IP: $IP";
+echo "Target IP: $IP";
 
 if [[ -n "$PORTS" ]]; then
 	echo "PORT(S): $PORTS"

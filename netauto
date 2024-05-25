@@ -162,7 +162,7 @@ ssh_scan() {
 	nmap -p 22 $IP --script ssh-run -oN Netauto/$IP/Protocols/SSH/nmap/ssh-run.txt
 	nmap -p 22 $IP --script ssh-auth-methods -oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods.txt
 	nmap --script ssh-auth-methods --script-args="ssh.user=username" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods-default.txt
-	nmap -p 22 $IP --script ssh-auth-methods --script-args="ssh.user=root"-oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods-root.txt
+	nmap -p 22 $IP --script ssh-auth-methods --script-args="ssh.user=root" -oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods-root.txt
 	nmap --script "ssh-* and not brute" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/ssh-all.txt
 }
 

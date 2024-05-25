@@ -9,7 +9,7 @@ It performs **no automated exploitation**.
 # Origin
 It was inspired by the following ethicaL hacking notes that provide numerous opportunities of scanning multiple targets in the form of IP addresses
 
-# Installation
+# Requirements
 Requirements of utilizing this tool must be met by installing the latest available packages
 ```
 sudo apt-get update
@@ -102,7 +102,7 @@ Perform those following commands if you want to install simultaneously:
 sudo apt-get install python python2 python3 python3-pip pip pipx
 ```
 
-You can utilize the bash script by donwloading the git clone by the following:
+# Installation
 ```
 git clone https://github.com/eliaz5536/netauto.git
 ```

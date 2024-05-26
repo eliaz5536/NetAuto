@@ -31,6 +31,11 @@ MAGENTA_BG="\e[45m"
 CYAN_BG="\e[46m"
 WHITE_BG="\e[47m"
 
+# Styles
+BOLD="\e[1m"
+ITALIC="\e[3m"
+
+
 ###############################################################
 # Banner 				 	      	      # 
 ###############################################################
@@ -60,13 +65,6 @@ bash -c "printf '\e[49m                                                  \e[m
 \e[49m                                                  \e[m
 \e[49m                                                  \e[m
 ';"
-
-###############################################################
-# Progress Bar 				 	      	      # 
-###############################################################
-
-# Focus on implementing the progressive bar after changing the name of the files underneath
-
 
 ###############################################################
 # Protocols Scans 				 	      # 
@@ -1591,6 +1589,7 @@ oracledb_scan() {
 # Port Detection                                              #
 ###############################################################
 handle_ports() {
+
 	echo -e "${GRAY}------------------------------------ Full Port Scan -------------------------------------${ENDCOLOR}"
 
 	DEFAULT_DIRECTORY=Netauto/$IP/Protocols/
@@ -1852,29 +1851,37 @@ udp_nmap() {
 # Help                                                        #
 ###############################################################
 usage() {
-        echo "Network Enumeration Automator with Nmap"
+        printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
+	echo " "
         echo "Usage: Netauto -i <ip_address> [options]"
+	echo " "
         echo "Options:"
-        echo "  -h, --help              	  Help & Usage"
-        echo "  -i, --ip              	  	  Scan IP address of the target device"
-        echo "  -p, --ports              	  Scan ports of the targets device"
-        echo "  -t, --timing              	  Set NMAP timing minrate option"
-        echo "  -m, --mode              	  Set type of scan to perform"
+        printf "  ${ITALIC}-h, --help${ENDCOLOR}              	  Help & Usage\n"
+        printf "  ${ITALIC}-i, --ip${ENDCOLOR}              	  Scan IP address of the target device\n"
+        printf "  ${ITALIC}-p, --ports${ENDCOLOR}              	  Scan ports of the targets device\n"
+        printf "  ${ITALIC}-t, --timing${ENDCOLOR}              	  Set NMAP timing minrate option\n"
+        printf "  ${ITALIC}-m, --mode${ENDCOLOR}              	  Set type of scan to perform\n"
         echo " "
         echo "Timing minrate options:"
-        echo "  -T0              	  Paranoid"
-        echo "  -T1              	  Sneaky"
-        echo "  -T2              	  Polite"
-	echo "  -T3              	  Normal (Default)"
-        echo "  -T4              	  Aggressive"
-        echo "  -T5              	  Insane"
+        printf "  ${ITALIC}-T0${ENDCOLOR}              	  Paranoid\n"
+        printf "  ${ITALIC}-T1${ENDCOLOR}              	  Sneaky\n"
+        printf "  ${ITALIC}-T2${ENDCOLOR}              	  Polite\n"
+	printf "  ${ITALIC}-T3${ENDCOLOR}              	  Normal (Default)\n"
+        printf "  ${ITALIC}-T4${ENDCOLOR}              	  Aggressive\n"
+        printf "  ${ITALIC}-T5${ENDCOLOR}              	  Insane\n"
 	echo " "
 	echo "Mode options: "
-	echo " recon			  Full Reconnaissance Scan"
-	echo " tcp			  TCP Scan"
-	echo " udp			  UDP Scan"
-	echo " script			  Script Scan"
-	echo " vuln			  Vulnerability Scan"
+	printf " ${ITALIC}recon${ENDCOLOR}			  Full Reconnaissance Scan\n"
+	printf " ${ITALIC}tcp${ENDCOLOR}			  TCP Scan\n"
+	printf " ${ITALIC}udp${ENDCOLOR}			  UDP Scan\n"
+	printf " ${ITALIC}script${ENDCOLOR}			  Script Scan\n"
+	printf " ${ITALIC}brute${ENDCOLOR}			  Script Scan\n"
+	printf " ${ITALIC}vuln${ENDCOLOR}			  Vulnerability Scan\n"
+	echo " "
+	echo "Color Code Representation: "
+	printf "${BLUE_BG} Port ${ENDCOLOR}\n"
+	printf "${YELLOW_BG} Database ${ENDCOLOR}\n"
+	printf "${BLACK_BG} Protocol ${ENDCOLOR}\n"
 	echo " "
 	echo "If you input only the IP, it will perform default reconnaissance scan."
 	echo "If you input ports for scanning, it will perform a complete full reconnaissance scan."
@@ -1910,7 +1917,7 @@ while [[ "$#" -gt 0 ]]; do
         -i|--ip) IP="$2"; shift ;;
         -p|--ports) PORTS="$2"; shift ;;
         -m|--minrate) MINRATE="$2"; shift ;;
-        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+        *) printf "${RED_BG}[ERROR]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
     esac
     shift
 done

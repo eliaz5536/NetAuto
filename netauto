@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# --- COLOR CODE ---
+###############################################################
+# Color Codes 				 	      	      # 
+###############################################################
 BLACK="\e[30m"
 RED="\e[31m"
 GREEN="\e[32m"
@@ -19,7 +21,7 @@ LIGHT_CYAN="\e[96m"
 WHITE="\e[97m"
 ENDCOLOR="\e[0m"
 
-# --- BACKGROUND COLOR CODE ---
+# Background Color
 BLACK_BG="\e[40m"
 RED_BG="\e[41m"
 GREEN_BG="\e[42m"
@@ -29,6 +31,9 @@ MAGENTA_BG="\e[45m"
 CYAN_BG="\e[46m"
 WHITE_BG="\e[47m"
 
+###############################################################
+# Banner 				 	      	      # 
+###############################################################
 bash -c "printf '\e[49m                                                  \e[m
 \e[49m               \e[38;5;239;49m▄\e[38;5;238;49m▄\e[38;5;239;49m▄\e[38;5;239;48;5;238m▄\e[38;5;239;48;5;239m▄\e[48;5;239m  \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[38;5;239;48;5;240m▄\e[38;5;239;49m▄▄▄\e[49m               \e[m
 \e[49m            \e[38;5;238;49m▄\e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄▄\e[48;5;239m  \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;240m▄\e[38;5;239;49m▄\e[49m            \e[m
@@ -57,32 +62,43 @@ bash -c "printf '\e[49m                                                  \e[m
 ';"
 
 ###############################################################
+# Progress Bar 				 	      	      # 
+###############################################################
+
+# Focus on implementing the progressive bar after changing the name of the files underneath
+
+
+###############################################################
 # Protocols Scans 				 	      # 
 ###############################################################
 dhcp_scan() {
+	echo -e "${BLUE}------------------------------------ DHCP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/DHCP
 	mkdir -p Netauto/$IP/Protocols/DHCP/nmap
-	sudo nmap -sU --script dhcp-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/dhcp_discover.txt
-	sudo nmap -sU --script broadcast-dhcp-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp_discover.txt
-	sudo nmap -sU --script broadcast-dhcp6-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp_discover.txt
+	sudo nmap -sU --script dhcp-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/dhcp_discover.nmap
+	sudo nmap -sU --script broadcast-dhcp-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp_discover.nmap
+	sudo nmap -sU --script broadcast-dhcp6-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp_discover.nmap
+
+	echo " " 
 }
 
 snmp_scan() {
+	echo -e "${BLUE}------------------------------------ SNMP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/SNMP
 	mkdir -p Netauto/$IP/Protocols/SNMP/nmap
-	nmap -p 161 -sU -oA nmap_udp_snmp $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-udp.txt
-	nmap -sU --script snmp-info -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-info.txt
-	nmap -sU --script snmp-interfaces -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-interfaces.txt
-	nmap -sU --script snmp-ios-config -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-ios-config.txt
-	nmap -sU --script snmp-netstat -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-netstat.txt
-	nmap -sU --script snmp-processes -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-processes.txt
-	nmap -sU --script snmp-sysdescr -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmao/snmp-sysdescr.txt
-	nmap -sU --script snmp-win32-services -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-services.txt
-	nmap -sU --script snmp-win32-shares -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-shares.txt
-	nmap -sU --script snmp-win32-software -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-software.txt
-	nmap -sU --script snmp-win32-users -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-users.txt
-	nmap -sU --script snmp-hh3c-logins -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-hh3c-logins.txt
-	nmap -sU --script "snmp* and not brute" -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp_all.txt
+	nmap -p 161 -sU -oA nmap_udp_snmp $IP -oN Netauto/$IP/Protocols/SNMP/nmap/udp.nmap
+	nmap -sU --script snmp-info -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/info.nmap
+	nmap -sU --script snmp-interfaces -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/interfaces.nmap
+	nmap -sU --script snmp-ios-config -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/ios-config.nmap
+	nmap -sU --script snmp-netstat -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/netstat.nmap
+	nmap -sU --script snmp-processes -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/processes.nmap
+	nmap -sU --script snmp-sysdescr -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmao/sysdescr.nmap
+	nmap -sU --script snmp-win32-services -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/win32-services.nmap
+	nmap -sU --script snmp-win32-shares -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/win32-shares.nmap
+	nmap -sU --script snmp-win32-software -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-software.nmap
+	nmap -sU --script snmp-win32-users -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/win32-users.nmap
+	nmap -sU --script snmp-hh3c-logins -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/hh3c-logins.nmap
+	nmap -sU --script "snmp* and not brute" -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/all.nmap
 
 	onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp.txt $IP | tee Netauto/$IP/Protocols/SNMP/onsixtyone-bruteforce.txt
 
@@ -154,18 +170,24 @@ snmp_scan() {
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.25.6.3.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_software_nane.txt
 	# SysLocation
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.1.6 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_syslocation.txt
+
+	echo " "
 }
 
 echo_scan() {
+	echo -e "${BLUE}------------------------------------ Echo -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Echo/nc
 	nc $IP $port | tee Netauto/$IP/Protocols/Echo/nc/echo_nc.txt
 	nc -vn $IP $port | tee Netauto/$IP/Protocols/Echo/nc/echo_nc_vn.txt
 
 	mkdir -p Netauto/$IP/Protocols/Echo/nmap
-	nmap -p 7 $IP -oN Netauto/$IP/Protocols/Echo/nmap/echo_nmap.txt
+	nmap -p 7 $IP -oN Netauto/$IP/Protocols/Echo/nmap/port.nmap
+
+	echo " "
 }
 
 ftp_scan() {
+	echo -e "${BLUE}------------------------------------ FTP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/ftp/nc
 	nc $IP $port | tee Netauto/$IP/Protocols/ftp/ftp_nc.txt
 	nc -vn $IP $port | tee Netauto/$IP/Protocols/ftp/ftp_nc_nv.txt
@@ -174,17 +196,20 @@ ftp_scan() {
 	openssl s_client -connect $IP:21 -starttls ftp | tee Netauto/$IP/Protocols/ftp/openssl/ftp-openssl.txt
 	
 	mkdir -p Netauto/$IP/Protocols/ftp/nmap
-	nmap --script ftp-anon -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-anon.txt
-	nmap --script ftp-bounce -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-bounce.txt
-	nmap --script ftp-libopie -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-libopie.txt
-	nmap --script ftp-proftpd-backdoor -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-proftpd-backdoor.txt
-	nmap --script ftp-syst -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-syst.txt
-	nmap --script ftp-vuln-cve2010-4221 -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-vuln-cve2010-4221.txt
-	nmap --script ftp-vuln* -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-vuln-all.txt
-	nmap --script "ftp-* and not brute"  -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/ftp-all.txt
+	nmap --script ftp-anon -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/anon.nmap
+	nmap --script ftp-bounce -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/bounce.nmap
+	nmap --script ftp-libopie -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/libopie.nmap
+	nmap --script ftp-proftpd-backdoor -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/proftpd-backdoor.nmap
+	nmap --script ftp-syst -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/syst.nmap
+	nmap --script ftp-vuln-cve2010-4221 -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/vuln-cve2010-4221.nmap
+	nmap --script ftp-vuln* -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/vuln-all.nmap
+	nmap --script "ftp-* and not brute"  -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/all.nmap
+
+	echo " "
 }
 
 ssh_scan() {
+	echo -e "${YELLOW}------------------------------------ SSH -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/SSH/nc
 	nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/ssh-nc.txt
 	nc -nv $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/ssh-nc-nv.txt
@@ -196,29 +221,32 @@ ssh_scan() {
 	ssh-keyscan -t rsa $IP -p 22 | tee Netauto/$IP/Protocols/SSH/ssh-keyscan/ssh-keyscan-public-key.txt
 
 	mkdir -p Netauto/$IP/Protocols/SSH/nmap
-	nmap -p 22 $IP --script ssh2-enum-algos -oN Netauto/$IP/Protocols/SSH/nmap/ssh2-enum-algos.txt
-	nmap -p 22 $IP --script ssh-hostkey --script-args ssh_hostkey=full -oN Netauto/$IP/Protocols/SSH/nmap/ssh-hostkey.txt
-	nmap -p 22 $IP --script ssh-publickey-acceptance -oN Netauto/$IP/Protocols/SSH/nmap/ssh-publickey-acceptance.txt
-	nmap -p 22 $IP --script ssh-run -oN Netauto/$IP/Protocols/SSH/nmap/ssh-run.txt
-	nmap -p 22 $IP --script ssh-auth-methods -oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods.txt
-	nmap --script ssh-auth-methods --script-args="ssh.user=username" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods-default.txt
-	nmap -p 22 $IP --script ssh-auth-methods --script-args="ssh.user=root" -oN Netauto/$IP/Protocols/SSH/nmap/ssh-auth-methods-root.txt
-	nmap --script "ssh-* and not brute" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/ssh-all.txt
+	nmap -p 22 $IP --script ssh2-enum-algos -oN Netauto/$IP/Protocols/SSH/nmap/enum-algos.nmap
+	nmap -p 22 $IP --script ssh-hostkey --script-args ssh_hostkey=full -oN Netauto/$IP/Protocols/SSH/nmap/hostkey.nmap
+	nmap -p 22 $IP --script ssh-publickey-acceptance -oN Netauto/$IP/Protocols/SSH/nmap/publickey-acceptance.nmap
+	nmap -p 22 $IP --script ssh-run -oN Netauto/$IP/Protocols/SSH/nmap/run.nmap
+	nmap -p 22 $IP --script ssh-auth-methods -oN Netauto/$IP/Protocols/SSH/nmap/auth-methods.nmap
+	nmap --script ssh-auth-methods --script-args="ssh.user=username" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/auth-methods-default.nmap
+	nmap -p 22 $IP --script ssh-auth-methods --script-args="ssh.user=root" -oN Netauto/$IP/Protocols/SSH/nmap/auth-methods-root.nmap
+	nmap --script "ssh-* and not brute" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/all.nmap
+
+	echo " "
 }
 
 telnet_scan() {
+	echo -e "${GRAY}------------------------------------ Telnet -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Telnet/nc
 	nc $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/telnet-nc.txt
 	nc -nv $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/telnet-nc-nv.txt
 
 	mkdir -p Netauto/$IP/Protocols/Telnet/nmap
-	nmap -n -sV -Pn --script "*telnet* and safe" -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/telnet-scripts.txt
-	nmap --script telnet-encryption -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/telnet-encryption.txt
-	nmap --script telnet-ntlm-info -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/telnet-ntlm-info.txt
+	nmap -n -sV -Pn --script "*telnet* and safe" -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/scripts.nmap
+	nmap --script telnet-encryption -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/encryption.nmap
+	nmap --script telnet-ntlm-info -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/ntlm-info.nmap
 }
 
-
 smtp_scan() {
+	echo -e "${YELLOW}------------------------------------ SMTP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/SMTP/nc
 	nc $IP 25 | tee Netauto/$IP/Protocols/SMTP/smtp-nc.txt
 	nc -nv $IP 25 | tee Netauto/$IP/Protocols/SMTP/smtp-nv.txt
@@ -232,76 +260,91 @@ smtp_scan() {
 	dif mx $IP | tee Netauto/$IP/Protocols/SMTP/df/smtp-mx-domains.txt
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/nmap
-	nmap --script smtp-commands -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-commands.txt
-	nmap --script smtp-open-relay -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-open-relay.txt
-	nmap --script smtp-enum-users -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-enum-users.txt
-	nmap --script smtp-strangeport -p- $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-strangeport.txt
-	nmap --script smtp-ntlm-info --script-args smtp-ntlm-info.domain=example.com -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-ntlm-info.txt
-	nmap --script smtp-vuln-cve2010-4344 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-vuln-cve2010-4344.txt
-	nmap --script smtp-vuln-cve2011-1720 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTPt/nmap/smtp-vuln-cve2011-1720.txt
-	nmap --script smtp-vuln-cve2011-1764 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-vuln-cve2011-1764.txt
-	nmap --script "smtp-* and not brute" -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/smtp-all.txt
+	nmap --script smtp-commands -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/commands.nmap
+	nmap --script smtp-open-relay -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/open-relay.nmap
+	nmap --script smtp-enum-users -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/enum-users.nmap
+	nmap --script smtp-strangeport -p- $IP -oN Netauto/$IP/Protocols/SMTP/nmap/strangeport.nmap
+	nmap --script smtp-ntlm-info --script-args smtp-ntlm-info.domain=example.com -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/ntlm-info.nmap
+	nmap --script smtp-vuln-cve2010-4344 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/vuln-cve2010-4344.nmap
+	nmap --script smtp-vuln-cve2011-1720 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTPt/nmap/vuln-cve2011-1720.nmap
+	nmap --script smtp-vuln-cve2011-1764 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/vuln-cve2011-1764.nmap
+	nmap --script "smtp-* and not brute" -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/all.nmap
+
+	echo " "
 }
 
 whois_scan() {
+	echo -e "${BLUE}------------------------------------ WHOIS -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/WHOIS/nmap
-	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports.txt
-	nmap -sV -p 113	$IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports.txt
-	nmap -sC -sV -p 113 $IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports-and-version.txt
+	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/WHOIS/script.nmap
+	nmap -sV -p 113	$IP -oN Netauto/$IP/Protocols/WHOIS/version.nmap
+	nmap -sC -sV -p 113 $IP -oN Netauto/$IP/Protocols/WHOIS/script-and-version.nmap
+
+	echo " "
 }
 
 tacacs_scan() {
+	echo -e "${GRAY}------------------------------------ TACACS -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/TACACS/nmap
-	nmap -sC -p 49 $IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports.txt
-	nmap -sV -p 49 $IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports.txt
-	nmap -sC -sV -p 49 $IP -oN Netauto/$IP/Protocols/WHOIS/whois-ports-and-version.txt
+	nmap -sC -p 49 $IP -oN Netauto/$IP/Protocols/TACACS/script.nmap
+	nmap -sV -p 49 $IP -oN Netauto/$IP/Protocols/TACACS/version.nmap
+	nmap -sC -sV -p 49 $IP -oN Netauto/$IP/Protocols/TACACS/script-and-version.nmap
+
+	echo " "
 }
 
 dns_scan() {
+	echo -e "${GRAY}------------------------------------ DNS -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/DNS/nmap
-	nmap --script broadcast-dns-service-discovery -p- $IP -oN Netauto/$IP/Protocols/DNS/nmap/broadcast-dns-service-discovery.txt
-	nmap --script dns-blacklist -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-blacklist.txt
-	nmap --script dns-cache-snoop -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-cache-snoop.txt
-	nmap --script dns-check-zone -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-check-zone.txt
-	nmap --script dns-client-subnet-scan -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/dns-client-subnet-scan.txt
-	nmap --script dns-fuzz -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/dns-fuzz.txt
-	nmap --script dns-ip6-arpa-scan -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-ip6-arpa-scan.txt
-	nmap --script dns-nsec3-enum -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-nsec3-enum.txt
-	nmap --script dns-nsid -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-nsid.txt
-	nmap -sV --script dns-nsid -p53 -Pn $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-nsid-extended.txt
-	nmap --script dns-random-srcport -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-random-srcport.txt
-	nmap --script dns-random-txid -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-random-txid.txt
-	nmap --script dns-nsec-enum --script-args dns-nsec-enum.domains vulnerable.com -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-nsec-enum.txt
-	nmap --script dns-recursion -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-recursion.txt
-	nmap --script dns-service-discovery -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-service-discovery.txt
-	nmap --script dns-srv-enum -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-srv-enum.txt
-	nmap --script dns-update -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-update.txt
-	nmap --script dns-zeustracker -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-zeustracker.txt
-	nmap --script dns-zone-transfer -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-zone-transfer.txt
-	nmap -sn -Pn --script fcrdns -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-zone-transfer.txt
-	nmap --script "dns-* and not brute" -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/dns-all.txt
+	nmap --script broadcast-dns-service-discovery -p- $IP -oN Netauto/$IP/Protocols/DNS/nmap/broadcast-dns-service-discovery.nmap
+	nmap --script dns-blacklist -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/blacklist.nmap
+	nmap --script dns-cache-snoop -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/cache-snoop.nmap
+	nmap --script dns-check-zone -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/check-zone.nmap
+	nmap --script dns-client-subnet-scan -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/client-subnet-scan.nmap
+	nmap --script dns-fuzz -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/fuzz.nmap # this one would always freeze
+	nmap --script dns-ip6-arpa-scan -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/ip6-arpa-scan.nmap
+	nmap --script dns-nsec3-enum -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/nsec3-enum.nmap
+	nmap --script dns-nsid -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/nsid.nmap
+	nmap -sV --script dns-nsid -p53 -Pn $IP -oN Netauto/$IP/Protocols/DNS/nmap/nsid-extended.nmap
+	nmap --script dns-random-srcport -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/random-srcport.nmap
+	nmap --script dns-random-txid -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/random-txid.nmap
+	nmap --script dns-nsec-enum --script-args dns-nsec-enum.domains vulnerable.com -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/nsec-enum.nmap
+	nmap --script dns-recursion -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/recursion.nmap
+	nmap --script dns-service-discovery -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/service-discovery.nmap
+	nmap --script dns-srv-enum -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/srv-enum.nmap
+	nmap --script dns-update -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/update.nmap
+	nmap --script dns-zeustracker -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/zeustracker.nmap
+	nmap --script dns-zone-transfer -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/zone-transfer.nmap
+	nmap -sn -Pn --script fcrdns -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/fcrdns.nmap
+	nmap --script "dns-* and not brute" -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/all.namp
+
+	echo " "
 }
 
 tftp_scan() {
+	echo -e "${YELLOW}------------------------------------ TFTP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/TFTP/nmap
-	nmap -sU -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-open-port.txt
-	nmap --script tftp-version -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-version.txt
-	nmap --script tftp-enum -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-enum.txt
-	nmap -sU --script tftp-enum -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-enum-UDP.txt
-	nmap -sU -p 69 --script tftp-enum.nse --script-args tftp-enum.filelist=enumlist.txt $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-enum-list.txt
-	nmap -n -Pn -sU -p 69 -sV --script tftp-enum $IP -oN Netauto/$IP/Protocols/TFTP/nmap/tftp-enum-scan-extended.txt
+	nmap -sU -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/open-ports.nmap
+	nmap --script tftp-version -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/version.nmap
+	nmap --script tftp-enum -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/enum.nmap
+	nmap -sU --script tftp-enum -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/udp-enum.nmap
+	nmap -sU -p 69 --script tftp-enum.nse --script-args tftp-enum.filelist=enumlist.txt $IP -oN Netauto/$IP/Protocols/TFTP/nmap/enumlist.nmap
+	nmap -n -Pn -sU -p 69 -sV --script tftp-enum $IP -oN Netauto/$IP/Protocols/TFTP/nmap/enum-extended.nmap
+
+	echo " "
 }
 
 finger_scan() {
+	echo -e "${YELLOW}------------------------------------ Finger -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Finger
 	mkdir -p Netauto/$IP/Protocols/Finger/nc
 	nc $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/finger-nc.txt
 	nc -vn $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/finger-nc-vn.txt
 
 	mkdir -p Netauto/$IP/Protocols/Finger/nmap
-	nmap -sC -p 79 $IP -oN Netauto/$IP/Protocols/Finger/finger-ports.txt
-	nmap -sV -p 79 $IP -oN Netauto/$IP/Protocols/Finger/finger-version.txt
-	nmap -sC -sV -p 79 $IP -oN Netauto/$IP/Protocols/Finger/finger-ports-and-version.txt
+	nmap -sC -p 79 $IP -oN Netauto/$IP/Protocols/Finger/script.nmap
+	nmap -sV -p 79 $IP -oN Netauto/$IP/Protocols/Finger/version.nmap
+	nmap -sC -sV -p 79 $IP -oN Netauto/$IP/Protocols/Finger/script-and-version.nmap
 
 	mkdir -p Netauto/$IP/Protocols/Finger/enumeration
 	finger @$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-users.txt
@@ -313,17 +356,23 @@ finger_scan() {
 	finger -l root@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-root-all-format.txt
 	finger 0@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-zero-enumeration.txt
 	finger 'a b c d e f g h'@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-all-accounts.txt
+
+	echo " "
 }
 
 kerberos_scan() {
+	echo -e "${GRAY}------------------------------------ Kerberos -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Kerberos/nmap
-	nmap -sC -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/kerberos-ports.txt
-	nmap -sV -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/kerberos-version.txt
-	nmap -sC -sV -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/kerberos-ports-and-version.txt
-	nmap -p 88 --script=krb5-enum-users -oN Netauto/$IP/Protocols/Kerberos/nmap/kerberos-script.txt
+	nmap -sC -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/script.nmap
+	nmap -sV -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/version.nmap
+	nmap -sC -sV -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/script-and-version.nmap
+	nmap -p 88 --script=krb5-enum-users -oN Netauto/$IP/Protocols/Kerberos/nmap/enum-users.nmap
+
+	echo " "
 }
 
 pop_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ POP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/POP
 	mkdir -p Netauto/$IP/Protocols/POP/nc
 	nc $IP 110 | tee Netauto/$IP/Protocols/POP/nc/pop-nc.txt
@@ -333,67 +382,82 @@ pop_scan() {
 	openssl s_client -connect $IP:995 -crlf -quiet | tee Netauto/$IP/Protocols/POP/openssl/pop-openssl-crlf.txt
 
 	mkdir -p Netauto/$IP/Protocols/POP/nmap
-	nmap --script "pop3-capabilities or pop3-ntlm-info" -sV -port 110,995 $IP -oN Netauto/$IP/Protocols/POP/nmap/pop-script.txt
-	nmap -p 110,995 --script pop3-ntlm-info $IP -oN Netauto/$IP/Protocols/POP/nmap/pop-ntlm-info.txt
-	nmap -p 110,995 --script pop3-capabilities $IP -oN Netauto/$IP/Protocols/POP/nmap/pop-capabilities.txt
+	nmap --script "pop3-capabilities or pop3-ntlm-info" -sV -port 110,995 $IP -oN Netauto/$IP/Protocols/POP/nmap/cap-and-ntlm.nmap
+	nmap -p 110,995 --script pop3-ntlm-info $IP -oN Netauto/$IP/Protocols/POP/nmap/ntlm-info.nmap
+	nmap -p 110,995 --script pop3-capabilities $IP -oN Netauto/$IP/Protocols/POP/nmap/capabilities.nmap
+
+	echo " "
 }
 
 portmapper_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ Portmapper -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Portmapper/nmap
-	nmap -sC -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/portmapper-ports.txt
-	nmap -sV -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/portmapper-version.txt
-	nmap -sC -sV -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/portmapper-ports-and-version.txt
-	nmap -sSUC -p111 $IP -oN Netauto/$IP/Protocols/Portmapper/portmapper-info.txt
+	nmap -sC -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/script.nmap
+	nmap -sV -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/version.nmap
+	nmap -sC -sV -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/script-and-version.nmap
+	nmap -sSUC -p111 $IP -oN Netauto/$IP/Protocols/Portmapper/info.nmap
+
+	echo " "
 }
 
 ident_scan() {
+	echo -e "${BLUE}------------------------------------ Ident -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Ident/nmap
-	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/Ident/nmap/ident-ports.txt
-	nmap -sV -p 113	$IP -oN Netauto/$IP/Protocols/Ident/nmap/ident-version.txt
-	nmap -sC -sV -p 113 $IP -oN Netauto/$IP/Protocols/Ident/nmap/ident-ports-and-version.txt
+	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/Ident/nmap/script.nmap
+	nmap -sV -p 113	$IP -oN Netauto/$IP/Protocols/Ident/nmap/version.nmap
+	nmap -sC -sV -p 113 $IP -oN Netauto/$IP/Protocols/Ident/nmap/script-and-version.nmap
+
+	echo " "
 }
 
 ntp_scan() {
+	echo -e "${BLUE}------------------------------------ NTP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/NTP
 	mkdir -p Netauto/$IP/Protocols/NTP/nmap
-	nmap -sU --script ntp-info -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-ports-and-version.txt
-	nmap -sU --script ntp-monlist -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-ports-and-version.txt
-	nmap -sU --script "ntp* and not (dos or brute)" -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-ports-and-version.txt
-	nmap -sU -sV --script "ntp* and not (dos or brute)" -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-ports-and-version.txt
-	nmap -sU -pU:123 -Pn -n --script=ntp-monlist $IP -oN Netauto/$IP/Protocols/NTP/nmap/ntp-aggressive-monlist
+	nmap -sU --script ntp-info -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/info.nmap
+	nmap -sU --script ntp-monlist -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/monlist.nmap
+	nmap -sU --script "ntp* and not (dos or brute)" -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/udp-all.nmap
+	nmap -sU -sV --script "ntp* and not (dos or brute)" -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/udp-version-all.nmap
+	nmap -sU -pU:123 -Pn -n --script=ntp-monlist $IP -oN Netauto/$IP/Protocols/NTP/nmap/aggressive-monlist.nmap
 
 	mkdir -p Netauto/$IP/Protocols/NTP/ntpq
 	ntpq -c readlist $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-readlist.txt
 	ntpq -c readvar $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-readvar.txt
 	ntpq -c peers $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-peers.txt
 	ntpq -c associations $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-associations.txt
+
+	echo " "
 }
 
 msrpc_scan() {
+	echo -e "${BLUE}------------------------------------ MSRPC -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/MSRPC/nmap
-	nmap -sC -p 135	$IP -oN Netauto/$IP/Protocols/MSRPC/nmap/msrpc-ports.txt
-	nmap -sV -p 135	$IP -oN Netauto/$IP/Protocols/MSRPC/nmap/msrpc-version.txt
-	nmap -sC -sV -p 135 $IP -oN Netauto/$IP/Protocols/MSRPC/nmap/msrpc-ports-and-version.txt
-	nmap --script msrpc-enum -p 135 $IP -oN Netauto/$IP/Protocols/MSRPC/nmap/msrpc-enum.txt
+	nmap -sC -p 135	$IP -oN Netauto/$IP/Protocols/MSRPC/nmap/script.nmap
+	nmap -sV -p 135	$IP -oN Netauto/$IP/Protocols/MSRPC/nmap/version.nmap
+	nmap -sC -sV -p 135 $IP -oN Netauto/$IP/Protocols/MSRPC/nmap/script-and-version.nmap
+	nmap --script msrpc-enum -p 135 $IP -oN Netauto/$IP/Protocols/MSRPC/nmap/enum.nmap
 
 	mkdir -p Netauto/$IP/Protocols/MSRPC/rpcdump
 	impacket-rpcdump -port 135 $IP | tee Netauto/$IP/Protocols/MSRPC/rpcdump/impacket-rpcdump.txt
 	/usr/share/doc/python3-impacket/examples/rpcdump.py $IP -p 135 | tee Netauto/$IP/Protocols/MSRPC/rpcdump/rpcdump_port.txt
 	/usr/share/doc/python3-impacket/examples/rpcmap.py 'ncacn_ip_tcp:$IP' | tee Netauto/$IP/Protocols/MSRPC/rpcdump/rpcmap.txt
 	python /opt/tools/MSRPC/IOXIDResolver.py -t $IP | tee Netauto/$IP/Protocols/MSRPC/rpcdump/IOXIDResolver.txt
+
+	echo " "
 }
 
 netbios_scan() {
+	echo -e "${YELLOW}------------------------------------ NetBIOS -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/NetBios/nmap
-	nmap -sU -p 137,138,139 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-udp.txt
-	nmap -vv --reason -Pn -sV -p139,445 --script="(nbstat or smb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="unsafe=1" $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-udp-aggressive.txt
-	nmap -sT -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-tcp.txt
-	nmap -vv --reason -Pn -sU -sV -p137 --script="(nbstat or smb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="unsafe=1" $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-tcp-aggressive.txt
-	nmap -sC -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-ports.txt
-	nmap -sV -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-version.txt
-	nmap -sC -sV -p 135,137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-ports-and-version.txt
-	nmap --script broadcast-netbios-master-browser -p 135,137,139 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/broadcast-netbios-master-browser.txt
-	sudo nmap -sU -sV -T4 --script nbstat.nse -p137 -Pn -n $IP -oN Netauto/$IP/Protocols/NetBios/nmap/netbios-script.txt
+	nmap -sU -p 137,138,139 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/udp.nmap
+	nmap -vv --reason -Pn -sV -p139,445 --script="(nbstat or smb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="unsafe=1" $IP -oN Netauto/$IP/Protocols/NetBios/nmap/aggressive-udp.nmap
+	nmap -sT -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/tcp.nmap
+	nmap -vv --reason -Pn -sU -sV -p137 --script="(nbstat or smb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="unsafe=1" $IP -oN Netauto/$IP/Protocols/NetBios/nmap/aggressive-tcp.nmap
+	nmap -sC -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/script.nmap
+	nmap -sV -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/version.nmap
+	nmap -sC -sV -p 135,137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/script-and-version.nmap
+	nmap --script broadcast-netbios-master-browser -p 135,137,139 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/broadcast-netbios-master-browser.nmap
+	sudo nmap -sU -sV -T4 --script nbstat.nse -p137 -Pn -n $IP -oN Netauto/$IP/Protocols/NetBios/nmap/nbstat.nmap
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/nmblookup
 	nmblookup -A $IP | tee Netauto/$IP/Protocols/NetBios/nmblookup/netbios-nmblookup.txt
@@ -402,32 +466,35 @@ netbios_scan() {
 	nbtscan $IP | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-default.txt
 	nbtscan -rvh $IP | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-rvh.txt
 	nbtscan $IP/30 | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-30.txt
-	nbtscan -r $IP/24 | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-24.txt
+	nbtscan -r $IP/24 | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-24.txt # the command would always freeze
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/enum4linux
 	enum4linux -a -M -l -d $IP | tee Netauto/$IP/Protocols/NetBios/enum4linux/netbios-enum4linux.txt
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/rpcclient
 	rpcclient -U "" -P $IP | tee Netauto/$IP/Protocols/NetBios/rpcclient/null_session_attempt.txt
+
+	echo " "
 }
 
 smb_scan() {
+	echo -e "${YELLOW}------------------------------------ NetBIOS -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/SMB/nmap
-	nmap --script smb-enum-shares.nse,smb-enum-users.nse -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-enum-shares-users.txt
-	nmap --script smb-enum* -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-enum-all.txt
-	nmap --script smb-protocols -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-protocols.txt
-	nmap --script smb-flood -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-flood.txt
-	nmap --script smb-ls -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-ls.txt
-	nmap --script smb-mbenum -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-mbenum.txt
-	nmap --script smb-os-discovery -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-os-discovery.txt
-	nmap --script smb-psexec -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-psexec.txt
-	nmap --script smb-security-mode -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-security-mode.txt
-	nmap --script smb-server-stats -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-server-stats.txt
-	nmap --script smb-system-info -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-system-info.txt
-	nmap --script smb-webexec-exploit -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-webexec-exploit.txt
-	nmap --script smb-double-pulsar-backdoor -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-double-pulsar-backdoor.txt
-	nmap --script smb-vuln* -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-vuln.txt
-	nmap --script "smb-* and not brute" -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/smb-all.txt
+	nmap --script smb-enum-shares.nse,smb-enum-users.nse -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/enum-scripts.nmap
+	nmap --script smb-enum* -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/enum-all.nmap
+	nmap --script smb-protocols -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/protocols.nmap
+	nmap --script smb-flood -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/flood.nmap
+	nmap --script smb-ls -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/list.nmap
+	nmap --script smb-mbenum -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/mbenum.nmap
+	nmap --script smb-os-discovery -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/os-discovery.nmap
+	nmap --script smb-psexec -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/psexec.nmap
+	nmap --script smb-security-mode -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/security-mode.nmap
+	nmap --script smb-server-stats -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/server-stats.nmap
+	nmap --script smb-system-info -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/system-info.nmap
+	nmap --script smb-webexec-exploit -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/webexec-exploit.nmap
+	nmap --script smb-double-pulsar-backdoor -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/double-pulsar-backdoor.nmap
+	nmap --script smb-vuln* -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/vuln-all.nmap
+	nmap --script "smb-* and not brute" -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/all.nmap
 
 	mkdir -p Netauto/$IP/Protocols/SMB/nmblookup
 	nmblookup -A $IP | tee Netauto/$IP/Protocols/SMB/nmblookup/smb-nmblookup.txt
@@ -475,9 +542,12 @@ smb_scan() {
 	impacket-lookupsid example.local/anonymous@$IP 20000 -no-pass | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/impacket-looksupid-anon-nopass.txt
 	impacket-lookupsid example.local/guest@$IP 20000 -no-pass | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/impacket-looksupid-guest-nopass.txt
 	impacket-lookupsid example.local/guest@$IP 20000 | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/impacket-looksupid-guest.txt
+
+	echo " "
 }
 
 imap_scan() {
+	echo -e "${BLUE}------------------------------------ IMAP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/IMAP
 	mkdir -p Netauto/$IP/Protocols/IMAP/nc
 	nc $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/imap-nc.txt
@@ -488,12 +558,15 @@ imap_scan() {
 	openssl s_client -connect $IP:993 -quiet | tee Netauto/$IP/Protocols/IMAP/openssl/imap-openssl-quiet.txt
 
 	mkdir -p Netauto/$IP/Protocols/IMAP/nmap
-	nmap --script imap-capabilities -p 143,993 $IP -oN Netauto/$IP/Protocols/IMAP/nmap/imap-capabilities.txt
-	nmap -p 143,993 --script imap-ntlm-info $IP -oN Netauto/$IP/Protocols/IMAP/nmap/imap-ntlm-info.txt
-	nmap --script imap-ntlm-info -p 143,993 $IP -oN Netauto/$IP/Protocols/IMAP/nmap/imap-ntlm-info.txt
+	nmap --script imap-capabilities -p 143,993 $IP -oN Netauto/$IP/Protocols/IMAP/nmap/capabilities.nmap
+	nmap -p 143,993 --script imap-ntlm-info $IP -oN Netauto/$IP/Protocols/IMAP/nmap/ntlm-info-ports.nmap
+	nmap --script imap-ntlm-info -p 143,993 $IP -oN Netauto/$IP/Protocols/IMAP/nmap/ntlm-info.nmap
+
+	echo " "
 }
 
 irc_scan() {
+	echo -e "${GRAY}------------------------------------ IRC -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/IRC
 	mkdir -p Netauto/$IP/Protocols/IRC/nc
 	nc $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/irc-nc-194.txt
@@ -506,124 +579,160 @@ irc_scan() {
 	openssl s_client -connect $IP:6667 | tee Netauto/$IP/Protocols/IRC/openssl/irc-openssl-6667.txt
 
 	mkdir -p Netauto/$IP/Protocols/IRC/nmap
-	nmap --script irc-info,irc-botnet-channels,irc-unrealircd-backdoor -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/irc-scan.txt
-	nmap -sV --script irc-info,irc-botnet-channels,irc-unrealircd-backdoor -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/irc-scan.txt
-	nmap -sV --script "irc-* and not brute" -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/irc-scan.txt
+	nmap --script irc-info,irc-botnet-channels,irc-unrealircd-backdoor -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/info.nmap
+	nmap -sV --script irc-info,irc-botnet-channels,irc-unrealircd-backdoor -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/info-version.nmap
+	nmap -sV --script "irc-* and not brute" -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/all.nmap
+
+	echo " "
 }
 
 checkpoint_firewall_scan() {
+	echo -e "${GRAY}------------------------------------ IRC -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Checkpoint_Firewall-1
 	mkdir -p Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap
-	nmap -sC -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/cpf-sc.txt
-	nmap -sV -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/cpf-sv.txt
-	nmap -sC -sV -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/cpf-info.txt
+	nmap -sC -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/script.nmap
+	nmap -sV -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/version.nmap
+	nmap -sC -sV -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/script-and-version.nmap
+
+	echo " "
 }
 
 ldap_scan() {
+	echo -e "${BLUE}------------------------------------ LDAP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/LDAP
 	mkdir -p Netauto/$IP/Protocols/LDAP/nmap
-	nmap --script ldap-brute --script-args ldap.base='"cn=users,dc=cqure,dc=net"' -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-brute.txt
-	nmap --script ldap-search -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-search.txt
-	nmap --script ldap-novell-getpass -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-novell-getpass.txt
-	nmap --script ldap-rootdse -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-rootdse.txt
-	nmap --script "ldap* and not brute" -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-brute-and-all.txt
-	nmap -n -sV --script "ldap* and not brute" $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-brute-and-all-scan.txt
-	nmap --script ldap-* $IP -oN Netauto/$IP/Protocols/LDAP/nmap/ldap-all.txt
+	nmap --script ldap-brute --script-args ldap.base='"cn=users,dc=cqure,dc=net"' -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/brute.nmap
+	nmap --script ldap-search -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/search.nmap
+	nmap --script ldap-novell-getpass -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/novell-getpass.nmap
+	nmap --script ldap-rootdse -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/rootdse.nmap
+	nmap --script "ldap* and not brute" -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/no-brute.nmap
+	nmap -n -sV --script "ldap* and not brute" $IP -oN Netauto/$IP/Protocols/LDAP/nmap/no-brute-version.nmap
+	nmap --script ldap-* $IP -oN Netauto/$IP/Protocols/LDAP/nmap/all.nmap
 
 	mkdir -p Netauto/$IP/Protocols/LDAP/ldapsearch
 	ldapsearch -LLL -x -H ldap://$IP -b ‘’ -s base '(objectclass=*)' | tee Netauto/$IP/Protocols/LDAP/ldapsearch/ldap-anonymous-credential-dumping.txt
 	ldapsearch -h $IP -x -s base namingcontexts | tee Netauto/$IP/Protocols/LDAP/ldapsearch/ldap-namingcontexts.txt
 	ldapsearch -h $IP -x -b "DC=BLACKFIELD,DC=local" | tee Netauto/$IP/Protocols/LDAP/ldapsearch/ldap-domainname.txt
+
+	echo " "
 }
 
 ipsec_scan() {
+	echo -e "${BLUE}------------------------------------ IPSEC -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/IKE
 	mkdir -p Netauto/$IP/Protocols/IKE/nmap
-	nmap -sU -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/ike-all.txt
-	nmap --script ike-version -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/ike-version.txt
-	nmap --script http-cisco-anyconnect -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/http-cisco-anyconnect.txt
+	nmap -sU -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/udp.nmap
+	nmap --script ike-version -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/version.nmap
+	nmap --script http-cisco-anyconnect -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/http-cisco-anyconnect.nmap
 
 	mkdir -p Netauto/$IP/Protocols/IKE/ike-scan
 	ike-scan -M $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/ike-scan.txt
 	ike-scan -M --showbackoff $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/ike-scan-aggressive.txt
 	ike-scan -P -M -A -n fakeID $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/ike-scan-fakeID.txt
+
+	echo " "
 }
 
 modbus_scan() {
+	echo -e "${YELLOW}------------------------------------ Modbus -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Modbus
 	mkdir -p Netauto/$IP/Protocols/Modbus/nmap
-	nmap -sC -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-sc.txt
-	nmap -sV -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-sv.txt
-	nmap -sC -sV -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-sc-sv.txt
-	nmap --script modbus-discover -p 502 $IP -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-discover.txt
-	nmap --script modbus-discover --script-args modbus-discover.aggressive=true -p 502 $IP -oN Netauto/$IP/Protocols/Modbus/nmap/modbus-discover-aggressive.txt
+	nmap -sC -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/script.nmap
+	nmap -sV -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/version.nmap
+	nmap -sC -sV -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/script-and-version.nmap
+	nmap --script modbus-discover -p 502 $IP -oN Netauto/$IP/Protocols/Modbus/nmap/discover.nmap
+	nmap --script modbus-discover --script-args modbus-discover.aggressive=true -p 502 $IP -oN Netauto/$IP/Protocols/Modbus/nmap/aggressive-discover.nmap
+
+	echo " "
 }
 
 rexec_scan() {
+	echo -e "${GRAY}------------------------------------ Rexec -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Rexec
 	mkdir -p Netauto/$IP/Protocols/Rexec/nmap
-	nmap -sC -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/rexec-sc.txt
-	nmap -sV -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/rexec-sv.txt
-	nmap -sC -sV -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/rexec-info.txt
+	nmap -sC -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/script.nmap
+	nmap -sV -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/version.nmap
+	nmap -sC -sV -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/script-and-version.nmap
+
+	echo " "
 }
 
 rlogin_scan() {
+	echo -e "${GRAY}------------------------------------ Rlogin -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Rlogin
 	mkdir -p Netauto/$IP/Protocols/Rlogin/nmap
-	nmap -sC -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/rlogin-sc.txt
-	nmap -sV -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/rlogin-sv.txt
-	nmap -sC -sV -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/rlogin-info.txt
+	nmap -sC -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/script.nmap
+	nmap -sV -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/version.nmap
+	nmap -sC -sV -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/script-and-version.nmap
+
+	echo " "
 }
 
 rsh_scan() {
+	echo -e "${GRAY}------------------------------------ Rsh -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Rsh
 	mkdir -p Netauto/$IP/Protocols/Rsh/nmap
-	nmap -sC -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/rsh-sc.txt
-	nmap -sV -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/rsh-sv.txt
-	nmap -sC -sV -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/rsh-info.txt
+	nmap -sC -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/script.nmap
+	nmap -sV -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/version.nmap
+	nmap -sC -sV -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/script-and-version.nmap
+
+	echo " "
 }
 
 lpd_scan() {
+	echo -e "${GRAY}------------------------------------ Rsh -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/LPD
 	mkdir -p Netauto/$IP/Protocols/LPD/nmap
-	nmap -sC -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/lpd-sc.txt
-	nmap -sV -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/lpd-sv.txt
-	nmap -sC -sV -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/lpd-info.txt
+	nmap -sC -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/script.nmap
+	nmap -sV -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/version.nmap
+	nmap -sC -sV -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/script-and-version.nmap
+
+	echo " "
 }
 
 afp_scan() {
+	echo -e "${BLUE}------------------------------------ AFP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/AFP
 	mkdir -p Netauto/$IP/Protocols/AFP/nmap
-	nmap --script afp-ls -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/afp-ls.txt
-	nmap --script afp-path-vuln -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/afp-path-vuln.txt
-	nmap --script afp-serverinfo -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/afp-serverinfo.txt
-	nmap --script afp-showmount -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/afp-showmount.txt
-	nmap -sV --script "afp-* and not dos and not brute" -p 548 $IP -oN Netauto/$IP/Protocols/APF/nmap/afp-all.txt
+	nmap --script afp-ls -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/list.nmap
+	nmap --script afp-path-vuln -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/path-vuln.nmap
+	nmap --script afp-serverinfo -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/serverinfo.nmap
+	nmap --script afp-showmount -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/showmount.nmap
+	nmap -sV --script "afp-* and not dos and not brute" -p 548 $IP -oN Netauto/$IP/Protocols/APF/nmap/all.nmap
+
+	echo " "
 }
 
 rtsp_scan() {
+	echo -e "${GRAY}------------------------------------ RTSP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/RTSP
 	mkdir -p Netauto/$IP/Protocols/RTSP/nmap
-	nmap --script rtsp-url-brute -p 554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/rtsp-url-brute.txt
-	nmap --script rtsp-methods -p 554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/rtsp-methods.txt
-	nmap --script rtsp-* -p 554,8554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/rtsp-all.txt
-	nmap -sV --script "rtsp-*" -p 554,8554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/rtsp-all-version.txt
+	nmap --script rtsp-url-brute -p 554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/url-brute.nmap
+	nmap --script rtsp-methods -p 554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/methods.nmap
+	nmap --script rtsp-* -p 554,8554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/all.nmap
+	nmap -sV --script "rtsp-*" -p 554,8554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/all-version.nmap
+
+	echo " "
 }
 
 ipmi_scan() {
+	echo -e "${GRAY}------------------------------------ IPMI -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/IPMI
 	mkdir -p Netauto/$IP/Protocols/IPMI/nmap
-	nmap -n -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/ipmi-scan.txt
-	nmap -n-sU -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/ipmi-scan-info.txt
-	nmap -sU --script ipmi-version -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/ipmi-version.txt
+	nmap -n -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/scan.nmap
+	nmap -n-sU -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/info-scan.nmap
+	nmap -sU --script ipmi-version -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/version.nmap
+
+	echo " "
 }
 
 ipp_scan() {
+	echo -e "${GRAY}------------------------------------ IPP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/IPP
 	mkdir -p Netauto/$IP/Protocols/IPP/nmap
-	nmap -sV -p631 --script=cups* $IP -oN Netauto/$IP/Protocols/IPP/nmap/ipp-all-.txt
-	nmap -sV -p631 --script=cups-info $IP -oN Netauto/$IP/Protocols/IPP/nmap/ipp-info.txt
-	nmap -sV -p631 --script=cups-queue-info $IP -oN Netauto/$IP/Protocols/IPP/nmap/ipp-queue-info.txt
+	nmap -sV -p631 --script=cups* $IP -oN Netauto/$IP/Protocols/IPP/nmap/all.nmap
+	nmap -sV -p631 --script=cups-info $IP -oN Netauto/$IP/Protocols/IPP/nmap/info.nmap
+	nmap -sV -p631 --script=cups-queue-info $IP -oN Netauto/$IP/Protocols/IPP/nmap/queue-info.nmap
 
 	curl http:/$IP:631 | tee Netauto/$IP/Protocols/IPP/ipp-curl.txt
 
@@ -631,20 +740,26 @@ ipp_scan() {
 	python2 /opt/tools/IPP/PRET/pret.py $IP:631 ps | tee Netauto/$IP/Protocols/IPP/PRET/ipp-pret-ps.txt
 	python2 /opt/tools/IPP/PRET/pret.py $IP:631 pjl | tee Netauto/$IP/Protocols/IPP/PRET/ipp-pret-pjl.txt
 	python2 /opt/tools/IPP/PRET/pret.py $IP:631 pcl | tee Netauto/$IP/Protocols/IPP/PRET/ipp-pret-pcl.txt
+
+	echo " "
 }
 
 epp_scan() {
+	echo -e "${BLUE}------------------------------------ IPP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/EPP
 	mkdir -p Netauto/$IP/Protocols/EPP/nmap
-	nmap -sC -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/epp-sc.txt
-	nmap -sV -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/epp-sv.txt
-	nmap -sC -sV -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/epp-info.txt
+	nmap -sC -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/script.nmap
+	nmap -sV -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/version.nmap
+	nmap -sC -sV -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/script-and-version.nmap
+
+	echo " "
 }
 
 rsync_scan() {
+	echo -e "${GRAY}------------------------------------ Rsync -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Rsync
 	mkdir -p Netauto/$IP/Protocols/Rsync/nmap
-	nmap --script rsync-list-modules -p 873 $IP -oN Netauto/$IP/Protocols/Rsync/nmap/rsync-list-modules.txt
+	nmap --script rsync-list-modules -p 873 $IP -oN Netauto/$IP/Protocols/Rsync/nmap/list-modules.nmap
 
 	mkdir -p Netauto/$IP/Protocols/Rsync/rsync
 	rsync $IP:: | tee Netauto/$IP/Protocols/Rsync/rsync/rsync-sync-data.txt
@@ -655,98 +770,127 @@ rsync_scan() {
 	mkdir -p Netauto/$IP/Protocols/Rsync/rsync/shares
 	rsync $IP::shares | tee Netauto/$IP/Protocols/Rsync/rsync/shares/rsync-shares.txt
 	rsync -av --list-only rsync://$IP:873/shares | tee Netauto/$IP/Protocols/Rsync/rsync/shares/rsync-shares-list.txt
+
+	echo " "
 }
 
 rusersd_scan() {
+	echo -e "${GRAY}------------------------------------ Rusersd -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Rusersd
 	mkdir -p Netauto/$IP/Protocols/Rusersd/nmap
-	nmap -sC -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/rusersd-sc.txt
-	nmap -sV -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/rusersd-sv.txt
-	nmap -sC -sV -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/rusersd-info.txt
+	nmap -sC -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/script.nmap
+	nmap -sV -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/version.nmap
+	nmap -sC -sV -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/script-and-version.nmap
 
 	mkdir -p Netauto/$IP/Protocols/Rusersd/rusers
 	rusers -l $IP | tee Netauto/$IP/Protocols/Rusersd/rusers/rusersd-ls.txt
+
+	echo " "
 }
 
 socks_scan() {
+	echo -e "${BLUE}------------------------------------ Rusersd -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/SOCKS
 	mkdir -p Netauto/$IP/Protocols/SOCKS/nmap
-	nmap -p 1080 $IP --script socks-auth-info -oN Netauto/$IP/Protocols/SOCKS/nmap/socks-auth-info.txt
-	nmap --script socks-open-proxy -p 1080 $IP -oN Netauto/$IP/Protocols/SOCKS/nmap/socks-open-proxy.txt
+	nmap -p 1080 $IP --script socks-auth-info -oN Netauto/$IP/Protocols/SOCKS/nmap/auth-info.nmap
+	nmap --script socks-open-proxy -p 1080 $IP -oN Netauto/$IP/Protocols/SOCKS/nmap/open-proxy.nmap
+
+	echo " "
 }
 
 java_rmi_scan() {
-	# Check over here
+	echo -e "${BLUE}------------------------------------ Java RMI -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Java-RMI
 	mkdir -p Netauto/$IP/Protocols/Java-RMI/nmap/
-	nmap -p- $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-p.txt
-	nmap -Pn $IP -p- -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-pn.txt
-        nmap -n -v -sU -p- -T5 $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-udp-scan-a.txt
-        nmap -n -v -sU $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-udp-scan.txt
-        nmap -n -v -sT -p- -T5 $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/java-rmi-tcp.txt
+	nmap -p- $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/port.nmap
+	nmap -Pn $IP -p- -oN Netauto/$IP/Protocols/Java-RMI/nmap/open-port.nmap
+        nmap -n -v -sU -p- -T5 $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/udp-scan.nmap
+        nmap -n -v -sU $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/udp.nmap
+        nmap -n -v -sT -p- -T5 $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/tcp-scan.nmap
+
+	echo " "
 }
 
 ibm_mq_scan() {
+	echo -e "${BLUE}------------------------------------ IBM MQ -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/IBM-MQ
 	mkdir -p Netauto/$IP/Protocols/IBM-MQ/nmap
-	nmap -sC -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/ibm-mq-sc.txt
-	nmap -sV -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/ibm-mq-sv.txt
-	nmap -sC -sV -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/ibm-mq-info.txt
+	nmap -sC -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/script.nmap
+	nmap -sV -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/version.nmap
+	nmap -sC -sV -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/script-and-version.nmap
 
 	mkdir -p Netauto/$IP/Protocols/IBM-MQ/docker
 	sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 discover name | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-queue-manager.txt
 	sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 --username admin --password passw0rd discover channels | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-channels.txt
+
+	echo " "
 }
 
 pptp_scan() {
+	echo -e "${BLUE}------------------------------------ PPTP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/PPTP/
 	mkdir -p Netauto/$IP/Protocols/PPTP/nmap
-	nmap –Pn -sSV -p1723 $IP -oN Netauto/$IP/Protocols/PPTP/nmap/pptp-ports.txt
-	nmap --script pptp-version -p 1723 $IP -oN Netauto/$IP/Protocols/PPTP/nmap/pptp-version.txt
+	nmap –Pn -sSV -p1723 $IP -oN Netauto/$IP/Protocols/PPTP/nmap/ports.nmap
+	nmap --script pptp-version -p 1723 $IP -oN Netauto/$IP/Protocols/PPTP/nmap/version.nmap
+
+	echo " "
 }
 
 mqtt_scan() {
+	echo -e "${GREY}------------------------------------ MQTT -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/MQTT/
 	mkdir -p Netauto/$IP/Protocols/MQTT/nmap
-	nmap --script mqtt-subscribe -p 1883 $IP -oN Netauto/$IP/Protocols/MQTT/nmap/mqtt-subscribe.txt
+	nmap --script mqtt-subscribe -p 1883 $IP -oN Netauto/$IP/Protocols/MQTT/nmap/mqtt-subscribe.nmap
+
+	echo " "
 }
 
 nfs_scan() {
+	echo -e "${BLUE}------------------------------------ NFS -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/NFS/
 	mkdir -p Netauto/$IP/Protocols/NFS/nmap
-	nmap -sC -p2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-sc.txt
-	nmap --script nfs-ls -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
-	nmap --script nfs-showmount -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
-	nmap --script nfs-statfs -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
-	nmap --script=nfs-ls,nfs-statfs,nfs-showmount -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
-	sudo nmap -Pn -n --open -p111 --script=nfs-ls,nfs-showmount,nfs-statfs,rpcinfo $IP/24 -oN Netauto/$IP/Protocols/NFS/nmap/nfs-ls.txt
-	nmap -Pn -n -T4 -sV --script=rpcinfo -p111 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-rpcinfo-nmap-script.txt
+	nmap -sC -p2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-sc.nmap
+	nmap --script nfs-ls -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/list.nmap
+	nmap --script nfs-showmount -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/showmount.nmap
+	nmap --script nfs-statfs -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/statfs.nmap
+	nmap --script=nfs-ls,nfs-statfs,nfs-showmount -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/script-scan.nmap
+	sudo nmap -Pn -n --open -p111 --script=nfs-ls,nfs-showmount,nfs-statfs,rpcinfo $IP/24 -oN Netauto/$IP/Protocols/NFS/nmap/extended-script-scan.nmap
+	nmap -Pn -n -T4 -sV --script=rpcinfo -p111 $IP -oN Netauto/$IP/Protocols/NFS/nmap/rpcinfo.nmap
 
 	mkdir -p Netauto/$IP/Protocols/NFS/showmount
 	showmount -e $IP | tee Netauto/$IP/Protocols/NFS/showmount/nfs-showmount.txt
 
 	mkdir -p Netauto/$IP/Protocols/NFS/rpcinfo
 	rpcinfo -p $IP | tee Netauto/$IP/Protocols/NFS/showmount/rpcinfo/nfs-rpcinfo.txt
+
+	echo " "
 }
 
 compaq_scan() {
+	echo -e "${BLUE}------------------------------------ Compaq -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/compaq/
 	mkdir -p Netauto/$IP/Protocols/compaq/nmap/
-	nmap -p- $IP -oN Netauto/$IP/Protocols/compaq/nmap/compaq-p.txt
-	nmap -Pn $IP -p- -oN Netauto/$IP/Protocols/compaq/nmap/compaq-pn.txt
-        nmap -n -v -sU -p- -T5 $IP -oN Netauto/$IP/Protocols/compaq/nmap/compaq-a.txt
-        nmap -n -v -sU $IP -oN Netauto/$IP/Protocols/compaq/nmap/compaq-udp-scan.txt
-        nmap -n -v -sT -p- -T5 $IP -oN Netauto/$IP/Protocols/compaq/nmap/compaq-tcp.txt
+	nmap -p- $IP -oN Netauto/$IP/Protocols/compaq/nmap/port.nmap
+	nmap -Pn $IP -p- -oN Netauto/$IP/Protocols/compaq/nmap/open-port.nmap
+        nmap -n -v -sU -p- -T5 $IP -oN Netauto/$IP/Protocols/compaq/nmap/udp-scan.nmap
+        nmap -n -v -sU $IP -oN Netauto/$IP/Protocols/compaq/nmap/udp.nmap
+        nmap -n -v -sT -p- -T5 $IP -oN Netauto/$IP/Protocols/compaq/nmap/tcp-scan.nmap
+
+	echo " "
 }
 
 docker_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ Docker -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Docker/
 	mkdir -p Netauto/$IP/Protocols/Docker/nmap
-	map --script docker-version -p 2375,2376 $IP -oN Netauto/$IP/Protocols/Docker/nmap/docker-version.txt
-	nmap -sV --script "docker-* and not brute" -p 2375,2376 $IP -oN Netauto/$IP/Protocols/Docker/nmap/docker-script.txt
+	map --script docker-version -p 2375,2376 $IP -oN Netauto/$IP/Protocols/Docker/nmap/version.nmap
+	nmap -sV --script "docker-* and not brute" -p 2375,2376 $IP -oN Netauto/$IP/Protocols/Docker/nmap/all.nmap
+
+	echo " "
 }
 
 squid_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ Squid -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Squid/
 	curl --proxy http://$IP:3128 http://$IP | tee Netauto/$IP/Protocols/Squid/squid-curl-proxy.txt
 
@@ -754,88 +898,116 @@ squid_scan() {
 }
 
 iscsi_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ Iscsi -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/ISCSI/
 	mkdir -p Netauto/$IP/Protocols/ISCSI/nmap
-	nmap -sV --script=iscsi-info -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/iscsi-info.txt
-	nmap --script "iscsi-* and not brute" -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/iscsi-all.txt
+	nmap -sV --script=iscsi-info -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/info.nmap
+	nmap --script "iscsi-* and not brute" -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/all.nmap
+
+	echo " "
 }
 
 rdp_scan() {
+	echo -e "${GRAY}------------------------------------ RDP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/RDP/
 	mkdir -p Netauto/$IP/Protocols/RDP/nmap
-	nmap --script rdp-enum-encryption -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-enum-encryption.txt
-	nmap --script rdp-ntlm-info -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-ntlm-info.txt
-	nmap --script rdp-vuln-ms12-020 -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-vuln-ms12-020.txt
-	nmap --script "rdp* and not brute" -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-all.txt
-	nmap --script "rdp-enum-encryption or rdp-vuln-ms12-020 or rdp-ntlm-info" -p 3389 -T4 $IP -oN Netauto/$IP/Protocols/RDP/nmap/rdp-aggressive-scan.txt
-	sudo nmap -Pn -n --open -p3389 --script=rdp-vuln-ms12-020,rdp-enum-encryption $IP/24 -oN Netauto/$IP/Protocols/RDP/nmap/rdp-ip-scan.txt
+	nmap --script rdp-enum-encryption -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/enum-encryption.nmap
+	nmap --script rdp-ntlm-info -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/ntlm-info.nmap
+	nmap --script rdp-vuln-ms12-020 -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/vuln-ms12-020.nmap
+	nmap --script "rdp* and not brute" -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/all.nmap
+	nmap --script "rdp-enum-encryption or rdp-vuln-ms12-020 or rdp-ntlm-info" -p 3389 -T4 $IP -oN Netauto/$IP/Protocols/RDP/nmap/aggressive-scan.nmap
+	sudo nmap -Pn -n --open -p3389 --script=rdp-vuln-ms12-020,rdp-enum-encryption $IP/24 -oN Netauto/$IP/Protocols/RDP/nmap/port-scan.nmap
+
+	echo " "
 }
 
 saprouter_scan() {
+	echo -e "${GRAY}------------------------------------ SAPRouter -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/SAPRouter/
 	mkdir -p Netauto/$IP/Protocols/SAPRouter/nmap
-	nmap -sC -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/saprouter-sc.txt
-	nmap -sV -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/saprouter-sv.txt
-	nmap -sC -sV -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/saprouter-info.txt
+	nmap -sC -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/script.nmap
+	nmap -sV -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/version.nmap
+	nmap -sC -sV -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/script-and-version.nmap
+
+	echo " "
 }
 
 distcc_scan() {
+	echo -e "${GREEN}------------------------------------ Distcc -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/distcc/
 	mkdir -p Netauto/$IP/Protocols/distcc/nmap
-	nmap -p 3632 $IP --script distcc-cve2004-2687 --script-args="distcc-exec.cmd='id'" -oN Netauto/$IP/Protocols/distcc/nmap/distcc-nmap.txt
+	nmap -p 3632 $IP --script distcc-cve2004-2687 --script-args="distcc-exec.cmd='id'" -oN Netauto/$IP/Protocols/distcc/nmap/cve2004-2687.nmap
+
+	echo " "
 }
 
 subversion_scan() {
+	echo -e "${WHITE}------------------------------------ Subversion -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/subversion/
 	mkdir -p Netauto/$IP/Protocols/subversion/nc
 	nc $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/subversion-nc.txt
 	nc -vn $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/subversion-vn.txt
 
 	mkdir -p Netauto/$IP/Protocols/subversion/svn
-	svn ls svn://$IP | tee Netauto/$IP/Protocols/subversion/svn/subversion-ls.txt
-	svn log svn://$IP | tee Netauto/$IP/Protocols/subversion/svn/subversion-history.txt
+	svn ls svn://$IP | tee Netauto/$IP/Protocols/subversion/svn/list.txt
+	svn log svn://$IP | tee Netauto/$IP/Protocols/subversion/svn/log.txt
+
+	echo " "
 }
 
 ws-discovery_scan() {
+	echo -e "${BLUE}------------------------------------ WS Discovery -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/ws-discovery/
 	mkdir -p Netauto/$IP/Protocols/ws-discovery/nmap
-	nmap -sC -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/ws-scan.txt
-	nmap -sV -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/ws-version.txt
-	nmap -sC -sV -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/ws-all.txt
+	nmap -sC -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/script.nmap
+	nmap -sV -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/version.nmap
+	nmap -sC -sV -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/script-and-version.nmap
+
+	echo " "
 }
 
 epmd_scan() {
+	echo -e "${BLUE}------------------------------------ EPMD -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/epmd/
 	mkdir -p Netauto/$IP/Protocols/epmd/nc
 	nc $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/epmd-nc.txt
 	nc -vn $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/epmd-vn.txt
 
 	mkdir -p Netauto/$IP/Protocols/epmd/nmap
-	nmap -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/epmd-info.txt
-	nmap -sV -Pn -n -T4 -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/epmd-info-aggressive.txt
+	nmap -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/info.nmap
+	nmap -sV -Pn -n -T4 -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/aggressive-scan.nmap
+
+	echo " "
 }
 
 cisco_smart_install_scan() {
+	echo -e "${BLUE}------------------------------- CISCO Smart Install -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/CSIS
 	sudo python3 /opt/tools/CISCO_Smart_Install/SIETpy3/siet.py -g -i $IP | tee Netauto/$IP/Protocols/CSIS/siet.txt
+
+	echo " "
 }
 
 opc_scan() {
+	echo -e "${GRAY}------------------------------------ OPC -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/OPC
 	mkdir -p Netauto/$IP/nmap/Protocols/OPC/nmap
-	nmap -sC -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/opc-scan.txt
-	nmap -sV -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/opc-version.txt
-	nmap -sC -sV -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/opc-all.txt
+	nmap -sC -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/script.nmap
+	nmap -sV -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/version.nmap
+	nmap -sC -sV -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/info.nmap
 
 	opalopc -vv opc.tcp://$IP:4840 | tee Netauto/$IP/Protocols/OPC/opc-opalopc.txt
+
+	echo " "
 }
 
 docker_registry_scan() {
+	echo -e "${BLUE}------------------------------ Docker Registry ----------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/docker_registry/
 	mkdir -p Netauto/$IP/Protocols/docker_registry/nmap
-	nmap -sC -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/dr-scan.txt
-	nmap -sV -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/dr-version.txt
-	nmap -sC -sV -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/dr-all.txt
+	nmap -sC -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/script.nmap
+	nmap -sV -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/version.nmap
+	nmap -sC -sV -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/info.nmap
 
 	mkdir -p Netauto/$IP/nmap/Protocols/docker_registry/curl
 	curl -s http://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/curl/dr-curl-http-catalog.txt
@@ -847,141 +1019,192 @@ docker_registry_scan() {
 	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --list | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/list.txt
 	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --dump linux | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/dump.txt
 	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --dump_all | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/dump_all.txt
+
+	echo " "
 }
 
 mdns_scan() {
+	echo -e "${BLUE}------------------------------------ OPC -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/mDNS/
 	mkdir -p Netauto/$IP/Protocols/mDNS/nmap
-	nmap --script dns-service-discovery -p 5353 $IP -oN Netauto/$IP/Protocols/mDNS/nmap/mdns-service-discovery.txt
-	nmap -sU --script dns-service-discovery -p 5353 $IP -oN Netauto/$IP/Protocols/mDNS/nmap/mdns-service-discovery-udp.txt
+	nmap --script dns-service-discovery -p 5353 $IP -oN Netauto/$IP/Protocols/mDNS/nmap/service-discovery.nmap
+	nmap -sU --script dns-service-discovery -p 5353 $IP -oN Netauto/$IP/Protocols/mDNS/nmap/udp-service-discovery.nmap
+
+	echo " "
 }
 
 redshift_scan() {
+	echo -e "${RED}------------------------------------ RedShift -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/redshift/
 	mkdir -p Netauto/$IP/Protocols/redshift/nmap
-	nmap -sC -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/redshift-scan.txt
-	nmap -sV -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/redshift-version.txt
-	nmap -sC -sV -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/redshift-all.txt
+	nmap -sC -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/script.nmap
+	nmap -sV -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/version.nmap
+	nmap -sC -sV -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/info.nmap
+
+	echo " "
 }
 
 android_debug_bridge_scan() {
+	echo -e "${GREEN}--------------------------- Android Debug Bridge --------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/ADB
 	mkdir -p Netauto/$IP/Protocols/ADB/nmap
-	nmap -sC -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/adb-scan.txt
-	nmap -sV -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/adb-version.txt
-	nmap -sC -sV -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/adb-all.txt
+	nmap -sC -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/script.nmap
+	nmap -sV -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/version.nmap
+	nmap -sC -sV -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/info.nmap
+
+	echo " "
 }
 
 kibana_scan() {
+	echo -e "${BLUE}------------------------------------ Kibana -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Kibana/
 	mkdir -p Netauto/$IP/Protocols/Kibana/nmap
-	nmap -sC -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/kibana-scan.txt
-	nmap -sV -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/kibana-version.txt
-	nmap -sC -sV -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/kibana-all.txt
+	nmap -sC -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/script.nmap
+	nmap -sV -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/version.nmap
+	nmap -sC -sV -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/info.nmap
+
+	echo " "
 }
 
 amqp_scan() {
+	echo -e "${BLUE}------------------------------------ AMQP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/AMQP/
 	mkdir -p Netauto/$IP/Protocols/AMQP/nmap
-	nmap -p 5672 --script amqp-info $IP -oN Netauto/$IP/Protocols/AMQP/nmap/amqp-info.txt
-	nmap -sV -Pn -n -T4 -p 5672 --script amqp-info $IP -oN Netauto/$IP/Protocols/AMQP/nmap/amqp-info-extend.txt
+	nmap -p 5672 --script amqp-info $IP -oN Netauto/$IP/Protocols/AMQP/nmap/info.nmap
+	nmap -sV -Pn -n -T4 -p 5672 --script amqp-info $IP -oN Netauto/$IP/Protocols/AMQP/nmap/extended-info.nmap
+
+	echo " "
 }
 
 vnc_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ VNC -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/VNC
 	mkdir -p Netauto/$IP/Protocols/VNC/nmap
-	nmap -p 5900 --script vnc-title $IP -oN Netauto/$IP/Protocols/VNC/nmap/vnc-title.txt
-	nmap -p 5900 --script vnc-info $IP -oN Netauto/$IP/Protocols/VNC/nmap/vnc-info.txt
-	nmap --script realvnc-auth-bypass -p 5900 $IP -oN Netauto/$IP/Protocols/VNC/nmap/realvnc-auth-bypass.txt
-	nmap -sV --script vnc-info,realvnc-auth-bypass,vnc-title -p 5900 $IP -oN Netauto/$IP/Protocols/VNC/nmap/vnc-all.txt
-	sudo nmap -Pn -n --open -p5900 --script=realvnc-auth-bypass,vnc-info $IP/24 -oN Netauto/$IP/Protocols/VNC/vnc-all-extended.txt
-	nmap -p 5900 --script "vnc-* and not brute" $IP -oN Netauto/$IP/Protocols/VNC/nmap/vnc-info.txt
+	nmap -p 5900 --script vnc-title $IP -oN Netauto/$IP/Protocols/VNC/nmap/title.nmap
+	nmap -p 5900 --script vnc-info $IP -oN Netauto/$IP/Protocols/VNC/nmap/info.nmap
+	nmap --script realvnc-auth-bypass -p 5900 $IP -oN Netauto/$IP/Protocols/VNC/nmap/auth-bypass.nmap
+	nmap -sV --script vnc-info,realvnc-auth-bypass,vnc-title -p 5900 $IP -oN Netauto/$IP/Protocols/VNC/nmap/script-scan.nmap
+	sudo nmap -Pn -n --open -p5900 --script=realvnc-auth-bypass,vnc-info $IP/24 -oN Netauto/$IP/Protocols/VNC/extended-script-scan.nmap
+	nmap -p 5900 --script "vnc-* and not brute" $IP -oN Netauto/$IP/Protocols/VNC/nmap/no-brute.nmap
+
+	echo " "
 }
 
 winrm_scan() {
+	echo -e "${GREEN}------------------------------------ WinRM -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/WinRM/
 	mkdir -p Netauto/$IP/Protocols/WinRM/nmap
-	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/winrm-scan.txt
-	nmap -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/winrm-version.txt
-	nmap -sC -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/winrm-all.txt
+	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/script.nmap
+	nmap -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/version.nmap
+	nmap -sC -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/info.nmap
+
+	echo " "
 }
 
 omi_scan() {
+	echo -e "${GREEN}------------------------------------ OMI -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/OMI/
 	mkdir -p Netauto/$IP/Protocols/OMI/nmap
-	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/omi-scan.txt
-	nmap -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/omi-version.txt
-	nmap -sC -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/omi-all.txt
+	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/script.nmap
+	nmap -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/version.nmap
+	nmap -sC -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/info.nmap
+
+	echo " "
 }
 
 x11_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ X11 -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/X11/
 	mkdir -p Netauto/$IP/Protocols/X11/nmap
-	nmap --script x11-access -p 6000 $IP -oN Netauto/$IP/Protocols/X11/nmap/x11-access.txt
-	nmap -sV --script x11-access -p 6000 $IP -oN Netauto/$IP/Protocols/X11/nmap/x11-access-version.txt
-	sudo nmap -Pn -n --open -p6000-6005 --script=x11-access $IP/24 -oN Netauto/$IP/Protocols/X11/nmap/x11-extended.txt
+	nmap --script x11-access -p 6000 $IP -oN Netauto/$IP/Protocols/X11/nmap/access.nmap
+	nmap -sV --script x11-access -p 6000 $IP -oN Netauto/$IP/Protocols/X11/nmap/access-version.nmap
+	sudo nmap -Pn -n --open -p6000-6005 --script=x11-access $IP/24 -oN Netauto/$IP/Protocols/X11/nmap/extended-script.nmap
+
+	echo " "
 }
 
 ajp_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ AJP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/AJP/
 	mkdir -p Netauto/$IP/Protocols/AJP/nmap
-	nmap --script ajp-auth -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-auth.txt
-	nmap --script ajp-auth --script-args ajp-auth.path=/login -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-auth-login.txt
-	nmap --script ajp-headers -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-headers.txt
-	nmap --script ajp-methods -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-methods.txt
-	nmap --script ajp-request -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-request.txt
-	nmap -sV --script ajp-auth,ajp-headers,ajp-methods,ajp-request -n -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/ajp-all.txt
+	nmap --script ajp-auth -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/auth.nmap
+	nmap --script ajp-auth --script-args ajp-auth.path=/login -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/auth-login.nmap
+	nmap --script ajp-headers -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/headers.nmap
+	nmap --script ajp-methods -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/methods.nmap
+	nmap --script ajp-request -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/request.nmap
+	nmap -sV --script ajp-auth,ajp-headers,ajp-methods,ajp-request -n -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/all.nmap
+
+	echo " "
 }
 
 splunk_scan() {
+	echo -e "${BLUE}------------------------------------ AJP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Splunk/
 	mkdir -p Netauto/$IP/Protocols/Splunk/nmap
-	nmap -sC -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/splunk-scan.txt
-	nmap -sV -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/splunk-version.txt
-	nmap -sC -sV -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/splunk-all.txt
+	nmap -sC -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/script.nmap
+	nmap -sV -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/version.nmap
+	nmap -sC -sV -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/info.nmap
+
+	echo " "
 }
 
 bitcoin_scan() {
+	echo -e "${YELLOW}------------------------------------ Bitcoin -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Bitcoin/
 	mkdir -p Netauto/$IP/Protocols/Bitcoin/nmap
-	sudo nmap -p 8333 --script bitcoin-info $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-info.txt
-	sudo nmap -p 8333 --script bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-getaddr.txt
-	sudo nmap -p 8333 --script bitcoin-info --script bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-info.txt
-	sudo nmap -p 8333,18333,38333,18444 --script bitcoin-info,bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-all-info.txt
-	sudo nmap -sV -p 8333,18333,38333,18444 --script bitcoin-info,bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/bitcoin-all-extended.txt
+	sudo nmap -p 8333 --script bitcoin-info $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/info.nmap
+	sudo nmap -p 8333 --script bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/getaddr.nmap
+	sudo nmap -p 8333 --script bitcoin-info --script bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/info-getaddr.nmap
+	sudo nmap -p 8333,18333,38333,18444 --script bitcoin-info,bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/script.nmap
+	sudo nmap -sV -p 8333,18333,38333,18444 --script bitcoin-info,bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/ext-script.nmap
+
+	echo " "
 }
 
 fastcgi_scan() {
+	echo -e "${BLUE}------------------------------------ FastCGI -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/FastCGI/
 	mkdir -p Netauto/$IP/Protocols/FastCGI/nmap
-	nmap -sC -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/fastcgi-scan.txt
-	nmap -sV -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/fastcgi-version.txt
-	nmap -sC -sV -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/fastcgi-all.txt
+	nmap -sC -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/script.nmap
+	nmap -sV -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/version.nmap
+	nmap -sC -sV -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/info.nmap
+
+	echo " "
 }
 
 hsqldb_scan() {
+	echo -e "${YELLOW}------------------------------------ HSQLDB -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/HSQLDB/
 	mkdir -p Netauto/$IP/Protocols/HSQLDB/nmap
-	nmap -sC -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/hsqldb-scan.txt
-	nmap -sV -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/hsqldb-version.txt
-	nmap -sC -sV -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/hsqldb-all.txt
+	nmap -sC -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/script.nmap
+	nmap -sV -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/version.nmap
+	nmap -sC -sV -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/info.nmap
+
+	echo " "
 }
 
 cassandra_scan() {
+	echo -e "${WHITE}------------------------------------ Cassandra -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Cassandra/
 	mkdir -p Netauto/$IP/Protocols/Cassandra/nmap
-	nmap --script cassandra-info -p 9042,9160 $IP -oN Netauto/$IP/Protocols/Cassandra/nmap/cassandra-info.txt
-	nmap -sV --script cassandra-info -p 9042,9160 $IP -oN Netauto/$IP/Protocols/Cassandra/nmap/cassandra-info-version.txt
+	nmap --script cassandra-info -p 9042,9160 $IP -oN Netauto/$IP/Protocols/Cassandra/nmap/info.nmap
+	nmap -sV --script cassandra-info -p 9042,9160 $IP -oN Netauto/$IP/Protocols/Cassandra/nmap/info-version.nmap
+
+	echo " "
 }
 
 raw_printing_scan() {
+	echo -e "${WHITE}------------------------------------ Raw Printing -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/raw_printing/
 	mkdir -p Netauto/$IP/Protocols/raw_printing/nmap
-	nmap --script pjl-ready-message -p 9100 $IP -oN Netauto/$IP/Protocols/raw_printing/nmap/pjl-ready-message.txt
-	nmap -sV --script pjl-ready-message -p 9100 $IP -oN Netauto/$IP/Protocols/raw_printing/nmap/pjl-ready-message-version.txt
+	nmap --script pjl-ready-message -p 9100 $IP -oN Netauto/$IP/Protocols/raw_printing/nmap/pjl-ready-message.nmap
+	nmap -sV --script pjl-ready-message -p 9100 $IP -oN Netauto/$IP/Protocols/raw_printing/nmap/version.nmap
+
+	echo " "
 }
 
 elasticsearch_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ Elasticsearch -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl
 	curl -X GET "$IP:9200/_xpack/security/user" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-security-user.txt
@@ -1039,17 +1262,23 @@ elasticsearch_scan() {
 	curl -X GET "$IP:9200/_security/role_mapping" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-role_mapping.txt
 	curl -X GET "$IP:9200/_security/role" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-role.txt
 	curl -X GET "$IP:9200/_security/api_key" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-api_key.txt
+
+	echo " "
 }
 
 ndmp_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ NDMP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/NDMP/
 	mkdir -p Netauto/$IP/Protocols/NDMP/nmap
-	nmap --script ndmp-version -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/ndmp-version.txt
-	nmap --script ndmp-fs-info -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/ndmp-fs-info.txt
-	nmap -n -sV --script "ndmp-fs-info or ndmp-version" -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/ndmp-all.txt
+	nmap --script ndmp-version -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/version.nmap
+	nmap --script ndmp-fs-info -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/fs-info.nmap
+	nmap -n -sV --script "ndmp-fs-info or ndmp-version" -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/all.nmap
+
+	echo " "
 }
 
 memcached_scan() {
+	echo -e "${GRAY}------------------------------------ Memcached -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Memcached/
 	mkdir -p Netauto/$IP/Protocols/Memcached/nc
 	nc $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/memcached-nc.txt
@@ -1063,80 +1292,101 @@ memcached_scan() {
 	memcdump --servers=$IP | tee Netauto/$IP/Protocols/Memcached/memcdump/all-items.txt
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/nmap
-	nmap -n -sV --script memcached-info -p 11211 $IP | tee Netauto/$IP/Protocols/Memcached/nmap/memcached-info.txt
+	nmap -n -sV --script memcached-info -p 11211 $IP | tee Netauto/$IP/Protocols/Memcached/nmap/info.nmap
+
+	echo " "
 }
 
 rabbitmq_scan() {
+	echo -e "${YELLOW}------------------------------------ RabbitMQ -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/RabbitMQ/
 	mkdir -p Netauto/$IP/Protocols/RabbitMQ/nmap
-	nmap -sC -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/rabbitmq-scan.txt
-	nmap -sV -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/rabbitmq-version.txt
-	nmap -sC -sV -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/rabbitmq-all.txt
+	nmap -sC -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/script.nmap
+	nmap -sV -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/version.nmap
+	nmap -sC -sV -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/info.nmap
+
+	echo " "
 }
 
 glusterfs_scan() {
+	echo -e "${GREEN}------------------------------------ GlusterFS -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/GlusterFS/
 	mkdir -p Netauto/$IP/Protocols/GlusterFS/nmap
-	nmap -sC -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/glusterfs-scan.txt
-	nmap -sV -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/glusterfs-version.txt
-	nmap -sC -sV -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/glusterfs-all.txt
+	nmap -sC -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/script.nmap
+	nmap -sV -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/version.nmap
+	nmap -sC -sV -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/info.nmap
 
 	mkdir -p Netauto/$IP/Protocols/GlusterFS/gluster
 	sudo gluster --remote-host=$IP volume list | tee Netauto/$IP/Protocols/GlusterFS/gluster/volume-list.txt
+
+	echo " "
 }
 
 tiller_scan() {
+	echo -e "${YELLOW}------------------------------------ Tiller -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Tiller/
 	mkdir -p Netauto/$IP/Protocols/Tiller/nmap
-	nmap -sC -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/tiller-scan.txt
-	nmap -sV -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/tiller-version.txt
-	nmap -sC -sV -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/tiller-all.txt
-	sudo nmap -sS -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/tiller-stealth-scan.txt
+	nmap -sC -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/script.nmap
+	nmap -sV -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/version.nmap
+	nmap -sC -sV -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/info.nmap
+	sudo nmap -sS -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/stealth-scan.nmap
+
+	echo " "
 }
 
 ethernetip_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ Tiller -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/EthernetIP/
 	mkdir -p Netauto/$IP/Protocols/EthernetIP/nmap
-	nmap -sC -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-scan.txt
-	nmap -sV -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-version.txt
-	nmap -sC -sV -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-all.txt
-	nmap --script enip-info -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-info.txt
-	nmap -n -sV --script enip-info -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/enip-info-extended.txt
+	nmap -sC -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/script.nmap
+	nmap -sV -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/version.nmap
+	nmap -sC -sV -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/info.nmap
+	nmap --script enip-info -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/info-script.nmap
+	nmap -n -sV --script enip-info -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/ext-info-script.nmap
+
+	echo " "
 }
 
 bacnet_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ BACNet -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/BACNet/
 	mkdir -p Netauto/$IP/Protocols/BACNet/nmap
-	nmap -sC -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/bacnet-scan.txt
-	nmap -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/bacnet-version.txt
-	nmap -sC -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/bacnet-all.txt
-	nmap --script bacnet-info --script-args full=yes -sU -n -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/bacnet-full-scan.txt
+	nmap -sC -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/script.nmap
+	nmap -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/version.nmap
+	nmap -sC -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/info.nmap
+	nmap --script bacnet-info --script-args full=yes -sU -n -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/ext-info.nmap
+
+	echo " "
 }
 
 hadoop_scan() {
+	echo -e "${LIGHT_BLUE}------------------------------------ Hadoop -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/Hadoop/
 	mkdir -p Netauto/$IP/Protocols/Hadoop/nmap
-	nmap --script hadoop-jobtracker-info -p 50030 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-jobtracker-info.txt
-	nmap --script hadoop-tasktracker-info -p 50060 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-tasktracker-info.txt
-	nmap --script hadoop-namenode-info -p 50070 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-namenode-info.txt
-	nmap --script hadoop-datanode-info -p 50075 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-datanode-info.txt
-	nmap --script hadoop-secondary-namenode-info -p 50090 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-secondary-namenode-info.txt
-	nmap --script "hadoop-* and not brute" -p 50030,50060,50070,50075,50090 -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-secondary-namenode-info.txt
-	nmap -sV --script "hadoop-* and not brute" -p 50030,50060,50070,50075,50090 -oN Netauto/$IP/Protocols/Hadoop/nmap/hadoop-all.txt
+	nmap --script hadoop-jobtracker-info -p 50030 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/jobtracker-info.nmap
+	nmap --script hadoop-tasktracker-info -p 50060 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/tasktracker-info.nmap
+	nmap --script hadoop-namenode-info -p 50070 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/namenode-info.nmap
+	nmap --script hadoop-datanode-info -p 50075 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/datanode-info.nmap
+	nmap --script hadoop-secondary-namenode-info -p 50090 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/secondary-namenode-info.nmap
+	nmap --script "hadoop-* and not brute" -p 50030,50060,50070,50075,50090 -oN Netauto/$IP/Protocols/Hadoop/nmap/all.nmap
+	nmap -sV --script "hadoop-* and not brute" -p 50030,50060,50070,50075,50090 -oN Netauto/$IP/Protocols/Hadoop/nmap/all-ext.nmap
+
+	echo " "
 }
 
 http_scan() {
+	echo -e "${WHITE}------------------------------------ HTTP -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/HTTP/
 	mkdir -p Netauto/$IP/Protocols/HTTP/nmap
-	nmap --script http-auth --script-args http-auth.path=/login -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-auth.txt
-	nmap --script http-devframework -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-devframework.txt
-	nmap --script http-enum -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-enum.txt
-	nmap --script http-headers -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-headers.txt
-	nmap --script http-methods -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-methods.txt
-	nmap --script http-waf-detect -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-waf-detect.txt
-	nmap --script http-wordpress-enum --script-args type="plugins",search-limit=1500 -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-wordpress-enum.txt
-	nmap --script http-wordpress-users -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-wordpress-users.txt
-	nmap --script "http-wordpress-* and not brute" -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/http-wordpress-all.txt
+	nmap --script http-auth --script-args http-auth.path=/login -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/auth-login.nmap
+	nmap --script http-devframework -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/devframework.nmap
+	nmap --script http-enum -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/enum.nmap
+	nmap --script http-headers -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/headers.nmap
+	nmap --script http-methods -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/methods.nmap
+	nmap --script http-waf-detect -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/waf-detect.nmap
+	nmap --script http-wordpress-enum --script-args type="plugins",search-limit=1500 -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/wordpress-enum.nmap
+	nmap --script http-wordpress-users -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/wordpress-users.nmap
+	nmap --script "http-wordpress-* and not brute" -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/wordpress-all.nmap
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners
 
@@ -1144,10 +1394,10 @@ http_scan() {
 	nikto -h http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto/http-nikto.txt
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb
-	whatweb http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/http-whatweb.txt
-	whatweb -a 1 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/http-whatweb-stealthy.txt
-	whatweb -a 3 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/http-whatweb-aggressive.txt
-	whatweb -a 4 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/http-whatweb-extreme.txt
+	whatweb http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/default.txt
+	whatweb -a 1 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/stealthy.txt
+	whatweb -a 3 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/aggressive.txt
+	whatweb -a 4 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/extreme.txt
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech
 	webtech -u $IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech/http-webtech.txt
@@ -1167,20 +1417,23 @@ http_scan() {
 	wpscan --force update -e --url $IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-wpscan.txt
 	joomscan --ec -u $IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-joomscan.txt
 	python3 /opt/tools/HTTP/CMSeeK/cmseek.py -u http://$IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-cmseek.txt
+
+	echo " "
 }
 
 https_scan() {
+	echo -e "${WHITE}------------------------------------ HTTPS -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Protocols/HTTPS/
 	mkdir -p Netauto/$IP/Protocols/HTTPS/nmap
-	nmap --script http-auth --script-args http-auth.path=/login -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-auth.txt
-	nmap --script http-devframework -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-devframework.txt
-	nmap --script http-enum -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-enum.txt
-	nmap --script http-headers -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-headers.txt
-	nmap --script http-methods -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-methods.txt
-	nmap --script http-waf-detect -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-waf-detect.txt
-	nmap --script http-wordpress-enum --script-args type="plugins",search-limit=1500 -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-wordpress-enum.txt
-	nmap --script http-wordpress-users -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-wordpress-users.txt
-	nmap --script "http-wordpress-* and not brute" -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/https-wordpress-all.txt
+	nmap --script http-auth --script-args http-auth.path=/login -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/auth.nmap
+	nmap --script http-devframework -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/devframework.nmap
+	nmap --script http-enum -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/enum.nmap
+	nmap --script http-headers -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/headers.nmap
+	nmap --script http-methods -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/methods.nmap
+	nmap --script http-waf-detect -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/waf-detect.nmap
+	nmap --script http-wordpress-enum --script-args type="plugins",search-limit=1500 -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/wordpress-enum.nmap
+	nmap --script http-wordpress-users -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/wordpress-users.nmap
+	nmap --script "http-wordpress-* and not brute" -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/wordpress-all.nmap
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners
 
@@ -1188,10 +1441,10 @@ https_scan() {
 	nikto -h https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto/https-nikto.txt
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb
-	whatweb https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/https-whatweb.txt
-	whatweb -a 1 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/https-whatweb-stealthy.txt
-	whatweb -a 3 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/https-whatweb-aggression.txt
-	whatweb -a 4 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/https-whatweb-aggression.txt
+	whatweb https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/default.txt
+	whatweb -a 1 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/stealthy.txt
+	whatweb -a 3 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/aggression.txt
+	whatweb -a 4 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/extreme.txt
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech
 	webtech -u $IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech/https-webtech.txt
@@ -1211,92 +1464,116 @@ https_scan() {
 	wpscan --force update -e --url $IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-wpscan.txt
 	joomscan --ec -u $IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-joomscan.txt
 	python3 /opt/tools/HTTP/CMSeek/cmseek.py -u https://$IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-cmseek.txt
+
+	echo " "
 }
 
 ###############################################################
 # Database Scans                           		      #
 ###############################################################
 mysql_scan() {
+	echo -e "${YELLOW}------------------------------------ MySQL -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Databases/MySQL
 	mkdir -p Netauto/$IP/Databases/MySQL/nmap
-	nmap --script mysql-info -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_info.txt
-	nmap --script mysql-audit -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_audit.txt
-	nmap --script mysql-query -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_query.txt
-	nmap --script mysql-enum -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_enum.txt
-	nmap --script mysql-dump-hashes -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_dump_hashes.txt
-	nmap --script mysql-empty-password -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_empty_password.txt
-	nmap --script mysql-variables -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_variables.txt
-	nmap --script mysql-vuln-cve2012-2122 -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_vuln.txt
-	nmap --script mysql-databases -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_databases.txt
-	nmap --script mysql-users -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_users.txt
-	nmap --script "mysql-* and not brute" -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_all.txt	
-	nmap -sV -p 3306 --script mysql-audit,mysql-databases,mysql-dump-hashes,mysql-empty-password,mysql-enum,mysql-info,mysql-query,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 $IP -oN Netauto/$IP/Databases/MySQL/nmap/mysql_all_extended.txt	
+	nmap --script mysql-info -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/info.nmap
+	nmap --script mysql-audit -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/audit.nmap
+	nmap --script mysql-query -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/query.nmap
+	nmap --script mysql-enum -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/enum.nmap
+	nmap --script mysql-dump-hashes -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/dump_hashes.nmap
+	nmap --script mysql-empty-password -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/empty_password.nmap
+	nmap --script mysql-variables -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/variables.nmap
+	nmap --script mysql-vuln-cve2012-2122 -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/vuln.nmap
+	nmap --script mysql-databases -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/databases.nmap
+	nmap --script mysql-users -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/users.nmap
+	nmap --script "mysql-* and not brute" -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/all.nmap
+	nmap -sV -p 3306 --script mysql-audit,mysql-databases,mysql-dump-hashes,mysql-empty-password,mysql-enum,mysql-info,mysql-query,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 $IP -oN Netauto/$IP/Databases/MySQL/nmap/all-ext.nmap
+
+	echo " "
 }
 
 couchdb_scan() {
+	echo -e "${YELLOW}------------------------------------ CouchDB -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Databases/CouchDB
 	mkdir -p Netauto/$IP/Databases/CouchDB/nmap
-	nmap --script couchdb-databases -p 5984,6384 $IP -oN Netauto/$IP/Databases/CouchDB/nmap/couchdb_databases.txt
-	nmap --script couchdb-stats -p 5984,6384 $IP -oN Netauto/$IP/Databases/CouchDB/nmap/couchdb_stats.txt
+	nmap --script couchdb-databases -p 5984,6384 $IP -oN Netauto/$IP/Databases/CouchDB/nmap/databases.nmap
+	nmap --script couchdb-stats -p 5984,6384 $IP -oN Netauto/$IP/Databases/CouchDB/nmap/stats.nmap
+
+	echo " "
 }
 
 influxdb_scan() {
+	echo -e "${YELLOW}------------------------------------ InfluxDB -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Databases/InfluxDB
 	curl http://$IP:8086/debug/requests | tee Netauto/$IP/Databases/InfluxDB/influxdb_user_enumeration.txt
+
+	echo " "
 }
 
 mongodb_scan() {
+	echo -e "${YELLOW}------------------------------------ MongoDB -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Databases/MongoDB
 	mkdir -p Netauto/$IP/Databases/MongoDB/nmap
-	nmap --script mongodb-info -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/mongodb_info.txt
-	nmap --script mongodb-databases -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/mongodb_databases.txt
-	nmap --script "mongodb-* and not brute" -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/mongodb_all.txt
+	nmap --script mongodb-info -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/info.nmap
+	nmap --script mongodb-databases -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/databases.nmap
+	nmap --script "mongodb-* and not brute" -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/all.nmap
+
+	echo " "
 }
 
 mssql_scan() {
+	echo -e "${YELLOW}------------------------------------ MSSQL -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Databases/MSSQL
 	mkdir -p Netauto/$IP/Databases/MSSQL/nmap
-	nmap --script broadcast-ms-sql-discover -p 1433 $IP  -oN Netauto/$IP/Databases/MSSQL/nmap/broadcast-ms-sql-discover.txt
-	nmap --script ms-sql-info -p 1433 $IP  -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-info.txt
-	nmap --script ms-sql-config -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-config.txt
-	nmap --script ms-sql-dac -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-dac.txt
-	nmap --script ms-sql-dump-hashes -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-dump-hashes.txt
-	nmap --script ms-sql-empty-password -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-empty-password.txt
-	nmap --script ms-sql-hasdbaccess -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-hasdbaccess.txt
-	nmap --script ms-sql-ntlm-info -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-ntlm-info.txt
-	nmap --script ms-sql-query -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-query.txt
-	nmap --script ms-sql-tables -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql-tables.txt
-	nmap --script ms-sql-empty-password,ms-sql-xp-cmdshell -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql_empty_pwd_xp_cmdshell.txt
-	nmap --script "ms-sql-* and not brute" -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql_all.txt
-	nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/mssql_all_extended.txt
+	nmap --script broadcast-ms-sql-discover -p 1433 $IP  -oN Netauto/$IP/Databases/MSSQL/nmap/broadcast-ms-sql-discover.nmap
+	nmap --script ms-sql-info -p 1433 $IP  -oN Netauto/$IP/Databases/MSSQL/nmap/info.nmap
+	nmap --script ms-sql-config -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/config.nmap
+	nmap --script ms-sql-dac -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/dac.nmap
+	nmap --script ms-sql-dump-hashes -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/dump-hashes.nmap
+	nmap --script ms-sql-empty-password -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/empty-password.nmap
+	nmap --script ms-sql-hasdbaccess -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/hasdbaccess.nmap
+	nmap --script ms-sql-ntlm-info -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/ntlm-info.nmap
+	nmap --script ms-sql-query -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/query.nmap
+	nmap --script ms-sql-tables -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/tables.nmap
+	nmap --script ms-sql-empty-password,ms-sql-xp-cmdshell -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/cmdshell.nmap
+	nmap --script "ms-sql-* and not brute" -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/all.nmap
+	nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/all-ext.nmap
+	
+	echo " "
 }
 
 postgresql_scan() {
+	echo -e "${YELLOW}------------------------------------ PostgreSQL -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Databases/PostgreSQL
 	mkdir -p Netauto/$IP/Databases/PostgreSQL/nmap
-	nmap -sC -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/psql_scan.txt
-	nmap -sV -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/psql_version.txt
-	nmap -sC -sV -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/psql_info.txt
+	nmap -sC -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/script.nmap
+	nmap -sV -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/version.nmap
+	nmap -sC -sV -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/info.nmap
+
+	echo " "
 }
 
 redis_scan() {
+	echo -e "${YELLOW}------------------------------------ Redis -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Databases/Redis
 	mkdir -p Netauto/$IP/Databases/Redis/nc
 	nc $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/redis_nc.txt
 	nc -nv $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/redis_nc.txt
 	mkdir -p Netauto/$IP/Databases/Redis/nmap
-	nmap --script redis-info -p 6379 $IP -oN Netauto/$IP/Databases/Redis/nmap/redis_info.txt
-	nmap --script redis-info -sV -p 6379 $IP -oN Netauto/$IP/Databases/Redis/nmap/redis_info_extended.txt
+	nmap --script redis-info -p 6379 $IP -oN Netauto/$IP/Databases/Redis/nmap/info.nmap
+	nmap --script redis-info -sV -p 6379 $IP -oN Netauto/$IP/Databases/Redis/nmap/info-ext.nmap
 	mkdir -p Netauto/$IP/Databases/Redis/redis-cli
 	redis-cli -h $IP | tee Netauto/$IP/Databases/Redis/redis-cli/redis-cli.txt
+
+	echo " "
 }
 
 oracledb_scan() {
+	echo -e "${YELLOW}------------------------------------ OracleDB -------------------------------------${ENDCOLOR}"
 	mkdir -p Netauto/$IP/Databases/OracleDB
 	mkdir -p Netauto/$IP/Databases/OracleDB/nmap
-	nmap --script oracle-tns-version -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/oracledb_tns.txt
-	nmap --script oracle-sid-brute -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/oracledb_sid_brute.txt
-	nmap --script oracle-enum-users -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/oracledb_enum_users.txt
+	nmap --script oracle-tns-version -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/tns-version.nmap
+	nmap --script oracle-sid-brute -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/sid-brute.nmap
+	nmap --script oracle-enum-users -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/enum-users.nmap
 
 	mkdir -p Netauto/$IP/Databases/OracleDB/oscanner
 	oscanner -s $IP -P 1521 | tee Netauto/$IP/Databases/OracleDB/oscanner/oracledb_oscanner.txt
@@ -1306,12 +1583,16 @@ oracledb_scan() {
 	mkdir -p Netauto/$IP/Databases/OracleDB/ODAT
 	odat sidguesser -s $IP | tee Netauto/$IP/Databases/OracleDB/ODAT/oracledb_odat.txt
 	odat-libc2.12-x86_64 passwordguesser -s $IP -d XE --accounts-file accounts/default.txt | tee Netauto/$IP/Databases/OracleDB/ODAT/passwordguesser.txt
+
+	echo " "
 }
 
 ###############################################################
 # Port Detection                                              #
 ###############################################################
 handle_ports() {
+	echo -e "${GRAY}------------------------------------ Full Port Scan -------------------------------------${ENDCOLOR}"
+
 	DEFAULT_DIRECTORY=Netauto/$IP/Protocols/
 
 	local ports=$1
@@ -1448,9 +1729,6 @@ handle_ports() {
 ###############################################################
 # Nmap
 default_nmap() {
-	# Add Progress Bar to this script over here!!!
-	#
-
 	echo -e "${YELLOW}============================= Full Reconnaissance Scan =============================${ENDCOLOR}"
 
 	# Creating output directory of our target
@@ -1463,10 +1741,8 @@ default_nmap() {
         # Scans for all ports available
 	echo -e "${GRAY}------------------------------------ Port Scan -------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
-		echo "nmap -Pn $IP -p-"
 		nmap -Pn $IP -p- -oN Netauto/$IP/DEFAULT/port_scans.txt
 	else 
-		echo "nmap $MINRATE -Pn $IP -p-"
 		nmap $MINRATE -Pn $IP -p- -oN Netauto/$IP/DEFAULT/port_scans.txt
 	fi
 
@@ -1478,10 +1754,8 @@ default_nmap() {
         # Useful for attempting to identify outdated version of service
 	echo -e "${GRAY}----------------------------------- Script Scan ------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
-		echo "nmap -sC -sV $IP"
 		nmap -sC -sV $IP -oN Netauto/$IP/DEFAULT/script_scan.txt
 	else 
-		echo "nmap $MINRATE -sC -sV $IP"
 		nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/DEFAULT/script_scan.txt
 	fi
 
@@ -1492,10 +1766,8 @@ default_nmap() {
         # Scans ports only and no host discovery
 	echo -e "${GRAY}--------------------------------- Stealth Scan -------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
-		echo "sudo nmap -sS -Pn -n $IP"
 		sudo nmap -sS -Pn -n $IP -oN Netauto/$IP/DEFAULT/stealth_scan.txt
 	else 
-		echo "sudo nmap $MINRATE -sS -Pn -n $IP"
 		sudo nmap $MINRATE -sS -Pn -n $IP -oN Netauto/$IP/DEFAULT/stealth_scan.txt
 	fi
 
@@ -1507,24 +1779,19 @@ default_nmap() {
         # Useful for detailed reconnaissane and vulnerability assessment
 	echo -e "${GRAY}--------------------------------- Aggressive Scan -------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
-		echo "nmap -p- -A $IP"
 		nmap -p- -A $IP -oN Netauto/$IP/DEFAULT/aggressive_scan.txt
 	else 
-		echo "nmap $MINRATE -p- -A $IP"
 		nmap $MINRATE -p- -A $IP -oN Netauto/$IP/DEFAULT/aggressive_scan.txt
 	fi
 
         echo " "
 
-
         # Scans all standard ports to establish connection system call using TCP Connection Scan
         # runs all the scripts and checks on them
 	echo -e "${GRAY}------------------------------------ TCP Scan -----------------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
-		echo "nmap -n -v -sT -A $IP"
 		nmap -n -v -sT -A $IP -oN Netauto/$IP/DEFAULT/TCP_scan.txt
 	else
-		echo "nmap $MINRATE -n -v -sT -A $IP"
 		nmap $MINRATE -n -v -sT -A $IP -oN Netauto/$IP/DEFAULT/TCP_scan.txt
 	fi
 
@@ -1533,10 +1800,8 @@ default_nmap() {
         # Run Vulnerability Script to perform NSE Vulnerability Scan
 	echo -e "${GRAY}----------------------------- NSE Vulnerability Scan ----------------------------------${ENDCOLOR}"
 	if [ "$MINRATE" == "" ]; then
-		echo "nmap -sV --script vuln $IP"
 		nmap -sV --script vuln $IP -oN Netauto/$IP/DEFAULT/vulnerability_scan.txt
 	else
-		echo "nmap $MINRATE -sV --script vuln $IP"
 		nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/DEFAULT/vulnerability_scan.txt
 	fi
 
@@ -1544,6 +1809,7 @@ default_nmap() {
 }
 
 tcp_nmap() {
+	echo -e "${YELLOW}============================= Full TCP Scan =============================${ENDCOLOR}"
 	# Check if directory exists
 	DEFAULT_DIRECTORY=Netauto/$IP/DEFAULT/
 
@@ -1556,9 +1822,13 @@ tcp_nmap() {
 	nmap -n -v -sT -p- -T5 -oN Netauto/$IP/DEFAULT/TCP_Full_Scan_1.txt $IP
 	echo "sudo nmap -T4 -F -sV -sC -oX valley.xml --reason --stats-every 5s -p- $IP"
 	sudo nmap -T4 -F -sV -sC -oN Netauto/$IP/DEFAULT/TCP_Full_Scan_1.txt --reason --stats-every 5s -p- $IP
+
+        echo " "
 }
 
 udp_nmap() {
+	echo -e "${YELLOW}============================= Full UDP Scan =============================${ENDCOLOR}"
+
 	# Check if directory exists
 	DEFAULT_DIRECTORY=Netauto/$IP/DEFAULT/
 
@@ -1574,6 +1844,8 @@ udp_nmap() {
 
         echo "nmap -n -v -sU -p- -T5 $IP"
         sudo nmap -n -v -sU -p- -T5 -oN Netauto/$IP/DEFAULT/Full_UDP_Scan_2.txt $IP
+
+        echo " "
 }
 
 ###############################################################
@@ -1588,7 +1860,6 @@ usage() {
         echo "  -p, --ports              	  Scan ports of the targets device"
         echo "  -t, --timing              	  Set NMAP timing minrate option"
         echo "  -m, --mode              	  Set type of scan to perform"
-
         echo " "
         echo "Timing minrate options:"
         echo "  -T0              	  Paranoid"
@@ -1616,6 +1887,8 @@ usage() {
         echo " "
         echo "Perform protocols, port and service scan as default: "
 	echo "netauto -i 192.168.69.10 -p 40,60,80"
+
+	exit 1
 }
 
 ###############################################################
@@ -1650,7 +1923,7 @@ done
 # IP
 # --------------------------------------------------------------
 if [ -z "$IP" ]; then
-        echo "Missing IP address. Please specify an IP using the -i option."
+        printf "${RED}[ERROR]${ENDCOLOR} ${WHITE}Missing IP address. Please specify an IP using the -i option.${ENDCOLOR}"
         exit 1
 fi
 
@@ -1665,20 +1938,20 @@ if [[ -n "$MINRATE" ]]; then
 
 	# Check if the input is an integer
 	if ! [[ $MINRATE =~ ^[0-9]+$ ]]; then
-	    echo "Error: Input must be an integer"
+	    printf "${RED_BG}[ERROR]${ENDCOLOR} ${WHITE}Minrate Input must be an integer${ENDCOLOR}"
 	    exit 1
 	fi
 
 
 	# Check if the input is a single character
 	if [ $MINRATE -ne 1 ]; then
-	    echo "Error: Input must be a single character"
+	    printf "${RED_BG}[ERROR]${ENDCOLOR} ${WHITE}Minrate Input must be a single character${ENDCOLOR}"
 	    exit 1
 	fi
 
 	# Check if the integer is not higher than 5
 	if [ $MINRATE -gt 5 ]; then
-	    echo "Error: Input must not be higher than 5"
+	    printf "${RED_BG}[ERROR]${ENDCOLOR} ${WHITE}Minrate Input must not be higher than 5${ENDCOLOR}"
 	    exit 1
 	fi
 fi 
@@ -1686,14 +1959,17 @@ fi
 # --------------------------------------------------------------
 # Printing output options...
 # --------------------------------------------------------------
-echo "Target IP: $IP";
+echo " "
+printf "${GREEN_BG}Target IP:${ENDCOLOR} ${WHITE}$IP${ENDCOLOR}"
 
 if [[ -n "$PORTS" ]]; then
-	echo "PORT(S): $PORTS"
+	printf "${YELLOW_BG}[Ports]${ENDCOLOR} ${WHITE}$PORTS${ENDCOLOR}"
 fi
 if [[ -n "$MINRATE" ]]; then
-	echo "MINRATE: $MINRATE"
+	printf "${YELLOW_BG}[Minrate]${ENDCOLOR} ${WHITE}$MINRATE${ENDCOLOR}"
 fi
+
+echo " "
 
 if [ -z "$PORTS" ]; then
 	default_nmap

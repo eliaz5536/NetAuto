@@ -103,6 +103,8 @@ You can add symlink to call the following program without using
 ```
 
 # Usage 
+It is recommended that you run sudo on this script since it requires specific permissions to execute Nmap commands.
+
 ```
 
             ███╗   ██╗███████╗████████╗██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗              

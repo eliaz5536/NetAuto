@@ -35,7 +35,6 @@ WHITE_BG="\e[47m"
 BOLD="\e[1m"
 ITALIC="\e[3m"
 
-
 ###############################################################
 # Banner 				 	      	      # 
 ###############################################################
@@ -1879,9 +1878,9 @@ usage() {
 	printf " ${ITALIC}vuln${ENDCOLOR}			  Vulnerability Scan\n"
 	echo " "
 	echo "Color Code Representation: "
-	printf "${BLUE_BG} Port ${ENDCOLOR}\n"
-	printf "${YELLOW_BG} Database ${ENDCOLOR}\n"
-	printf "${BLACK_BG} Protocol ${ENDCOLOR}\n"
+	printf " ${BLUE_BG} Port ${ENDCOLOR}\n"
+	printf " ${YELLOW_BG} Database ${ENDCOLOR}\n"
+	printf " ${BLACK_BG} Protocol ${ENDCOLOR}\n"
 	echo " "
 	echo "If you input only the IP, it will perform default reconnaissance scan."
 	echo "If you input ports for scanning, it will perform a complete full reconnaissance scan."
@@ -1889,7 +1888,7 @@ usage() {
         echo "Perform reconnaissance: "
 	echo "netauto -i 192.168.69.10"
         echo " "
-        echo "Perform reconnaissance with timing: "
+        echo "Perform reconnaissance with minrate option: "
 	echo "netauto -i 192.168.69.10 -t5"
         echo " "
         echo "Perform protocols, port and service scan as default: "
@@ -1917,7 +1916,7 @@ while [[ "$#" -gt 0 ]]; do
         -i|--ip) IP="$2"; shift ;;
         -p|--ports) PORTS="$2"; shift ;;
         -m|--minrate) MINRATE="$2"; shift ;;
-        *) printf "${RED_BG}[ERROR]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+        *) printf "${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
     esac
     shift
 done
@@ -1930,7 +1929,7 @@ done
 # IP
 # --------------------------------------------------------------
 if [ -z "$IP" ]; then
-        printf "${RED}[ERROR]${ENDCOLOR} ${WHITE}Missing IP address. Please specify an IP using the -i option.${ENDCOLOR}"
+        printf "${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Missing IP address. Please specify an IP using the -i option.${ENDCOLOR}"
         exit 1
 fi
 
@@ -1945,20 +1944,20 @@ if [[ -n "$MINRATE" ]]; then
 
 	# Check if the input is an integer
 	if ! [[ $MINRATE =~ ^[0-9]+$ ]]; then
-	    printf "${RED_BG}[ERROR]${ENDCOLOR} ${WHITE}Minrate Input must be an integer${ENDCOLOR}"
+	    printf "${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Minrate Input must be an integer${ENDCOLOR}"
 	    exit 1
 	fi
 
 
 	# Check if the input is a single character
 	if [ $MINRATE -ne 1 ]; then
-	    printf "${RED_BG}[ERROR]${ENDCOLOR} ${WHITE}Minrate Input must be a single character${ENDCOLOR}"
+	    printf "${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Minrate Input must be a single character${ENDCOLOR}"
 	    exit 1
 	fi
 
 	# Check if the integer is not higher than 5
 	if [ $MINRATE -gt 5 ]; then
-	    printf "${RED_BG}[ERROR]${ENDCOLOR} ${WHITE}Minrate Input must not be higher than 5${ENDCOLOR}"
+	    printf "${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Minrate Input must not be higher than 5${ENDCOLOR}"
 	    exit 1
 	fi
 fi 

@@ -1852,7 +1852,14 @@ udp_nmap() {
 usage() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
-        echo "Usage: Netauto -i <ip_address> [options]"
+        echo "Usage: Netauto -i <ip_address> [-u, --usage] [-h, --help] [-i, --ip] [-p, --ports] [-t, --timing] [-m, --mode]"
+	exit 1
+}
+
+help() {
+        printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
+	echo " "
+        echo "Usage: Netauto -i <ip_address> [-u, --usage] [-h, --help] [-i, --ip] [-p, --ports] [-t, --timing] [-m, --mode]"
 	echo " "
         echo "Options:"
         printf "  ${ITALIC}-h, --help${ENDCOLOR}              	  Help & Usage\n"
@@ -1893,7 +1900,6 @@ usage() {
         echo " "
         echo "Perform protocols, port and service scan as default: "
 	echo "netauto -i 192.168.69.10 -p 40,60,80"
-
 	exit 1
 }
 
@@ -1902,7 +1908,7 @@ usage() {
 ###############################################################
 if [ $# -eq 0 ];
 then 
-        usage
+        help
         exit 1
 fi
 
@@ -1912,7 +1918,8 @@ MINRATE=""
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        -h|--help) usage ;;
+        -h|--help) help ;;
+	-u|--usage) usage ;;
         -i|--ip) IP="$2"; shift ;;
         -p|--ports) PORTS="$2"; shift ;;
         -m|--minrate) MINRATE="$2"; shift ;;

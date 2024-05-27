@@ -121,11 +121,6 @@ Mode options:
  brute                    Script Scan
  vuln                     Vulnerability Scan
  
-Color Code Representation: 
-  Port 
-  Database 
-  Protocol 
- 
 If you input only the IP, it will perform default reconnaissance scan.
 If you input ports for scanning, it will perform a complete full reconnaissance scan.
  

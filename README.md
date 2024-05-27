@@ -1,9 +1,8 @@
 ![automated_network_enumerator](https://github.com/eliaz5536/NetAuto/assets/5835036/55eafde0-f387-49fa-913a-bb4436bb797e)
 
 # Demos
-
-https://asciinema.org/a/YaKGq6n861DWz1OF1RDJOsdMX
-
+## Reconnaissance
+[![asciicast](https://asciinema.org/a/YaKGq6n861DWz1OF1RDJOsdMX.svg)](https://asciinema.org/a/YaKGq6n861DWz1OF1RDJOsdMX)
 
 
 # NetAuto

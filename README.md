@@ -94,28 +94,16 @@ You can add symlink to call the following program without using
 It is recommended that you run sudo on this script since it requires specific permissions to execute Nmap commands.
 
 ```
-
-            ███╗   ██╗███████╗████████╗██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗              
-            ████╗  ██║██╔════╝╚══██╔══╝██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝              
-            ██╔██╗ ██║█████╗     ██║   ██║ █╗ ██║██║   ██║██████╔╝█████╔╝               
-            ██║╚██╗██║██╔══╝     ██║   ██║███╗██║██║   ██║██╔══██╗██╔═██╗               
-            ██║ ╚████║███████╗   ██║   ╚███╔███╔╝╚██████╔╝██║  ██║██║  ██╗              
-            ╚═╝  ╚═══╝╚══════╝   ╚═╝    ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝              
-███████╗███╗   ██╗██╗   ██╗███╗   ███╗███████╗██████╗  █████╗ ████████╗ ██████╗ ██████╗ 
-██╔════╝████╗  ██║██║   ██║████╗ ████║██╔════╝██╔══██╗██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
-█████╗  ██╔██╗ ██║██║   ██║██╔████╔██║█████╗  ██████╔╝███████║   ██║   ██║   ██║██████╔╝
-██╔══╝  ██║╚██╗██║██║   ██║██║╚██╔╝██║██╔══╝  ██╔══██╗██╔══██║   ██║   ██║   ██║██╔══██╗
-███████╗██║ ╚████║╚██████╔╝██║ ╚═╝ ██║███████╗██║  ██║██║  ██║   ██║   ╚██████╔╝██║  ██║
-╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
-
-
 Network Enumeration Automator with Nmap
+ 
 Usage: Netauto -i <ip_address> [options]
+ 
 Options:
   -h, --help                      Help & Usage
-  -i, --ip                                Scan IP address of the target device
+  -i, --ip                        Scan IP address of the target device
   -p, --ports                     Scan ports of the targets device
   -t, --timing                    Set NMAP timing minrate option
+  -m, --mode                      Set type of scan to perform
  
 Timing minrate options:
   -T0                     Paranoid
@@ -125,15 +113,30 @@ Timing minrate options:
   -T4                     Aggressive
   -T5                     Insane
  
+Mode options: 
+ recon                    Full Reconnaissance Scan
+ tcp                      TCP Scan
+ udp                      UDP Scan
+ script                   Script Scan
+ brute                    Script Scan
+ vuln                     Vulnerability Scan
+ 
+Color Code Representation: 
+  Port 
+  Database 
+  Protocol 
+ 
+If you input only the IP, it will perform default reconnaissance scan.
+If you input ports for scanning, it will perform a complete full reconnaissance scan.
+ 
 Perform reconnaissance: 
 netauto -i 192.168.69.10
  
 Perform reconnaissance with timing: 
 netauto -i 192.168.69.10 -t5
  
-Perform protocols, port and service scan: 
-netauto -i 192.168.69.10 -p 40,60,80
-                                                                                                                                                                                                                                           
+Perform protocols, port and service scan as default: 
+netauto -i 192.168.69.10 -p 40,60,80                                                                                                                                                                                                                                          
 ```
 
 # Results

@@ -14,7 +14,6 @@ insert asciinema of port enumeration scan demonstration here
 insert asciinema of vulnerability scan demonstration here
 ```
 
-
 # NetAuto
 NetAuto is a basic network reconnaissance tools that automates enumeration of services, protocols and ports, ideal for penetration testing environments and network scanning.
 

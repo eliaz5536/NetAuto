@@ -65,7 +65,7 @@ Perform those following commands if you want to install simultaneously:
 sudo apt-get install python python2 python3 python3-pip pip pipx
 ```
 
-It is recommended that you install most of the tools by default on ParrotOS or Kali Linux
+It is recommended that you install most of the tools by default on **ParrotOS** or **Kali Linux**.
 
 # Installation
 ```

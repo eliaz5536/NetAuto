@@ -67,6 +67,14 @@ sudo apt-get install python python2 python3 python3-pip pip pipx
 
 It is recommended that you install most of the tools by default on **ParrotOS** or **Kali Linux**.
 
+# Requirements from NetAuto
+Alternatively, you can also check if you have the following third-party tools installed using '--install' to install any 
+missing tools to perform this operation. Furthermore, you can use '--check' to ensure you meet the requirements of running 
+network enumeration program
+```
+< insert code over here to check if the user has got all third-party tools > 
+```
+
 # Installation
 ```
 git clone https://github.com/eliaz5536/netauto.git

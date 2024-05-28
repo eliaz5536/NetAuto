@@ -1850,16 +1850,13 @@ udp_nmap() {
 # Help                                                        #
 ###############################################################
 usage() {
-        printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
-	echo " "
-        echo "Usage: Netauto -i <ip_address> [-u, --usage] [-h, --help] [-i, --ip] [-p, --ports] [-t, --timing] [-m, --mode]"
-	exit 1
+        echo "Usage: Netauto -i <ip_address> [-u, --usage] [-h, --help] [-i, --ip] [-p, --ports] [-t, --timing] [-m, --mode] [-o, --output]"
 }
 
 help() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
-        echo "Usage: Netauto -i <ip_address> [-u, --usage] [-h, --help] [-i, --ip] [-p, --ports] [-t, --timing] [-m, --mode]"
+        echo "Usage: Netauto -i <ip_address> [-u, --usage] [-h, --help] [-i, --ip] [-p, --ports] [-t, --timing] [-m, --mode] [-o, --output]"
 	echo " "
         echo "Options:"
         printf "  ${ITALIC}-h, --help${ENDCOLOR}              	  Help & Usage\n"
@@ -1867,6 +1864,7 @@ help() {
         printf "  ${ITALIC}-p, --ports${ENDCOLOR}              	  Scan ports of the targets device\n"
         printf "  ${ITALIC}-t, --timing${ENDCOLOR}              	  Set NMAP timing minrate option\n"
         printf "  ${ITALIC}-m, --mode${ENDCOLOR}              	  Set type of scan to perform\n"
+        printf "  ${ITALIC}-o, --output${ENDCOLOR}              	  Sets the output destination for scan results\n"
         echo " "
         echo "Timing minrate options:"
         printf "  ${ITALIC}-T0${ENDCOLOR}              	  Paranoid\n"

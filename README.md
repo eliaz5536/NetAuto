@@ -138,7 +138,7 @@ Mode options:
  tcp                      TCP Scan
  udp                      UDP Scan
  script                   Script Scan
- brute                    Script Scan
+ brute                    Brute Scan
  vuln                     Vulnerability Scan
  
 If you input only the IP, it will perform default reconnaissance scan.

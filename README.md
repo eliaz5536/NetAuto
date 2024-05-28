@@ -4,7 +4,8 @@
 ## Reconnaissance
 [![asciicast](https://asciinema.org/a/YaKGq6n861DWz1OF1RDJOsdMX.svg)](https://asciinema.org/a/YaKGq6n861DWz1OF1RDJOsdMX)
 
-## Full Port Scan
+## Full Port Enumeration Scan
+
 
 
 # NetAuto

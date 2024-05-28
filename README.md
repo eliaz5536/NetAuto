@@ -269,3 +269,10 @@ Netauto
                 └── ftp-openssl.txt
 
 ```
+
+# References
+https://infra.newerasec.com/infrastructure-testing/enumeration/services-ports/88-kerberos
+https://book.hacktricks.xyz/network-services-pentesting/pentesting-pop
+https://exploit-notes.hdks.org/exploit/email/pop-pentesting/
+https://0xffsec.com/handbook/services/pop/
+https://n0a110w.github.io/notes/security-stuff/services/cups.html

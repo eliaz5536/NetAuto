@@ -76,7 +76,6 @@ ITALIC="\e[3m"
 # Current Time 				 	      	      # 
 ###############################################################
 current_time=$(date +"%T")
-# current_date=$()
 
 ###############################################################
 # Directory and File Verification Function		      #
@@ -143,8 +142,8 @@ bash -c "printf '\e[49m                                                  \e[m
 # Protocols Scans 				 	      # 
 ###############################################################
 dhcp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating DHCP at port 67 & 68${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform DHCP scan${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating DHCP on port 67 & 68${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate DHCP scan${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/DHCP
 	if [[ -d $(pwd)/Netauto/$IP/Protocols/DHCP ]]; then
@@ -152,6 +151,8 @@ dhcp_scan() {
 	else 
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to create DHCP protocol output directory of target live host under '$(pwd)/Netauto/$IP/Protocols/DHCP'${ENDCOLOR}\n"
 	fi
+
+	directory_check "" "" ""
 	
 	
 	mkdir -p Netauto/$IP/Protocols/DHCP/nmap
@@ -160,6 +161,10 @@ dhcp_scan() {
 	else 
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to create NMAP DHCP protocol output directory of target live host under '$(pwd)/Netauto/$IP/Protocols/DHCP/nmap'${ENDCOLOR}\n"
 	fi
+
+	directory_check "" "" ""
+
+
 
 	sudo nmap -sU --script dhcp-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/dhcp_discover.nmap
 	if [[ -e $(pwd)/Netauto/$IP/Protocols/DHCP/nmap/dhcp_discover.txt ]]; then
@@ -170,6 +175,8 @@ dhcp_scan() {
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${WARNING}YELLOW${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to generate output data of NMAP DHCP discover scan under '$(pwd)/Netauto/Protocols/DHCP/nmap/dhcp_discover.txt'${ENDCOLOR}\n" 
 	fi
 
+	file_check "" "" ""
+
 	sudo nmap -sU --script broadcast-dhcp-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp_discover.nmap
 	if [[ -e $(pwd)/Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp_discover.txt ]]; then
 		echo " "
@@ -178,6 +185,10 @@ dhcp_scan() {
 		echo " "
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${WARNING}YELLOW${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to generate output data of nmap broadcast dhcp discover scan under '$(pwd)/Netauto/Protocols/DHCP/nmap/broadcast_dhcp_discover.txt'${ENDCOLOR}\n"
 	fi
+
+	file_check "" "" ""
+
+
 
 	sudo nmap -sU --script broadcast-dhcp6-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp6_discover.nmap
 	if [[ -e $(pwd)/Netauto/$IP/Protocols/DHCP/nmap/broadcast_dhcp6_discover.txt ]]; then
@@ -188,105 +199,174 @@ dhcp_scan() {
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${WARNING}YELLOW${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to generate output data of nmap broadcast dhcp6 discover scan under '$(pwd)/Netauto/Protocols/DHCP/nmap/broadcast_dhcp6_discover.txt'${ENDCOLOR}\n"
 	fi
 
+	file_check "" "" ""
+
+
 	echo " " 
 }
 
 snmp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SNMP at port 161${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SNMP on port 161${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SNMP
+	directory_check "" "" ""
+
 	mkdir -p Netauto/$IP/Protocols/SNMP/nmap
+	directory_check "" "" ""
 
 	nmap -p 161 -sU -oA nmap_udp_snmp $IP -oN Netauto/$IP/Protocols/SNMP/nmap/udp.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-info -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/info.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-interfaces -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/interfaces.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-ios-config -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/ios-config.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-netstat -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/netstat.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-processes -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/processes.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-sysdescr -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmao/sysdescr.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-win32-services -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/win32-services.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-win32-shares -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/win32-shares.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-win32-software -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/snmp-win32-software.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-win32-users -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/win32-users.nmap
+	file_check "" "" ""
+
 	nmap -sU --script snmp-hh3c-logins -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/hh3c-logins.nmap
+	file_check "" "" ""
+
 	nmap -sU --script "snmp* and not brute" -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/all.nmap
+	file_check "" "" ""
 
 	onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp.txt $IP | tee Netauto/$IP/Protocols/SNMP/onsixtyone-bruteforce.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk
+	directory_check "" "" ""
 	snmpwalk -v1 -c public -m ALL $IP:161 | tee Netauto/$IP/Protocols/SSH/snmpwalk/ssnmp-snmpwalk-v1.txt
+	file_check "" "" ""
 	snmpwalk -v2c -c public $IP | tee Netauto/$IP/Protocols/SSH/snmpwalk/ssnmp-snmpwalk-v2c.txt
+	file_check "" "" ""
 	snmpwalk -v2c -c public -m ALL $IP:161 | tee Netauto/$IP/Protocols/SSH/snmpwalk/ssnmp-snmpwalk-v2c-full.txt
+	file_check "" "" ""
 	snmpwalk -v3 -l noAuthNoPriv -c public -m ALL $IP:161 | tee Netauto/$IP/Protocols/SSH/snmpwalk/ssnmp-snmpwalk-v3.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmp-check
+	directory_check "" "" ""
 	snmp-check $IP -p 161 -c public | tee Netauto/$IP/Protocols/SSH/snmp-check/ssnmp-snmp-check.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk/v1
+	directory_check "" "" ""
 	# Interfaces
 	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.2.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_interfaces.txt
+	file_check "" "" ""
 	# Windows User Accounts
 	snmpwalk -c public -v1 $IP 1.3.6.1.4.1.77.1.2.25 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_user_accounts.txt
+	file_check "" "" ""
 	# Windows Running Programs
 	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.25.4.2.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_running_programs.txt
+	file_check "" "" ""
 	# Windows Hostname
 	snmpwalk -c public -v1 $IP .1.3.6.1.2.1.1.5 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_hostname.txt
+	file_check "" "" ""
 	# Windows Share Information
 	snmpwalk -c public -v1 $IP 1.3.6.1.4.1.77.1.2.3.1.1 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_share_information.txt
+	file_check "" "" ""
 	# More Windows Share Information
 	snmpwalk -c public -v1 $IP 1.3.6.1.4.1.77.1.2.27 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_more_windows_share_information.txt
+	file_check "" "" ""
 	# Windows TCP Ports
 	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.6.13.1.3 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_windows_tcp_ports.txt
+	file_check "" "" ""
 	# Software Name
 	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.25.6.3.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_software_name.txt
+	file_check "" "" ""
 	# SysLocation
 	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.1.6 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1/v1_syslocation.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk/v2c
+	directory_check "" "" ""
 	# Interfaces
 	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.2.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_interfaces.txt
+	file_check "" "" ""
 	# Windows User Accounts
 	snmpwalk -c public -v2c $IP 1.3.6.1.4.1.77.1.2.25 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_user_accounts.txt
+	file_check "" "" ""
 	# Windows Running Programs
 	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.25.4.2.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_running_programs.txt
+	file_check "" "" ""
 	# Windows Hostname
 	snmpwalk -c public -v2c $IP .1.3.6.1.2.1.1.5 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_hostname.txt
+	file_check "" "" ""
 	# Windows Share Information
 	snmpwalk -c public -v2c $IP 1.3.6.1.4.1.77.1.2.3.1.1 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_share_information.txt
+	file_check "" "" ""
 	# More Windows Share Information
 	snmpwalk -c public -v2c $IP 1.3.6.1.4.1.77.1.2.27 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_more_windows_share_information.txt
+	file_check "" "" ""
 	# Windows TCP Ports
 	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.6.13.1.3 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_windows_tcp_ports.txt
+	file_check "" "" ""
 	# Software Name
 	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.25.6.3.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_software_name.txt
+	file_check "" "" ""
 	# SysLocation
 	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.1.6 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/v2c_syslocation.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk/v3
+	directory_check "" "" ""
 	# Interfaces
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.2.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_interfaces.txt
+	file_check "" "" ""
 	# Windows User Accounts
 	snmpwalk -c public -v3 $IP 1.3.6.1.4.1.77.1.2.25 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_user_accounts.txt
+	file_check "" "" ""
 	# Windows Running Programs
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.25.4.2.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_running_programs.txt
+	file_check "" "" ""
 	# Windows Hostname
 	snmpwalk -c public -v3 $IP .1.3.6.1.2.1.1.5 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_hostname.txt
+	file_check "" "" ""
 	# Windows share Information
 	snmpwalk -c public -v3 $IP 1.3.6.1.4.1.77.1.2.3.1.1 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_share_information.txt
+	file_check "" "" ""
 	# More Windows Share Information
 	snmpwalk -c public -v3 $IP 1.3.6.1.4.1.77.1.2.27 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_more_windows_share_information.txt
+	file_check "" "" ""
 	# Windows TCP Ports
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.6.13.1.3 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_tcp_ports.txt
+	file_check "" "" ""
 	# Software Name
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.25.6.3.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_software_nane.txt
+	file_check "" "" ""
 	# SysLocation
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.1.6 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_syslocation.txt
+	file_check "" "" ""
 
 	echo " "
 }
 
 echo_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Echo at port 7${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Echo on port 7${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Echo/nc
 	if [[ -d $(pwd)/Netauto/$IP/Protocols/Echo/nc ]]; then
@@ -294,6 +374,9 @@ echo_scan() {
 	else 
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to create Echo Netcat output directory of target live host under '$(pwd)/Netauto/$IP/Protocols/Echo/nc'${ENDCOLOR}\n"
 	fi
+	
+	directory_check "" "" ""
+
 
 	nc $IP $port | tee Netauto/$IP/Protocols/Echo/nc/nc.txt
 	if [[ -e $(pwd)/Netauto/$IP/Protocols/Echo/nc/nc.txt ]]; then
@@ -303,6 +386,8 @@ echo_scan() {
 		echo " "
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${WARNING}YELLOW${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to generate output data of nmap broadcast dhcp6 discover scan under '$(pwd)/Netauto/Protocols/DHCP/nmap/broadcast_dhcp6_discover.txt'${ENDCOLOR}\n"
 	fi
+
+	file_check "" "" ""
 
 
 	nc -vn $IP $port | tee Netauto/$IP/Protocols/Echo/nc/nc_vn.txt
@@ -314,223 +399,352 @@ echo_scan() {
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${WARNING}YELLOW${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to generate output data of nmap broadcast dhcp6 discover scan under '$(pwd)/Netauto/Protocols/DHCP/nmap/broadcast_dhcp6_discover.txt'${ENDCOLOR}\n"
 	fi
 
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Echo/nmap
+	directory_check "" "" ""
 	nmap -p 7 $IP -oN Netauto/$IP/Protocols/Echo/nmap/port.nmap
+	file_check "" "" ""
 
 	echo " "
 }
 
 ftp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating FTP at port 21${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating FTP on port 21${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/ftp/nc
+	directory_check "" "" ""
 	nc $IP $port | tee Netauto/$IP/Protocols/ftp/ftp_nc.txt
+	file_check "" "" ""
 	nc -vn $IP $port | tee Netauto/$IP/Protocols/ftp/ftp_nc_nv.txt
+	file_check "" "" ""
 	
 	mkdir -p Netauto/$IP/Protocols/ftp/openssl
+	directory_check "" "" ""
 	openssl s_client -connect $IP:21 -starttls ftp | tee Netauto/$IP/Protocols/ftp/openssl/ftp-openssl.txt
+	file_check "" "" ""
 	
 	mkdir -p Netauto/$IP/Protocols/ftp/nmap
+	directory_check "" "" ""
 	nmap --script ftp-anon -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/anon.nmap
+	file_check "" "" ""
 	nmap --script ftp-bounce -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/bounce.nmap
+	file_check "" "" ""
 	nmap --script ftp-libopie -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/libopie.nmap
+	file_check "" "" ""
 	nmap --script ftp-proftpd-backdoor -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/proftpd-backdoor.nmap
+	file_check "" "" ""
 	nmap --script ftp-syst -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/syst.nmap
+	file_check "" "" ""
 	nmap --script ftp-vuln-cve2010-4221 -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/vuln-cve2010-4221.nmap
+	file_check "" "" ""
 	nmap --script ftp-vuln* -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/vuln-all.nmap
+	file_check "" "" ""
 	nmap --script "ftp-* and not brute"  -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
 
 ssh_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SSH at port 22${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SSH on port 22${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SSH/nc
+	directory_check "" "" ""
 	nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/ssh-nc.txt
+	file_check "" "" ""
 	nc -nv $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/ssh-nc-nv.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SSH/ssh-audit
+	directory_check "" "" ""
 	ssh-audit.py $IP | tee Netauto/$IP/Protocols/SSH/ssh-audit/ssh-audit.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SSH/ssh-keyscan
+	directory_check "" "" ""
 	ssh-keyscan -t rsa $IP -p 22 | tee Netauto/$IP/Protocols/SSH/ssh-keyscan/ssh-keyscan-public-key.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SSH/nmap
+	directory_check "" "" ""
 	nmap -p 22 $IP --script ssh2-enum-algos -oN Netauto/$IP/Protocols/SSH/nmap/enum-algos.nmap
+	file_check "" "" ""
 	nmap -p 22 $IP --script ssh-hostkey --script-args ssh_hostkey=full -oN Netauto/$IP/Protocols/SSH/nmap/hostkey.nmap
+	file_check "" "" ""
 	nmap -p 22 $IP --script ssh-publickey-acceptance -oN Netauto/$IP/Protocols/SSH/nmap/publickey-acceptance.nmap
+	file_check "" "" ""
 	nmap -p 22 $IP --script ssh-run -oN Netauto/$IP/Protocols/SSH/nmap/run.nmap
+	file_check "" "" ""
 	nmap -p 22 $IP --script ssh-auth-methods -oN Netauto/$IP/Protocols/SSH/nmap/auth-methods.nmap
+	file_check "" "" ""
 	nmap --script ssh-auth-methods --script-args="ssh.user=username" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/auth-methods-default.nmap
+	file_check "" "" ""
 	nmap -p 22 $IP --script ssh-auth-methods --script-args="ssh.user=root" -oN Netauto/$IP/Protocols/SSH/nmap/auth-methods-root.nmap
+	file_check "" "" ""
 	nmap --script "ssh-* and not brute" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
 
 telnet_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Telnet at port 23${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Telnet on port 23${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Telnet/nc
+	directory_check "" "" ""
 	nc $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/telnet-nc.txt
+	file_check "" "" ""
 	nc -nv $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/telnet-nc-nv.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Telnet/nmap
+	directory_check "" "" ""
 	nmap -n -sV -Pn --script "*telnet* and safe" -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/scripts.nmap
+	file_check "" "" ""
 	nmap --script telnet-encryption -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/encryption.nmap
+	file_check "" "" ""
 	nmap --script telnet-ntlm-info -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/ntlm-info.nmap
+	file_check "" "" ""
 }
 
 smtp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SMTP at port 25, 465 & 587${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SMTP on port 25, 465 & 587${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/nc
+	directory_check "" "" ""
 	nc $IP 25 | tee Netauto/$IP/Protocols/SMTP/smtp-nc.txt
+	file_check "" "" ""
 	nc -nv $IP 25 | tee Netauto/$IP/Protocols/SMTP/smtp-nv.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/openssl
+	directory_check "" "" ""
 	openssl s_client -starttls smtp -connect $IP:25 | tee Netauto/$IP/Protocols/SMTP/openssl/smtp-starttls.txt
+	file_check "" "" ""
 	openssl s_client -crlf -connect $IP:465 | tee Netauto/$IP/Protocols/SMTP/openssl/smtp-crlf.txt
+	file_check "" "" ""
 	openssl s_client -starttls smtp -crlf -connect $IP:587 | tee Netauto/$IP/Protocols/SMTP/openssl/smtp-starttls-crlf.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/df
+	directory_check "" "" ""
 	dif mx $IP | tee Netauto/$IP/Protocols/SMTP/df/smtp-mx-domains.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/nmap
+	directory_check "" "" ""
 	nmap --script smtp-commands -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/commands.nmap
+	file_check "" "" ""
 	nmap --script smtp-open-relay -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/open-relay.nmap
+	file_check "" "" ""
 	nmap --script smtp-enum-users -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/enum-users.nmap
+	file_check "" "" ""
 	nmap --script smtp-strangeport -p- $IP -oN Netauto/$IP/Protocols/SMTP/nmap/strangeport.nmap
+	file_check "" "" ""
 	nmap --script smtp-ntlm-info --script-args smtp-ntlm-info.domain=example.com -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/ntlm-info.nmap
+	file_check "" "" ""
 	nmap --script smtp-vuln-cve2010-4344 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/vuln-cve2010-4344.nmap
+	file_check "" "" ""
 	nmap --script smtp-vuln-cve2011-1720 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTPt/nmap/vuln-cve2011-1720.nmap
+	file_check "" "" ""
 	nmap --script smtp-vuln-cve2011-1764 -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/vuln-cve2011-1764.nmap
+	file_check "" "" ""
 	nmap --script "smtp-* and not brute" -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
 
 whois_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WHOIS at port 113${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WHOIS on port 113${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/WHOIS/nmap
+	directory_check "" "" ""
 	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/WHOIS/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 113	$IP -oN Netauto/$IP/Protocols/WHOIS/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 113 $IP -oN Netauto/$IP/Protocols/WHOIS/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
 
 tacacs_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating TACACS at port 49${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating TACACS on port 49${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/TACACS/nmap
+	directory_check "" "" ""
 	nmap -sC -p 49 $IP -oN Netauto/$IP/Protocols/TACACS/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 49 $IP -oN Netauto/$IP/Protocols/TACACS/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 49 $IP -oN Netauto/$IP/Protocols/TACACS/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
 
 dns_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating DNS at port 53${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating DNS on port 53${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/DNS/nmap
+	directory_check "" "" ""
 	nmap --script broadcast-dns-service-discovery -p- $IP -oN Netauto/$IP/Protocols/DNS/nmap/broadcast-dns-service-discovery.nmap
+	file_check "" "" ""
 	nmap --script dns-blacklist -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/blacklist.nmap
+	file_check "" "" ""
 	nmap --script dns-cache-snoop -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/cache-snoop.nmap
+	file_check "" "" ""
 	nmap --script dns-check-zone -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/check-zone.nmap
+	file_check "" "" ""
 	nmap --script dns-client-subnet-scan -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/client-subnet-scan.nmap
+	file_check "" "" ""
 	nmap --script dns-fuzz -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/fuzz.nmap # this one would always freeze
+	file_check "" "" ""
 	nmap --script dns-ip6-arpa-scan -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/ip6-arpa-scan.nmap
+	file_check "" "" ""
 	nmap --script dns-nsec3-enum -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/nsec3-enum.nmap
+	file_check "" "" ""
 	nmap --script dns-nsid -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/nsid.nmap
+	file_check "" "" ""
 	nmap -sV --script dns-nsid -p53 -Pn $IP -oN Netauto/$IP/Protocols/DNS/nmap/nsid-extended.nmap
+	file_check "" "" ""
 	nmap --script dns-random-srcport -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/random-srcport.nmap
+	file_check "" "" ""
 	nmap --script dns-random-txid -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/random-txid.nmap
+	file_check "" "" ""
 	nmap --script dns-nsec-enum --script-args dns-nsec-enum.domains vulnerable.com -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/nsec-enum.nmap
+	file_check "" "" ""
 	nmap --script dns-recursion -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/recursion.nmap
+	file_check "" "" ""
 	nmap --script dns-service-discovery -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/service-discovery.nmap
+	file_check "" "" ""
 	nmap --script dns-srv-enum -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/srv-enum.nmap
+	file_check "" "" ""
 	nmap --script dns-update -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/update.nmap
+	file_check "" "" ""
 	nmap --script dns-zeustracker -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/zeustracker.nmap
+	file_check "" "" ""
 	nmap --script dns-zone-transfer -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/zone-transfer.nmap
+	file_check "" "" ""
 	nmap -sn -Pn --script fcrdns -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/fcrdns.nmap
+	file_check "" "" ""
 	nmap --script "dns-* and not brute" -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/all.namp
+	file_check "" "" ""
 
 	echo " "
 }
 
 tftp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating TFTP at port 69${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating TFTP on port 69${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/TFTP/nmap
+	directory_check "" "" ""
 	nmap -sU -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/open-ports.nmap
+	file_check "" "" ""
 	nmap --script tftp-version -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/version.nmap
+	file_check "" "" ""
 	nmap --script tftp-enum -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/enum.nmap
+	file_check "" "" ""
 	nmap -sU --script tftp-enum -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/udp-enum.nmap
+	file_check "" "" ""
 	nmap -sU -p 69 --script tftp-enum.nse --script-args tftp-enum.filelist=enumlist.txt $IP -oN Netauto/$IP/Protocols/TFTP/nmap/enumlist.nmap
+	file_check "" "" ""
 	nmap -n -Pn -sU -p 69 -sV --script tftp-enum $IP -oN Netauto/$IP/Protocols/TFTP/nmap/enum-extended.nmap
+	file_check "" "" ""
 
 	echo " "
 }
 
 finger_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Finger at port 79${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Finger on port 79${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Finger
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Finger/nc
+	directory_check "" "" ""
 	nc $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/finger-nc.txt
+	file_check "" "" ""
 	nc -vn $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/finger-nc-vn.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Finger/nmap
+	directory_check "" "" ""
 	nmap -sC -p 79 $IP -oN Netauto/$IP/Protocols/Finger/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 79 $IP -oN Netauto/$IP/Protocols/Finger/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 79 $IP -oN Netauto/$IP/Protocols/Finger/script-and-version.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Finger/enumeration
+	directory_check "" "" ""
 	finger @$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-users.txt
+	file_check "" "" ""
 	finger user@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-user.txt
+	file_check "" "" ""
 	finger -l user@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-user-all-format.txt
+	file_check "" "" ""
 	finger admin@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-admin.txt
+	file_check "" "" ""
 	finger -l admin@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-admin-all-format.txt
+	file_check "" "" ""
 	finger root@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-root.txt
+	file_check "" "" ""
 	finger -l root@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-logged-root-all-format.txt
+	file_check "" "" ""
 	finger 0@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-zero-enumeration.txt
+	file_check "" "" ""
 	finger 'a b c d e f g h'@$IP | tee Netauto/$IP/Protocols/finger/enumeration/finger-all-accounts.txt
+	file_check "" "" ""
 
 	echo " "
 }
 
 kerberos_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Kerberos at port 88${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Kerberos on port 88${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Kerberos/nmap
+	directory_check "" "" ""
 	nmap -sC -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/script-and-version.nmap
+	file_check "" "" ""
 	nmap -p 88 --script=krb5-enum-users -oN Netauto/$IP/Protocols/Kerberos/nmap/enum-users.nmap
+	file_check "" "" ""
 
 	echo " "
 }
 
 pop_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating POP at port 110${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating POP on port 110${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/POP
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/POP/nc
+	directory_check "" "" ""
 	nc $IP 110 | tee Netauto/$IP/Protocols/POP/nc/pop-nc.txt
+	file_check "" "" ""
 	nc -vn $IP 110 | tee Netauto/$IP/Protocols/POP/nc/pop-nc.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/POP/openssl
+	directory_check "" "" ""
 	openssl s_client -connect $IP:995 -crlf -quiet | tee Netauto/$IP/Protocols/POP/openssl/pop-openssl-crlf.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/POP/nmap
+	directory_check "" "" ""
 	nmap --script "pop3-capabilities or pop3-ntlm-info" -sV -port 110,995 $IP -oN Netauto/$IP/Protocols/POP/nmap/cap-and-ntlm.nmap
+	file_check "" "" ""
 	nmap -p 110,995 --script pop3-ntlm-info $IP -oN Netauto/$IP/Protocols/POP/nmap/ntlm-info.nmap
+	file_check "" "" ""
 	nmap -p 110,995 --script pop3-capabilities $IP -oN Netauto/$IP/Protocols/POP/nmap/capabilities.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -539,10 +753,15 @@ portmapper_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Portmapper on port 111${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Portmapper/nmap
+	directory_check "" "" ""
 	nmap -sC -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/script-and-version.nmap
+	file_check "" "" ""
 	nmap -sSUC -p111 $IP -oN Netauto/$IP/Protocols/Portmapper/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -551,9 +770,13 @@ ident_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Ident on port 113${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Ident/nmap
+	directory_check "" "" ""
 	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/Ident/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 113	$IP -oN Netauto/$IP/Protocols/Ident/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 113 $IP -oN Netauto/$IP/Protocols/Ident/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -562,18 +785,30 @@ ntp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NTP on port 123${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/NTP
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/NTP/nmap
+	directory_check "" "" ""
 	nmap -sU --script ntp-info -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/info.nmap
+	file_check "" "" ""
 	nmap -sU --script ntp-monlist -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/monlist.nmap
+	file_check "" "" ""
 	nmap -sU --script "ntp* and not (dos or brute)" -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/udp-all.nmap
+	file_check "" "" ""
 	nmap -sU -sV --script "ntp* and not (dos or brute)" -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/udp-version-all.nmap
+	file_check "" "" ""
 	nmap -sU -pU:123 -Pn -n --script=ntp-monlist $IP -oN Netauto/$IP/Protocols/NTP/nmap/aggressive-monlist.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/NTP/ntpq
+	directory_check "" "" ""
 	ntpq -c readlist $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-readlist.txt
+	file_check "" "" ""
 	ntpq -c readvar $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-readvar.txt
+	file_check "" "" ""
 	ntpq -c peers $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-peers.txt
+	file_check "" "" ""
 	ntpq -c associations $IP | tee Netauto/$IP/Protocols/NTP/ntpq/ntpq-associations.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -582,16 +817,26 @@ msrpc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MSRPC on port 135${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/MSRPC/nmap
+	directory_check "" "" ""
 	nmap -sC -p 135	$IP -oN Netauto/$IP/Protocols/MSRPC/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 135	$IP -oN Netauto/$IP/Protocols/MSRPC/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 135 $IP -oN Netauto/$IP/Protocols/MSRPC/nmap/script-and-version.nmap
+	file_check "" "" ""
 	nmap --script msrpc-enum -p 135 $IP -oN Netauto/$IP/Protocols/MSRPC/nmap/enum.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/MSRPC/rpcdump
+	directory_check "" "" ""
 	impacket-rpcdump -port 135 $IP | tee Netauto/$IP/Protocols/MSRPC/rpcdump/impacket-rpcdump.txt
+	file_check "" "" ""
 	/usr/share/doc/python3-impacket/examples/rpcdump.py $IP -p 135 | tee Netauto/$IP/Protocols/MSRPC/rpcdump/rpcdump_port.txt
+	file_check "" "" ""
 	/usr/share/doc/python3-impacket/examples/rpcmap.py 'ncacn_ip_tcp:$IP' | tee Netauto/$IP/Protocols/MSRPC/rpcdump/rpcmap.txt
+	file_check "" "" ""
 	python /opt/tools/MSRPC/IOXIDResolver.py -t $IP | tee Netauto/$IP/Protocols/MSRPC/rpcdump/IOXIDResolver.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -600,30 +845,51 @@ netbios_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NetBIOS on port 135, 137, 138, 139 & 445${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/nmap
+	directory_check "" "" ""
 	nmap -sU -p 137,138,139 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/udp.nmap
+	file_check "" "" ""
 	nmap -vv --reason -Pn -sV -p139,445 --script="(nbstat or smb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="unsafe=1" $IP -oN Netauto/$IP/Protocols/NetBios/nmap/aggressive-udp.nmap
+	file_check "" "" ""
 	nmap -sT -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/tcp.nmap
+	file_check "" "" ""
 	nmap -vv --reason -Pn -sU -sV -p137 --script="(nbstat or smb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="unsafe=1" $IP -oN Netauto/$IP/Protocols/NetBios/nmap/aggressive-tcp.nmap
+	file_check "" "" ""
 	nmap -sC -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 135,137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/script-and-version.nmap
+	file_check "" "" ""
 	nmap --script broadcast-netbios-master-browser -p 135,137,139 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/broadcast-netbios-master-browser.nmap
+	file_check "" "" ""
 	sudo nmap -sU -sV -T4 --script nbstat.nse -p137 -Pn -n $IP -oN Netauto/$IP/Protocols/NetBios/nmap/nbstat.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/nmblookup
+	directory_check "" "" ""
 	nmblookup -A $IP | tee Netauto/$IP/Protocols/NetBios/nmblookup/netbios-nmblookup.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/nbtscan
+	directory_check "" "" ""
 	nbtscan $IP | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-default.txt
+	file_check "" "" ""
 	nbtscan -rvh $IP | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-rvh.txt
+	file_check "" "" ""
 	nbtscan $IP/30 | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-30.txt
+	file_check "" "" ""
 	nbtscan -r $IP/24 | tee Netauto/$IP/Protocols/NetBios/nbtscan/netbios-nbtscan-24.txt # the command would always freeze
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/enum4linux
+	directory_check "" "" ""
 	enum4linux -a -M -l -d $IP | tee Netauto/$IP/Protocols/NetBios/enum4linux/netbios-enum4linux.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/rpcclient
+	directory_check "" "" ""
 	rpcclient -U "" -P $IP | tee Netauto/$IP/Protocols/NetBios/rpcclient/null_session_attempt.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -632,68 +898,121 @@ smb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SMB on port 445${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/nmap
+	directory_check "" "" ""
 	nmap --script smb-enum-shares.nse,smb-enum-users.nse -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/enum-scripts.nmap
+	file_check "" "" ""
 	nmap --script smb-enum* -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/enum-all.nmap
+	file_check "" "" ""
 	nmap --script smb-protocols -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/protocols.nmap
+	file_check "" "" ""
 	nmap --script smb-flood -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/flood.nmap
+	file_check "" "" ""
 	nmap --script smb-ls -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/list.nmap
+	file_check "" "" ""
 	nmap --script smb-mbenum -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/mbenum.nmap
+	file_check "" "" ""
 	nmap --script smb-os-discovery -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/os-discovery.nmap
+	file_check "" "" ""
 	nmap --script smb-psexec -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/psexec.nmap
+	file_check "" "" ""
 	nmap --script smb-security-mode -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/security-mode.nmap
+	file_check "" "" ""
 	nmap --script smb-server-stats -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/server-stats.nmap
+	file_check "" "" ""
 	nmap --script smb-system-info -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/system-info.nmap
+	file_check "" "" ""
 	nmap --script smb-webexec-exploit -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/webexec-exploit.nmap
+	file_check "" "" ""
 	nmap --script smb-double-pulsar-backdoor -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/double-pulsar-backdoor.nmap
+	file_check "" "" ""
 	nmap --script smb-vuln* -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/vuln-all.nmap
+	file_check "" "" ""
 	nmap --script "smb-* and not brute" -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/all.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMB/nmblookup
+	directory_check "" "" ""
 	nmblookup -A $IP | tee Netauto/$IP/Protocols/SMB/nmblookup/smb-nmblookup.txt
+	file_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/SMB/nbtscan
+	directory_check "" "" ""
 	nbtscan $IP | tee Netauto/$IP/Protocols/SMB/nbtscan/smb-nbtscan.txt
+	file_check "" "" ""
 	nbtscan -r $IP/24 | tee Netauto/$IP/Protocols/SMB/nbtscan/smb-nbtscan-recursive.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMB/enum4linux
+	directory_check "" "" ""
 	enum4linux $IP | tee Netauto/$IP/Protocols/SMB/enum4linux/smb-enum4linux.txt
+	file_check "" "" ""
 	enum4linux -a $IP | tee Netauto/$IP/Protocols/SMB/enum4linux/smb-enum4linux-all.txt
+	file_check "" "" ""
 	enum4linux -v $IP | tee Netauto/$IP/Protocols/SMB/enum4linux/smb-enum4linux-verbose.txt
+	file_check "" "" ""
 	enum4linux -a -M -l -d $IP | tee Netauto/$IP/Protocols/SMB/enum4linux/smb-enum4linux-extended.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMB/enum4linux-ng
+	directory_check "" "" ""
 	enum4linux-ng -A $IP | tee Netauto/$IP/Protocols/SMB/enum4linux-ng/smb-enum4linux-ng-all.txt
+	file_check "" "" ""
 	enum4linux-ng -As $IP | tee Netauto/$IP/Protocols/SMB/enum4linux-ng/smb-enum4linux-short-all.txt
+	file_check "" "" ""
 	
 	mkdir -p Netauto/$IP/Protocols/SMB/netexec
+	directory_check "" "" ""
 	netexec smb $IP/24 | tee Netauto/$IP/Protocols/SMB/netexec/smb-netexec-scan.txt
+	file_check "" "" ""
 	netexec smb $IP | tee Netauto/$IP/Protocols/SMB/netexec/smb-netexec-default.txt
+	file_check "" "" ""
 	netexec smb $IP-1 $IP-2 | tee Netauto/$IP/Protocols/SMB/netexec/smb-netexec-targetips.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMB/smbmap
+	directory_check "" "" ""
 	smbmap -H $IP | tee Netauto/$IP/Protocols/SMB/smbmap/smb-smbmap-scan-and-null-user.txt
+	file_check "" "" ""
 	smbmap -H $IP -P 445 | tee Netauto/$IP/Protocols/SMB/smbmap/smb-smbmap-port-null-user.txt
+	file_check "" "" ""
 	smbmap -u null -p "" $IP -P 445 | tee Netauto/$IP/Protocols/SMB/smbmap/smb-smbmap-null-session.txt
+	file_check "" "" ""
 	smbmap -u null -p "" $IP -P 445 -x "whoami" | tee Netauto/$IP/Protocols/SMB/smbmap/smb-smbmap-command-execution.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMB/crackmapexec
+	directory_check "" "" ""
 	crackmapexec smb $IP -u '' -p '' --shares | tee Netauto/$IP/Protocols/SMB/crackmapexec/null-user-shares.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMB/smbclient
+	directory_check "" "" ""
 	smbclient -L $IP | tee Netauto/$IP/Protocols/SMB/smbclient/smb-smbclient-directories.txt
+	file_check "" "" ""
 	smbclient -N -L $IP | tee Netauto/$IP/Protocols/SMB/smbclient/smb-smbclient-directories-nopswd.txt
+	file_check "" "" ""
 	smbclient -L\\ -N -I $IP | tee Netauto/$IP/Protocols/SMB/smbclient/smb-smbclient-null-session.txt
+	file_check "" "" ""
 	smbclient --no-pass -L //$IP | tee Netauto/$IP/Protocols/SMB/smbclient/smb-smbclient-null-user.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMB/netexec
+	directory_check "" "" ""
 	netexec smb $IP -u '' -p '' --shares | tee Netauto/$IP/Protocols/SMB/netexec/smb-netexec-nullsessions.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMB/rpcclient
+	directory_check "" "" ""
 	rpcclient -U "" -N $IP | tee Netauto/$IP/Protocols/SMB/rpcclient/smb-rpcclient-nullsessions.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/SMB/RID-Cycling-Attack
+	directory_check "" "" ""
 	impacket-lookupsid example.local/anonymous@$IP 20000 -no-pass | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/impacket-looksupid-anon-nopass.txt
+	file_check "" "" ""
 	impacket-lookupsid example.local/guest@$IP 20000 -no-pass | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/impacket-looksupid-guest-nopass.txt
+	file_check "" "" ""
 	impacket-lookupsid example.local/guest@$IP 20000 | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/impacket-looksupid-guest.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -702,18 +1021,29 @@ imap_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IMAP on port 143 & 993${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IMAP
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/IMAP/nc
+	directory_check "" "" ""
 	nc $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/imap-nc.txt
+	file_check "" "" ""
 	nc -vn $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/imap-vn.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/IMAP/openssl
+	directory_check "" "" ""
 	openssl s_client -connect $IP:993 | tee Netauto/$IP/Protocols/IMAP/openssl/imap-openssl.txt
+	file_check "" "" ""
 	openssl s_client -connect $IP:993 -quiet | tee Netauto/$IP/Protocols/IMAP/openssl/imap-openssl-quiet.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/IMAP/nmap
+	directory_check "" "" ""
 	nmap --script imap-capabilities -p 143,993 $IP -oN Netauto/$IP/Protocols/IMAP/nmap/capabilities.nmap
+	file_check "" "" ""
 	nmap -p 143,993 --script imap-ntlm-info $IP -oN Netauto/$IP/Protocols/IMAP/nmap/ntlm-info-ports.nmap
+	file_check "" "" ""
 	nmap --script imap-ntlm-info -p 143,993 $IP -oN Netauto/$IP/Protocols/IMAP/nmap/ntlm-info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -722,20 +1052,33 @@ irc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IRC on port 194 & from 6660 to 7000${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IRC
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/IRC/nc
+	directory_check "" "" ""
 	nc $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/irc-nc-194.txt
+	file_check "" "" ""
 	nc -vn $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/irc-vn-194.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/IRC/openssl
+	directory_check "" "" ""
 	openssl s_client -connect $IP:194 -quiet | tee Netauto/$IP/Protocols/IRC/openssl/irc-openssl-194-quiet.txt
+	file_check "" "" ""
 	openssl s_client -connect $IP:194 | tee Netauto/$IP/Protocols/IRC/openssl/irc-openssl-194-quiet.txt
+	file_check "" "" ""
 	openssl s_client -connect $IP:6667 -quiet | tee Netauto/$IP/Protocols/IRC/openssl/irc-openssl-6667-quiet.txt
+	file_check "" "" ""
 	openssl s_client -connect $IP:6667 | tee Netauto/$IP/Protocols/IRC/openssl/irc-openssl-6667.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/IRC/nmap
+	directory_check "" "" ""
 	nmap --script irc-info,irc-botnet-channels,irc-unrealircd-backdoor -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/info.nmap
+	file_check "" "" ""
 	nmap -sV --script irc-info,irc-botnet-channels,irc-unrealircd-backdoor -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/info-version.nmap
+	file_check "" "" ""
 	nmap -sV --script "irc-* and not brute" -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -744,10 +1087,15 @@ checkpoint_firewall_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Checkpoint Firewall on port 264${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Checkpoint_Firewall-1
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap
+	directory_check "" "" ""
 	nmap -sC -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 264 -oN Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -756,19 +1104,32 @@ ldap_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating LDAP on port 389${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/LDAP
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/LDAP/nmap
+	directory_check "" "" ""
 	nmap --script ldap-brute --script-args ldap.base='"cn=users,dc=cqure,dc=net"' -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/brute.nmap
+	file_check "" "" ""
 	nmap --script ldap-search -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/search.nmap
+	file_check "" "" ""
 	nmap --script ldap-novell-getpass -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/novell-getpass.nmap
+	file_check "" "" ""
 	nmap --script ldap-rootdse -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/rootdse.nmap
+	file_check "" "" ""
 	nmap --script "ldap* and not brute" -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/no-brute.nmap
+	file_check "" "" ""
 	nmap -n -sV --script "ldap* and not brute" $IP -oN Netauto/$IP/Protocols/LDAP/nmap/no-brute-version.nmap
+	file_check "" "" ""
 	nmap --script ldap-* $IP -oN Netauto/$IP/Protocols/LDAP/nmap/all.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/LDAP/ldapsearch
+	directory_check "" "" ""
 	ldapsearch -LLL -x -H ldap://$IP -b ‘’ -s base '(objectclass=*)' | tee Netauto/$IP/Protocols/LDAP/ldapsearch/ldap-anonymous-credential-dumping.txt
+	file_check "" "" ""
 	ldapsearch -h $IP -x -s base namingcontexts | tee Netauto/$IP/Protocols/LDAP/ldapsearch/ldap-namingcontexts.txt
+	file_check "" "" ""
 	ldapsearch -h $IP -x -b "DC=BLACKFIELD,DC=local" | tee Netauto/$IP/Protocols/LDAP/ldapsearch/ldap-domainname.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -777,15 +1138,24 @@ ipsec_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPSEC on port 500${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IKE
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/IKE/nmap
+	directory_check "" "" ""
 	nmap -sU -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/udp.nmap
+	file_check "" "" ""
 	nmap --script ike-version -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/version.nmap
+	file_check "" "" ""
 	nmap --script http-cisco-anyconnect -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/http-cisco-anyconnect.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/IKE/ike-scan
+	directory_check "" "" ""
 	ike-scan -M $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/ike-scan.txt
+	file_check "" "" ""
 	ike-scan -M --showbackoff $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/ike-scan-aggressive.txt
+	file_check "" "" ""
 	ike-scan -P -M -A -n fakeID $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/ike-scan-fakeID.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -794,12 +1164,19 @@ modbus_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Modbus on port 502${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Modbus
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Modbus/nmap
+	directory_check "" "" ""
 	nmap -sC -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/script-and-version.nmap
+	file_check "" "" ""
 	nmap --script modbus-discover -p 502 $IP -oN Netauto/$IP/Protocols/Modbus/nmap/discover.nmap
+	file_check "" "" ""
 	nmap --script modbus-discover --script-args modbus-discover.aggressive=true -p 502 $IP -oN Netauto/$IP/Protocols/Modbus/nmap/aggressive-discover.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -808,10 +1185,15 @@ rexec_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rexec on port 512${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rexec
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Rexec/nmap
+	directory_check "" "" ""
 	nmap -sC -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -820,10 +1202,15 @@ rlogin_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rlogin on port 513${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rlogin
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Rlogin/nmap
+	directory_check "" "" ""
 	nmap -sC -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -832,10 +1219,15 @@ rsh_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rsh on port 514${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rsh
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Rsh/nmap
+	directory_check "" "" ""
 	nmap -sC -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -844,10 +1236,15 @@ lpd_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating LPD on port 515${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/LPD
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/LPD/nmap
+	directory_check "" "" ""
 	nmap -sC -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -856,12 +1253,19 @@ afp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating AFP on port 548${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/AFP
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/AFP/nmap
+	directory_check "" "" ""
 	nmap --script afp-ls -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/list.nmap
+	file_check "" "" ""
 	nmap --script afp-path-vuln -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/path-vuln.nmap
+	file_check "" "" ""
 	nmap --script afp-serverinfo -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/serverinfo.nmap
+	file_check "" "" ""
 	nmap --script afp-showmount -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/showmount.nmap
+	file_check "" "" ""
 	nmap -sV --script "afp-* and not dos and not brute" -p 548 $IP -oN Netauto/$IP/Protocols/APF/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -870,11 +1274,17 @@ rtsp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RTSP on port 554 & 8554${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/RTSP
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/RTSP/nmap
+	directory_check "" "" ""
 	nmap --script rtsp-url-brute -p 554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/url-brute.nmap
+	file_check "" "" ""
 	nmap --script rtsp-methods -p 554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/methods.nmap
+	file_check "" "" ""
 	nmap --script rtsp-* -p 554,8554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/all.nmap
+	file_check "" "" ""
 	nmap -sV --script "rtsp-*" -p 554,8554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/all-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -883,10 +1293,15 @@ ipmi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPMI on port 623${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IPMI
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/IPMI/nmap
+	directory_check "" "" ""
 	nmap -n -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/scan.nmap
+	file_check "" "" ""
 	nmap -n-sU -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/info-scan.nmap
+	file_check "" "" ""
 	nmap -sU --script ipmi-version -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -895,17 +1310,27 @@ ipp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPP on port 631${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IPP
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/IPP/nmap
+	directory_check "" "" ""
 	nmap -sV -p631 --script=cups* $IP -oN Netauto/$IP/Protocols/IPP/nmap/all.nmap
+	file_check "" "" ""
 	nmap -sV -p631 --script=cups-info $IP -oN Netauto/$IP/Protocols/IPP/nmap/info.nmap
+	file_check "" "" ""
 	nmap -sV -p631 --script=cups-queue-info $IP -oN Netauto/$IP/Protocols/IPP/nmap/queue-info.nmap
+	file_check "" "" ""
 
 	curl http:/$IP:631 | tee Netauto/$IP/Protocols/IPP/ipp-curl.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/IPP/PRET
+	directory_check "" "" ""
 	python2 /opt/tools/IPP/PRET/pret.py $IP:631 ps | tee Netauto/$IP/Protocols/IPP/PRET/ipp-pret-ps.txt
+	file_check "" "" ""
 	python2 /opt/tools/IPP/PRET/pret.py $IP:631 pjl | tee Netauto/$IP/Protocols/IPP/PRET/ipp-pret-pjl.txt
+	file_check "" "" ""
 	python2 /opt/tools/IPP/PRET/pret.py $IP:631 pcl | tee Netauto/$IP/Protocols/IPP/PRET/ipp-pret-pcl.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -914,10 +1339,15 @@ epp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating EPP on port 700${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/EPP
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/EPP/nmap
+	directory_check "" "" ""
 	nmap -sC -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -926,18 +1356,29 @@ rsync_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rsync on port 873${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rsync
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Rsync/nmap
+	directory_check "" "" ""
 	nmap --script rsync-list-modules -p 873 $IP -oN Netauto/$IP/Protocols/Rsync/nmap/list-modules.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Rsync/rsync
+	directory_check "" "" ""
 	rsync $IP:: | tee Netauto/$IP/Protocols/Rsync/rsync/rsync-sync-data.txt
+	file_check "" "" ""
 	rsync -av --list-only rsync://$IP | tee Netauto/$IP/Protocols/Rsync/rsync/rsync-sync-only.txt
+	file_check "" "" ""
 	rsync $IP::files | tee Netauto/$IP/Protocols/Rsync/rsync/rsync-files.txt
+	file_check "" "" ""
 	rsync $IP::files/tmp/ | tee Netauto/$IP/Protocols/Rsync/rsync/rsync-files-tmp.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Rsync/rsync/shares
+	directory_check "" "" ""
 	rsync $IP::shares | tee Netauto/$IP/Protocols/Rsync/rsync/shares/rsync-shares.txt
+	file_check "" "" ""
 	rsync -av --list-only rsync://$IP:873/shares | tee Netauto/$IP/Protocols/Rsync/rsync/shares/rsync-shares-list.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -946,13 +1387,20 @@ rusersd_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rusersd on port 1026${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rusersd
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Rusersd/nmap
+	directory_check "" "" ""
 	nmap -sC -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Rusersd/rusers
+	directory_check "" "" ""
 	rusers -l $IP | tee Netauto/$IP/Protocols/Rusersd/rusers/rusersd-ls.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -961,9 +1409,13 @@ socks_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SOCKS on port 1080${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SOCKS
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/SOCKS/nmap
+	directory_check "" "" ""
 	nmap -p 1080 $IP --script socks-auth-info -oN Netauto/$IP/Protocols/SOCKS/nmap/auth-info.nmap
+	file_check "" "" ""
 	nmap --script socks-open-proxy -p 1080 $IP -oN Netauto/$IP/Protocols/SOCKS/nmap/open-proxy.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -972,12 +1424,19 @@ java_rmi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Java RMI${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Java-RMI
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Java-RMI/nmap/
+	directory_check "" "" ""
 	nmap -p- $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/port.nmap
+	file_check "" "" ""
 	nmap -Pn $IP -p- -oN Netauto/$IP/Protocols/Java-RMI/nmap/open-port.nmap
+	file_check "" "" ""
         nmap -n -v -sU -p- -T5 $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/udp-scan.nmap
+	file_check "" "" ""
         nmap -n -v -sU $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/udp.nmap
+	file_check "" "" ""
         nmap -n -v -sT -p- -T5 $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/tcp-scan.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -986,14 +1445,22 @@ ibm_mq_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IBM MQ on port 1414${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IBM-MQ
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/IBM-MQ/nmap
+	directory_check "" "" ""
 	nmap -sC -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/IBM-MQ/docker
+	directory_check "" "" ""
 	sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 discover name | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-queue-manager.txt
+	file_check "" "" ""
 	sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 --username admin --password passw0rd discover channels | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-channels.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1002,9 +1469,13 @@ pptp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating PPTP on port 1723${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/PPTP/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/PPTP/nmap
+	directory_check "" "" ""
 	nmap –Pn -sSV -p1723 $IP -oN Netauto/$IP/Protocols/PPTP/nmap/ports.nmap
+	file_check "" "" ""
 	nmap --script pptp-version -p 1723 $IP -oN Netauto/$IP/Protocols/PPTP/nmap/version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1013,8 +1484,11 @@ mqtt_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MQTT on port 1883${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/MQTT/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/MQTT/nmap
+	directory_check "" "" ""
 	nmap --script mqtt-subscribe -p 1883 $IP -oN Netauto/$IP/Protocols/MQTT/nmap/mqtt-subscribe.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1023,20 +1497,33 @@ nfs_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NFS on port 111 & 2049${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/NFS/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/NFS/nmap
+	directory_check "" "" ""
 	nmap -sC -p2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/nfs-sc.nmap
+	file_check "" "" ""
 	nmap --script nfs-ls -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/list.nmap
+	file_check "" "" ""
 	nmap --script nfs-showmount -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/showmount.nmap
+	file_check "" "" ""
 	nmap --script nfs-statfs -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/statfs.nmap
+	file_check "" "" ""
 	nmap --script=nfs-ls,nfs-statfs,nfs-showmount -p 111,2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/script-scan.nmap
+	file_check "" "" ""
 	sudo nmap -Pn -n --open -p111 --script=nfs-ls,nfs-showmount,nfs-statfs,rpcinfo $IP/24 -oN Netauto/$IP/Protocols/NFS/nmap/extended-script-scan.nmap
+	file_check "" "" ""
 	nmap -Pn -n -T4 -sV --script=rpcinfo -p111 $IP -oN Netauto/$IP/Protocols/NFS/nmap/rpcinfo.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/NFS/showmount
+	directory_check "" "" ""
 	showmount -e $IP | tee Netauto/$IP/Protocols/NFS/showmount/nfs-showmount.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/NFS/rpcinfo
+	directory_check "" "" ""
 	rpcinfo -p $IP | tee Netauto/$IP/Protocols/NFS/showmount/rpcinfo/nfs-rpcinfo.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1045,12 +1532,19 @@ compaq_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Compaq${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/compaq/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/compaq/nmap/
+	directory_check "" "" ""
 	nmap -p- $IP -oN Netauto/$IP/Protocols/compaq/nmap/port.nmap
+	file_check "" "" ""
 	nmap -Pn $IP -p- -oN Netauto/$IP/Protocols/compaq/nmap/open-port.nmap
+	file_check "" "" ""
         nmap -n -v -sU -p- -T5 $IP -oN Netauto/$IP/Protocols/compaq/nmap/udp-scan.nmap
+	file_check "" "" ""
         nmap -n -v -sU $IP -oN Netauto/$IP/Protocols/compaq/nmap/udp.nmap
+	file_check "" "" ""
         nmap -n -v -sT -p- -T5 $IP -oN Netauto/$IP/Protocols/compaq/nmap/tcp-scan.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1059,9 +1553,13 @@ docker_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Docker on port 2375 & 2376${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Docker/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Docker/nmap
+	directory_check "" "" ""
 	map --script docker-version -p 2375,2376 $IP -oN Netauto/$IP/Protocols/Docker/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sV --script "docker-* and not brute" -p 2375,2376 $IP -oN Netauto/$IP/Protocols/Docker/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1070,18 +1568,25 @@ squid_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Squid on port 3128${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Squid/
+	directory_check "" "" ""
 	curl --proxy http://$IP:3128 http://$IP | tee Netauto/$IP/Protocols/Squid/squid-curl-proxy.txt
+	file_check "" "" ""
 
 	python /opt/tools/Squid/spose/spose.py --proxy http://$IP:3128 --target $IP | tee Netauto/$IP/Protocols/Squid/squid-spose.txt
+	file_check "" "" ""
 }
 
 iscsi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating ISCSI on port 3260${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/ISCSI/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/ISCSI/nmap
+	directory_check "" "" ""
 	nmap -sV --script=iscsi-info -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/info.nmap
+	file_check "" "" ""
 	nmap --script "iscsi-* and not brute" -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1090,13 +1595,21 @@ rdp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RDP on port 3389${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/RDP/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/RDP/nmap
+	directory_check "" "" ""
 	nmap --script rdp-enum-encryption -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/enum-encryption.nmap
+	file_check "" "" ""
 	nmap --script rdp-ntlm-info -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/ntlm-info.nmap
+	file_check "" "" ""
 	nmap --script rdp-vuln-ms12-020 -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/vuln-ms12-020.nmap
+	file_check "" "" ""
 	nmap --script "rdp* and not brute" -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/all.nmap
+	file_check "" "" ""
 	nmap --script "rdp-enum-encryption or rdp-vuln-ms12-020 or rdp-ntlm-info" -p 3389 -T4 $IP -oN Netauto/$IP/Protocols/RDP/nmap/aggressive-scan.nmap
+	file_check "" "" ""
 	sudo nmap -Pn -n --open -p3389 --script=rdp-vuln-ms12-020,rdp-enum-encryption $IP/24 -oN Netauto/$IP/Protocols/RDP/nmap/port-scan.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1105,10 +1618,15 @@ saprouter_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SAPRouter on port 3299${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SAPRouter/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/SAPRouter/nmap
+	directory_check "" "" ""
 	nmap -sC -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1117,8 +1635,11 @@ distcc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Distcc on port 3632${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/distcc/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/distcc/nmap
+	directory_check "" "" ""
 	nmap -p 3632 $IP --script distcc-cve2004-2687 --script-args="distcc-exec.cmd='id'" -oN Netauto/$IP/Protocols/distcc/nmap/cve2004-2687.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1127,13 +1648,20 @@ subversion_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Subversion on port 3690${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/subversion/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/subversion/nc
+	directory_check "" "" ""
 	nc $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/subversion-nc.txt
+	file_check "" "" ""
 	nc -vn $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/subversion-vn.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/subversion/svn
+	directory_check "" "" ""
 	svn ls svn://$IP | tee Netauto/$IP/Protocols/subversion/svn/list.txt
+	file_check "" "" ""
 	svn log svn://$IP | tee Netauto/$IP/Protocols/subversion/svn/log.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1142,10 +1670,15 @@ ws-discovery_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WS Discovery on port 3702${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/ws-discovery/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/ws-discovery/nmap
+	directory_check "" "" ""
 	nmap -sC -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/script-and-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1154,13 +1687,20 @@ epmd_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating EPMD on port 4369${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/epmd/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/epmd/nc
+	directory_check "" "" ""
 	nc $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/epmd-nc.txt
+	file_check "" "" ""
 	nc -vn $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/epmd-vn.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/epmd/nmap
+	directory_check "" "" ""
 	nmap -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/info.nmap
+	file_check "" "" ""
 	nmap -sV -Pn -n -T4 -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/aggressive-scan.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1169,7 +1709,9 @@ cisco_smart_install_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating CISCO Smart Install${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/CSIS
+	directory_check "" "" ""
 	sudo python3 /opt/tools/CISCO_Smart_Install/SIETpy3/siet.py -g -i $IP | tee Netauto/$IP/Protocols/CSIS/siet.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1178,12 +1720,18 @@ opc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating OPC on port 4840${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/OPC
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/nmap/Protocols/OPC/nmap
+	directory_check "" "" ""
 	nmap -sC -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/info.nmap
+	file_check "" "" ""
 
 	opalopc -vv opc.tcp://$IP:4840 | tee Netauto/$IP/Protocols/OPC/opc-opalopc.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1192,21 +1740,35 @@ docker_registry_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Docker Registry on port 5000${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/docker_registry/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/docker_registry/nmap
+	directory_check "" "" ""
 	nmap -sC -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/info.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/nmap/Protocols/docker_registry/curl
+	directory_check "" "" ""
 	curl -s http://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/curl/dr-curl-http-catalog.txt
+	file_check "" "" ""
 	curl -s https://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/curl/dr-curl-https-catalog.txt
+	file_check "" "" ""
 	curl -k http://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/dr-curl-http-authentication.txt
+	file_check "" "" ""
 	curl -k https://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/dr-curl-https-authentication.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber
+	directory_check "" "" ""
 	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --list | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/list.txt
+	file_check "" "" ""
 	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --dump linux | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/dump.txt
+	file_check "" "" ""
 	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --dump_all | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/dump_all.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1215,9 +1777,13 @@ mdns_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MDNS on port 5353${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/mDNS/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/mDNS/nmap
+	directory_check "" "" ""
 	nmap --script dns-service-discovery -p 5353 $IP -oN Netauto/$IP/Protocols/mDNS/nmap/service-discovery.nmap
+	file_check "" "" ""
 	nmap -sU --script dns-service-discovery -p 5353 $IP -oN Netauto/$IP/Protocols/mDNS/nmap/udp-service-discovery.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1226,10 +1792,15 @@ redshift_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RedShift on port 5439${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/redshift/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/redshift/nmap
+	directory_check "" "" ""
 	nmap -sC -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1238,10 +1809,15 @@ android_debug_bridge_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Android Debug Bridge on port 5555${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/ADB
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/ADB/nmap
+	directory_check "" "" ""
 	nmap -sC -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1250,10 +1826,15 @@ kibana_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Kibana on port 5601${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Kibana/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Kibana/nmap
+	directory_check "" "" ""
 	nmap -sC -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1262,9 +1843,13 @@ amqp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating AMQP on port 5672${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/AMQP/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/AMQP/nmap
+	directory_check "" "" ""
 	nmap -p 5672 --script amqp-info $IP -oN Netauto/$IP/Protocols/AMQP/nmap/info.nmap
+	file_check "" "" ""
 	nmap -sV -Pn -n -T4 -p 5672 --script amqp-info $IP -oN Netauto/$IP/Protocols/AMQP/nmap/extended-info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1273,13 +1858,21 @@ vnc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating VNC on port 5900${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/VNC
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/VNC/nmap
+	directory_check "" "" ""
 	nmap -p 5900 --script vnc-title $IP -oN Netauto/$IP/Protocols/VNC/nmap/title.nmap
+	file_check "" "" ""
 	nmap -p 5900 --script vnc-info $IP -oN Netauto/$IP/Protocols/VNC/nmap/info.nmap
+	file_check "" "" ""
 	nmap --script realvnc-auth-bypass -p 5900 $IP -oN Netauto/$IP/Protocols/VNC/nmap/auth-bypass.nmap
+	file_check "" "" ""
 	nmap -sV --script vnc-info,realvnc-auth-bypass,vnc-title -p 5900 $IP -oN Netauto/$IP/Protocols/VNC/nmap/script-scan.nmap
+	file_check "" "" ""
 	sudo nmap -Pn -n --open -p5900 --script=realvnc-auth-bypass,vnc-info $IP/24 -oN Netauto/$IP/Protocols/VNC/extended-script-scan.nmap
+	file_check "" "" ""
 	nmap -p 5900 --script "vnc-* and not brute" $IP -oN Netauto/$IP/Protocols/VNC/nmap/no-brute.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1288,10 +1881,15 @@ winrm_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WinRM on port 5985 & 5986${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/WinRM/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/WinRM/nmap
+	directory_check "" "" ""
 	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1300,10 +1898,15 @@ omi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating OMI on port 5985 & 5986${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/OMI/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/OMI/nmap
+	directory_check "" "" ""
 	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1312,10 +1915,15 @@ x11_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating X11 on port 6000 & in range up to 6005${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/X11/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/X11/nmap
+	directory_check "" "" ""
 	nmap --script x11-access -p 6000 $IP -oN Netauto/$IP/Protocols/X11/nmap/access.nmap
+	file_check "" "" ""
 	nmap -sV --script x11-access -p 6000 $IP -oN Netauto/$IP/Protocols/X11/nmap/access-version.nmap
+	file_check "" "" ""
 	sudo nmap -Pn -n --open -p6000-6005 --script=x11-access $IP/24 -oN Netauto/$IP/Protocols/X11/nmap/extended-script.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1324,13 +1932,21 @@ ajp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating AJP on port 8009${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/AJP/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/AJP/nmap
+	directory_check "" "" ""
 	nmap --script ajp-auth -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/auth.nmap
+	file_check "" "" ""
 	nmap --script ajp-auth --script-args ajp-auth.path=/login -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/auth-login.nmap
+	file_check "" "" ""
 	nmap --script ajp-headers -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/headers.nmap
+	file_check "" "" ""
 	nmap --script ajp-methods -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/methods.nmap
+	file_check "" "" ""
 	nmap --script ajp-request -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/request.nmap
+	file_check "" "" ""
 	nmap -sV --script ajp-auth,ajp-headers,ajp-methods,ajp-request -n -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1339,10 +1955,15 @@ splunk_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Splunk on port 8089${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Splunk/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Splunk/nmap
+	directory_check "" "" ""
 	nmap -sC -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1350,13 +1971,22 @@ splunk_scan() {
 bitcoin_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Bitcoin on port 8333, 18333, 38333 & 18444${ENDCOLOR}\n"
 
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate Bitcoin${ENDCOLOR}\n"
+
 	mkdir -p Netauto/$IP/Protocols/Bitcoin/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Bitcoin/nmap
+	directory_check "" "" ""
 	sudo nmap -p 8333 --script bitcoin-info $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/info.nmap
+	file_check "" "" ""
 	sudo nmap -p 8333 --script bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/getaddr.nmap
+	file_check "" "" ""
 	sudo nmap -p 8333 --script bitcoin-info --script bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/info-getaddr.nmap
+	file_check "" "" ""
 	sudo nmap -p 8333,18333,38333,18444 --script bitcoin-info,bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/script.nmap
+	file_check "" "" ""
 	sudo nmap -sV -p 8333,18333,38333,18444 --script bitcoin-info,bitcoin-getaddr $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/ext-script.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1365,10 +1995,15 @@ fastcgi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating FastCGI on port 9000${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/FastCGI/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/FastCGI/nmap
+	directory_check "" "" ""
 	nmap -sC -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1377,10 +2012,15 @@ hsqldb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating HSQLDB on port 9001${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/HSQLDB/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/HSQLDB/nmap
+	directory_check "" "" ""
 	nmap -sC -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1389,9 +2029,13 @@ cassandra_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Cassandra on port 9042 & 9160${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Cassandra/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Cassandra/nmap
+	directory_check "" "" ""
 	nmap --script cassandra-info -p 9042,9160 $IP -oN Netauto/$IP/Protocols/Cassandra/nmap/info.nmap
+	file_check "" "" ""
 	nmap -sV --script cassandra-info -p 9042,9160 $IP -oN Netauto/$IP/Protocols/Cassandra/nmap/info-version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1400,9 +2044,13 @@ raw_printing_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Raw Printing on port 9100${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/raw_printing/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/raw_printing/nmap
+	directory_check "" "" ""
 	nmap --script pjl-ready-message -p 9100 $IP -oN Netauto/$IP/Protocols/raw_printing/nmap/pjl-ready-message.nmap
+	file_check "" "" ""
 	nmap -sV --script pjl-ready-message -p 9100 $IP -oN Netauto/$IP/Protocols/raw_printing/nmap/version.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1411,62 +2059,115 @@ elasticsearch_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Elasticsearch on port 9200${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl
+	directory_check "" "" ""
 	curl -X GET "$IP:9200/_xpack/security/user" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-security-user.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_security/role" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-role.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_security/user" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-user.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat
+	directory_check "" "" ""
 	curl -X GET "$IP:9200/_cat/segments" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-segments.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/shards" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-shards.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/repositories" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-repositories.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/recovery" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-recovery.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/plugins" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-plugins.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/pending_tasks" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-pending_tasks.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/nodes" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-nodes.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/tasks" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-tasks.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/templates" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-templates.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/thread_pool" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-thread_pool.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml
+	directory_check "" "" ""
 	curl -X GET "$IP:9200/_cat/ml/trained_models" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-ml_trained_models.txt
+	file_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat/transforms
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/transforms/_all" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-transforms_-all.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/aliases" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-aliases.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/allocation" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-allocation.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/ml/anomaly_detectors" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-ml-_anomaly_detectors.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/count" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-count.txt
+	file_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml/data_frame
+	directory_check "" "" ""
 	curl -X GET "$IP:9200/_cat/ml/data_frame/analytics" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-ml-_data_frame-analytics.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/ml/datafeeds" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-ml_datafeeds.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/fielddata" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-fielddata.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/health" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-health.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/indices" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-indices.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/master" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-master.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/nodeattrs" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-nodeattrs.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cat/nodes" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cat-nodes.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cluster
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cluster/allocation
+	directory_check "" "" ""
 	curl -X GET "$IP:9200/_cluster/allocation/explain" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_user-_explain.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cluster/settings" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-settings.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cluster/health" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-health.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cluster/state" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-state.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cluster/stats" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-stats.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_cluster/pending_tasks" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-pending_tasks.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_nodes" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_nodes.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_nodes/usage" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster--nodes-usage.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_nodes/hot_threads" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_nodes-hot_threads.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_nodes/stats" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_nodes-stats.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_tasks/allocation/explain" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-tasks-allocation-explain.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_remote/info" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_cluster-_remote-info.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_security
+	directory_check "" "" ""
 	curl -X GET "$IP:9200/_security/user" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-user.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_security/privilege" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-privilege.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_security/role_mapping" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-role_mapping.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_security/role" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-role.txt
+	file_check "" "" ""
 	curl -X GET "$IP:9200/_security/api_key" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl-_security-api_key.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1475,10 +2176,15 @@ ndmp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NDMP on port 10000${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/NDMP/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/NDMP/nmap
+	directory_check "" "" ""
 	nmap --script ndmp-version -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/version.nmap
+	file_check "" "" ""
 	nmap --script ndmp-fs-info -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/fs-info.nmap
+	file_check "" "" ""
 	nmap -n -sV --script "ndmp-fs-info or ndmp-version" -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1487,19 +2193,31 @@ memcached_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Memcached on port 11211${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Memcached/nc
+	directory_check "" "" ""
 	nc $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/memcached-nc.txt
+	file_check "" "" ""
 	nc -vn $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/memcached-vn.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/nc
+	directory_check "" "" ""
 	nc -vn -w 1 $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/memcached-w.txt
+	file_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Memcached/memcstat
+	directory_check "" "" ""
 	memcstat --servers=$IP | tee Netauto/$IP/Protocols/Memcached/memcstat/stats.txt
+	file_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Memcached/memcdump
+	directory_check "" "" ""
 	memcdump --servers=$IP | tee Netauto/$IP/Protocols/Memcached/memcdump/all-items.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/nmap
+	directory_check "" "" ""
 	nmap -n -sV --script memcached-info -p 11211 $IP | tee Netauto/$IP/Protocols/Memcached/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1508,38 +2226,58 @@ rabbitmq_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RabbitMQ on port 15672${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/RabbitMQ/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/RabbitMQ/nmap
+	directory_check "" "" ""
 	nmap -sC -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
 
 glusterfs_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating GlusterFS on port 24007 & 49152${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate GlusterFS${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/GlusterFS/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/GlusterFS/nmap
+	directory_check "" "" ""
 	nmap -sC -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/info.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/GlusterFS/gluster
+	directory_check "" "" ""
 	sudo gluster --remote-host=$IP volume list | tee Netauto/$IP/Protocols/GlusterFS/gluster/volume-list.txt
+	file_check "" "" ""
 
 	echo " "
 }
 
 tiller_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Tiller on port 44134${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate Tiller${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Tiller/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Tiller/nmap
+	directory_check "" "" ""
 	nmap -sC -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/info.nmap
+	file_check "" "" ""
 	sudo nmap -sS -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/stealth-scan.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1548,12 +2286,19 @@ ethernetip_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating EthernetIP on port 44818${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/EthernetIP/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/EthernetIP/nmap
+	directory_check "" "" ""
 	nmap -sC -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/info.nmap
+	file_check "" "" ""
 	nmap --script enip-info -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/info-script.nmap
+	file_check "" "" ""
 	nmap -n -sV --script enip-info -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/ext-info-script.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1562,11 +2307,17 @@ bacnet_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating BACNet on port 47808${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/BACNet/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/BACNet/nmap
+	directory_check "" "" ""
 	nmap -sC -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/info.nmap
+	file_check "" "" ""
 	nmap --script bacnet-info --script-args full=yes -sU -n -sV -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/ext-info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1575,14 +2326,23 @@ hadoop_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Hadoop on port 50030, 50060, 50070 & 50090${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Hadoop/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/Hadoop/nmap
+	directory_check "" "" ""
 	nmap --script hadoop-jobtracker-info -p 50030 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/jobtracker-info.nmap
+	file_check "" "" ""
 	nmap --script hadoop-tasktracker-info -p 50060 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/tasktracker-info.nmap
+	file_check "" "" ""
 	nmap --script hadoop-namenode-info -p 50070 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/namenode-info.nmap
+	file_check "" "" ""
 	nmap --script hadoop-datanode-info -p 50075 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/datanode-info.nmap
+	file_check "" "" ""
 	nmap --script hadoop-secondary-namenode-info -p 50090 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/secondary-namenode-info.nmap
+	file_check "" "" ""
 	nmap --script "hadoop-* and not brute" -p 50030,50060,50070,50075,50090 -oN Netauto/$IP/Protocols/Hadoop/nmap/all.nmap
+	file_check "" "" ""
 	nmap -sV --script "hadoop-* and not brute" -p 50030,50060,50070,50075,50090 -oN Netauto/$IP/Protocols/Hadoop/nmap/all-ext.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1591,46 +2351,79 @@ http_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating HTTP on port 80${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/HTTP/nmap
+	directory_check "" "" ""
 	nmap --script http-auth --script-args http-auth.path=/login -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/auth-login.nmap
+	file_check "" "" ""
 	nmap --script http-devframework -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/devframework.nmap
+	file_check "" "" ""
 	nmap --script http-enum -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/enum.nmap
+	file_check "" "" ""
 	nmap --script http-headers -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/headers.nmap
+	file_check "" "" ""
 	nmap --script http-methods -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/methods.nmap
+	file_check "" "" ""
 	nmap --script http-waf-detect -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/waf-detect.nmap
+	file_check "" "" ""
 	nmap --script http-wordpress-enum --script-args type="plugins",search-limit=1500 -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/wordpress-enum.nmap
+	file_check "" "" ""
 	nmap --script http-wordpress-users -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/wordpress-users.nmap
+	file_check "" "" ""
 	nmap --script "http-wordpress-* and not brute" -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/wordpress-all.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners
+	directory_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto
+	directory_check "" "" ""
 	nikto -h http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto/http-nikto.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb
+	directory_check "" "" ""
 	whatweb http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/default.txt
+	file_check "" "" ""
 	whatweb -a 1 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/stealthy.txt
+	file_check "" "" ""
 	whatweb -a 3 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/aggressive.txt
+	file_check "" "" ""
 	whatweb -a 4 http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/extreme.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech
+	directory_check "" "" ""
 	webtech -u $IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech/http-webtech.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze
+	directory_check "" "" ""
 	webanalyze -host $IP -crawl 2 | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze/http-webanalyze.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti
+	directory_check "" "" ""
 	wapiti -u http://$IP -o Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti/http-wapiti.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/Firewall
+	directory_check "" "" ""
 	wafw00f http://$IP | tee Netauto/$IP/Protocols/HTTP/Firewall/http-wafw00f.txt
+	file_check "" "" ""
 	python3 /opt/tools/HTTP/WhatWaf/whatwaf --url http://$IP | tee Netauto/$IP/Protocols/HTTP/Firewall/http-whatwaf.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/CMSScan
+	directory_check "" "" ""
 	cmsmap  -F -d http://$IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-cms.txt
+	file_check "" "" ""
 	wpscan --force update -e --url $IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-wpscan.txt
+	file_check "" "" ""
 	joomscan --ec -u $IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-joomscan.txt
+	file_check "" "" ""
 	python3 /opt/tools/HTTP/CMSeeK/cmseek.py -u http://$IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/http-cmseek.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1639,46 +2432,79 @@ https_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating HTTPS on port 443 & 1443${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Protocols/HTTPS/nmap
+	directory_check "" "" ""
 	nmap --script http-auth --script-args http-auth.path=/login -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/auth.nmap
+	file_check "" "" ""
 	nmap --script http-devframework -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/devframework.nmap
+	file_check "" "" ""
 	nmap --script http-enum -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/enum.nmap
+	file_check "" "" ""
 	nmap --script http-headers -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/headers.nmap
+	file_check "" "" ""
 	nmap --script http-methods -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/methods.nmap
+	file_check "" "" ""
 	nmap --script http-waf-detect -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/waf-detect.nmap
+	file_check "" "" ""
 	nmap --script http-wordpress-enum --script-args type="plugins",search-limit=1500 -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/wordpress-enum.nmap
+	file_check "" "" ""
 	nmap --script http-wordpress-users -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/wordpress-users.nmap
+	file_check "" "" ""
 	nmap --script "http-wordpress-* and not brute" -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/wordpress-all.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners
+	directory_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto
+	directory_check "" "" ""
 	nikto -h https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto/https-nikto.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb
+	directory_check "" "" ""
 	whatweb https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/default.txt
+	file_check "" "" ""
 	whatweb -a 1 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/stealthy.txt
+	file_check "" "" ""
 	whatweb -a 3 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/aggression.txt
+	file_check "" "" ""
 	whatweb -a 4 https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/extreme.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech
+	directory_check "" "" ""
 	webtech -u $IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech/https-webtech.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/webanalyze
+	directory_check "" "" ""
 	webanalyze -host $IP -crawl 2 | tee Netauto/$IP/Protocols/HTTPS/webanalyze/https-webanalyze.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/waipti
+	directory_check "" "" ""
 	wapiti -u https://$IP -o Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti/http-wapiti.txt | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/waipti/http-webanalyze.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/Firewall
+	directory_check "" "" ""
 	wafw00f https://$IP | tee Netauto/$IP/Protocols/HTTPS/Firewall/https-wafw00f.txt
+	file_check "" "" ""
 	whatwaf -u https://$IP | tee Netauto/$IP/Protocols/HTTPS/Firewall/https-whatwaf.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/CMSScan
+	directory_check "" "" ""
 	cmsmap  -F -d https://$IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-cms.txt
+	file_check "" "" ""
 	wpscan --force update -e --url $IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-wpscan.txt
+	file_check "" "" ""
 	joomscan --ec -u $IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-joomscan.txt
+	file_check "" "" ""
 	python3 /opt/tools/HTTP/CMSeek/cmseek.py -u https://$IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/https-cmseek.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1690,19 +2516,33 @@ mysql_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MySQL on port 3306${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/MySQL
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Databases/MySQL/nmap
+	directory_check "" "" ""
 	nmap --script mysql-info -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/info.nmap
+	file_check "" "" ""
 	nmap --script mysql-audit -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/audit.nmap
+	file_check "" "" ""
 	nmap --script mysql-query -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/query.nmap
+	file_check "" "" ""
 	nmap --script mysql-enum -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/enum.nmap
+	file_check "" "" ""
 	nmap --script mysql-dump-hashes -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/dump_hashes.nmap
+	file_check "" "" ""
 	nmap --script mysql-empty-password -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/empty_password.nmap
+	file_check "" "" ""
 	nmap --script mysql-variables -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/variables.nmap
+	file_check "" "" ""
 	nmap --script mysql-vuln-cve2012-2122 -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/vuln.nmap
+	file_check "" "" ""
 	nmap --script mysql-databases -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/databases.nmap
+	file_check "" "" ""
 	nmap --script mysql-users -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/users.nmap
+	file_check "" "" ""
 	nmap --script "mysql-* and not brute" -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/all.nmap
+	file_check "" "" ""
 	nmap -sV -p 3306 --script mysql-audit,mysql-databases,mysql-dump-hashes,mysql-empty-password,mysql-enum,mysql-info,mysql-query,mysql-users,mysql-variables,mysql-vuln-cve2012-2122 $IP -oN Netauto/$IP/Databases/MySQL/nmap/all-ext.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1711,9 +2551,13 @@ couchdb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating CouchDB on port 5984 & 6384${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/CouchDB
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Databases/CouchDB/nmap
+	directory_check "" "" ""
 	nmap --script couchdb-databases -p 5984,6384 $IP -oN Netauto/$IP/Databases/CouchDB/nmap/databases.nmap
+	file_check "" "" ""
 	nmap --script couchdb-stats -p 5984,6384 $IP -oN Netauto/$IP/Databases/CouchDB/nmap/stats.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1722,7 +2566,9 @@ influxdb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating InfluxDB on port 8086${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/InfluxDB
+	directory_check "" "" ""
 	curl http://$IP:8086/debug/requests | tee Netauto/$IP/Databases/InfluxDB/influxdb_user_enumeration.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1731,10 +2577,15 @@ mongodb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MongoDB on port 27017${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/MongoDB
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Databases/MongoDB/nmap
+	directory_check "" "" ""
 	nmap --script mongodb-info -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/info.nmap
+	file_check "" "" ""
 	nmap --script mongodb-databases -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/databases.nmap
+	file_check "" "" ""
 	nmap --script "mongodb-* and not brute" -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/all.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1743,20 +2594,35 @@ mssql_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MSSQL on port 1433${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/MSSQL
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Databases/MSSQL/nmap
+	directory_check "" "" ""
 	nmap --script broadcast-ms-sql-discover -p 1433 $IP  -oN Netauto/$IP/Databases/MSSQL/nmap/broadcast-ms-sql-discover.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-info -p 1433 $IP  -oN Netauto/$IP/Databases/MSSQL/nmap/info.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-config -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/config.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-dac -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/dac.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-dump-hashes -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/dump-hashes.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-empty-password -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/empty-password.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-hasdbaccess -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/hasdbaccess.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-ntlm-info -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/ntlm-info.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-query -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/query.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-tables -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/tables.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-empty-password,ms-sql-xp-cmdshell -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/cmdshell.nmap
+	file_check "" "" ""
 	nmap --script "ms-sql-* and not brute" -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/all.nmap
+	file_check "" "" ""
 	nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/all-ext.nmap
+	file_check "" "" ""
 	
 	echo " "
 }
@@ -1765,10 +2631,15 @@ postgresql_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating PostgreSQL on port 5432${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/PostgreSQL
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Databases/PostgreSQL/nmap
+	directory_check "" "" ""
 	nmap -sC -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/script.nmap
+	file_check "" "" ""
 	nmap -sV -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/version.nmap
+	file_check "" "" ""
 	nmap -sC -sV -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/info.nmap
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1777,14 +2648,24 @@ redis_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Redis on port 6379${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/Redis
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Databases/Redis/nc
+	directory_check "" "" ""
 	nc $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/redis_nc.txt
+	file_check "" "" ""
 	nc -nv $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/redis_nc.txt
+	file_check "" "" ""
+
 	mkdir -p Netauto/$IP/Databases/Redis/nmap
+	directory_check "" "" ""
 	nmap --script redis-info -p 6379 $IP -oN Netauto/$IP/Databases/Redis/nmap/info.nmap
+	file_check "" "" ""
 	nmap --script redis-info -sV -p 6379 $IP -oN Netauto/$IP/Databases/Redis/nmap/info-ext.nmap
+	file_check "" "" ""
 	mkdir -p Netauto/$IP/Databases/Redis/redis-cli
+	directory_check "" "" ""
 	redis-cli -h $IP | tee Netauto/$IP/Databases/Redis/redis-cli/redis-cli.txt
+	file_check "" "" ""
 
 	echo " "
 }
@@ -1793,19 +2674,30 @@ oracledb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating OracleDB on port 1521${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/OracleDB
+	directory_check "" "" ""
 	mkdir -p Netauto/$IP/Databases/OracleDB/nmap
+	directory_check "" "" ""
 	nmap --script oracle-tns-version -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/tns-version.nmap
+	file_check "" "" ""
 	nmap --script oracle-sid-brute -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/sid-brute.nmap
+	file_check "" "" ""
 	nmap --script oracle-enum-users -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/enum-users.nmap
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Databases/OracleDB/oscanner
+	directory_check "" "" ""
 	oscanner -s $IP -P 1521 | tee Netauto/$IP/Databases/OracleDB/oscanner/oracledb_oscanner.txt
+	file_check "" "" ""
 	mkdir -p Netauto/$IP/Databases/OracleDB/tnscmd10g
+	directory_check "" "" ""
 	tnscmd10g version -h $IP | tee Netauto/$IP/Databases/OracleDB/tnscmd10g/oracledb_tnscmd10g.txt
+	file_check "" "" ""
 
 	mkdir -p Netauto/$IP/Databases/OracleDB/ODAT
+	directory_check "" "" ""
 	odat sidguesser -s $IP | tee Netauto/$IP/Databases/OracleDB/ODAT/oracledb_odat.txt
 	odat-libc2.12-x86_64 passwordguesser -s $IP -d XE --accounts-file accounts/default.txt | tee Netauto/$IP/Databases/OracleDB/ODAT/passwordguesser.txt
+	file_check "" "" ""
 
 	echo " "
 }

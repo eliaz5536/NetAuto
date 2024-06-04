@@ -21,6 +21,8 @@ This tool performs port scans and service detection to perform further enumerati
 
 It performs **no automated exploitation**.
 
+**Disclaimer:** Do not perform automated scans without the organization's permission when performing penetration tests.
+
 # Origin
 It was inspired by the following ethical hacking notes that provide numerous opportunities of scanning multiple targets in the form of IP addresses
 

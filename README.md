@@ -11,18 +11,17 @@
 NetAuto is a customizable network reconnaissance tool that automates enumeration of services, protocols and ports, ideal for penetration testing environments and network scanning.
 
 # Requirements
-Requirements of utilizing this tool must be met by installing the latest available packages
+Your machine must be up-to-date in order to install the latest available packages
 ```
 sudo apt-get update
 ```
 
-If you want to ensure that all packages are installed, perform those following commands:
+If you want to install third-party tools to be installed in your system, perform this following command:
 ```
 sudo apt-get install python python2 python3 python3-pip pip pipx
 ```
 
-The following tools that are utilized for pure port scanning and service discovery requires installation
-These following tools need to be installed and put in /opt directory in order to utilize the following script:
+The tools that are utilized for enumeration requires installation of the following from the table:
 | [Nmap](https://nmap.org/)         | OpenSSL          | Netcat             | snmpwalk   | snmp-check    | finger                |
 |--------------|------------------|--------------------|------------|---------------|-----------------------|
 | ntpq         | [impacket-rpcdump](https://github.com/fortra/impacket/tree/master) | [rpcdump](https://github.com/fortra/impacket/tree/master)            | [rpcmap](https://github.com/fortra/impacket/tree/master)     | [IOXIDResolver](https://github.com/mubix/IOXIDResolver) | nmblookup             |
@@ -32,7 +31,10 @@ These following tools need to be installed and put in /opt directory in order to
 | [Nikto](https://github.com/sullo/nikto)        | [WhatWeb](https://github.com/urbanadventurer/WhatWeb)          | [WebTech](https://github.com/ShielderSec/webtech)            | [WebAnalyze](https://github.com/rverton/webanalyze) | [Wapiti](https://github.com/wapiti-scanner/wapiti)        | [wafw00f](https://github.com/EnableSecurity/wafw00f)              |
 | [WhatWaf](https://github.com/Ekultek/WhatWaf)      | [CMSMap](https://github.com/dionach/CMSmap)           | [WPScan](https://github.com/wpscanteam/wpscan)             | [Joomscan](https://github.com/OWASP/joomscan)   | [CMSeeK](https://github.com/Tuhinshubhra/CMSeeK)        |                       |
 
+The following commands
+
 It is recommended that you install the following tools on **Debian** based distribution machine.
+
 
 # Installation
 ```

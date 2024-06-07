@@ -16,7 +16,7 @@ Your machine must be up-to-date in order to install the latest available package
 sudo apt-get update
 ```
 
-If you want to install third-party tools to be installed in your system, perform this following command:
+If you want to install third-party tools to be installed in your system, execute this following command:
 ```
 sudo apt-get install python python2 python3 python3-pip pip pipx
 ```
@@ -38,12 +38,9 @@ It is recommended that you install the following tools on **Debian** based distr
 
 # Installation
 ```
-git clone https://github.com/eliaz5536/netauto.git
-```
+git clone https://github.com/eliaz5536/netauto.git # Clone repository
+chmod +x netauto # Change file permission to executable
 
-Make sure you provide the linux permission to execute the file before launching the bash script:
-```
-chmod +x netauto
 ```
 
 Launch NetAuto bash script file:
@@ -92,8 +89,7 @@ Mode options:
 ```
 
 # Results
-The following results of these scans will produce output directories and the rest of enumeration programs for each of the following ports which output all enumeration scans of specified ports.
-
+The following will produce output directories for each of the selected ports which that will output all enumeration scans.
 ## Reconnaissance Output Directory
 ```
 Netauto

@@ -153,7 +153,7 @@ The following results of these scans will produce NMAP directory and the rest of
 ## Reconnaissance
 ```
 Netauto
-└── <HOST>
+└── XXX.XXX.XX.XX
     └── Default
         ├── tcp.nmap
         ├── aggressive.nmap
@@ -166,7 +166,7 @@ Netauto
 ## Port and Service Scanning
 ```
 Netauto
-└── 192.168.69.10
+└── XXX.XXX.XX.XX
     └── Protocols
         ├── DNS
         │   └── nmap

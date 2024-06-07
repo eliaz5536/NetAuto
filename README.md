@@ -43,15 +43,8 @@ You can install most of the packages through apt package by doing the following
 sudo apt-get install nmap snmpwalk snmpcheck openssl ssh-audit ssh-keyscan dif finger ntpq impacket-rdcdump nmblookup nbtscan enum4linux rpcclient netexec smbmap crackmapexec impacket-looksupid ldapsearch ike-scan curl rsync rusers rpcinfo svn opalopc nikto whatweb webtech webanalyze apiti wafw00f cmsmap wpscan redis-cli oscanner tnscmd10g  
 ```
 
-It is recommended that you install most of the tools by default on **ParrotOS** or **Kali Linux**.
+It is recommended that you install most of the tools by default on **Debian**.
 
-# Requirements from NetAuto
-Alternatively, you can also check if you have the following third-party tools installed using '--install' to install any 
-missing tools to perform this operation. Furthermore, you can use '--check' to ensure you meet the requirements of running 
-network enumeration program
-```
-< insert code over here to check if the user has got all third-party tools > 
-```
 
 # Installation
 ```

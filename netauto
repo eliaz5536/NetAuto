@@ -206,12 +206,6 @@ snmp_scan() {
 	nmap -sU --script "snmp* and not brute" -p 161 $IP -oN Netauto/$IP/Protocols/SNMP/nmap/all.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/nmap/all.nmap" "full NMAP SNMP scan"
 
-	#onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp.txt $IP | tee Netauto/$IP/Protocols/SNMP/onsixtyone-bruteforce.txt
-	#path_check 
-	#"Netauto/$IP/Protocols/SNMP/onsixtyone-bruteforce.txt" 
-	#"Generated output data of NMAP DHCP discover scan under '$(pwd)/Netauto/Protocols/DHCP/nmap/dhcp_discover.txt'"
-       	#"Failed to generate output data of NMAP DHCP discover scan under '$(pwd)/Netauto/Protocols/DHCP/nmap/dhcp_discover.txt'"
-
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk
 	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk" "SNMP snmpwalk enumeration scan"
 
@@ -321,38 +315,35 @@ snmp_scan() {
 
 	# Windows User Accounts
 	snmpwalk -c public -v3 $IP 1.3.6.1.4.1.77.1.2.25 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_user_accounts.txt
-	path_check "Netauto/$IP/Protocols/SSH/snmpwalk/v3/accounts.txt" "snmpwalk v3 Windows users account"
+	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v3/accounts.txt" "snmpwalk v3 Windows users account"
 
 	# Windows Running Programs
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.25.4.2.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_running_programs.txt
-	path_check "Netauto/$IP/Protocols/SSH/snmpwalk/v3/programs.txt" "snmpwalk v3 Windows running programs"
+	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v3/programs.txt" "snmpwalk v3 Windows running programs"
 
 	# Windows Hostname
 	snmpwalk -c public -v3 $IP .1.3.6.1.2.1.1.5 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_hostname.txt
-	path_check "Netauto/$IP/Protocols/SSH/snmpwalk/v3/hostname.txt" "snmpwalk v3 Windows hostname"
+	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v3/hostname.txt" "snmpwalk v3 Windows hostname"
 
 	# Windows share Information
 	snmpwalk -c public -v3 $IP 1.3.6.1.4.1.77.1.2.3.1.1 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_share_information.txt
-	path_check "Netauto/$IP/Protocols/SSH/snmpwalk/v3/share-info.txt" "snmpwalk v3 Windows share info"
+	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v3/share-info.txt" "snmpwalk v3 Windows share info"
 
 	# More Windows Share Information
 	snmpwalk -c public -v3 $IP 1.3.6.1.4.1.77.1.2.27 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_more_windows_share_information.txt
-	path_check "Netauto/$IP/Protocols/SSH/snmpwalk/v3/share-info-ext.txt" "snmpwalk v3 extended Windows Share info"
+	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v3/share-info-ext.txt" "snmpwalk v3 extended Windows Share info"
 
 	# Windows TCP Ports
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.6.13.1.3 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_windows_tcp_ports.txt
-	path_check 
-	"Netauto/$IP/Protocols/SSH/snmpwalk/v3/tcp-ports.txt" "snmpwalk v3 Windows TCP ports"
+	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v3/tcp-ports.txt" "snmpwalk v3 Windows TCP ports"
 
 	# Software Name
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.25.6.3.1.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_software_name.txt
-	path_check 
-	"Netauto/$IP/Protocols/SSH/snmpwalk/v3/software-name.txt" "snmpwalk v3 software name"
+	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v3/software-name.txt" "snmpwalk v3 software name"
 
 	# SysLocation
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.1.6 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_syslocation.txt
-	path_check 
-	"Netauto/$IP/Protocols/SSH/snmpwalk/v3/syslocation.txt" "snmpwalk v3 syslocation"
+	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v3/syslocation.txt" "snmpwalk v3 syslocation"
 
 	echo " "
 }
@@ -367,16 +358,16 @@ echo_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc" "Echo netcat"
 
 	nc $IP $port | tee Netauto/$IP/Protocols/Echo/nc/nc.txt
-	path_check "Netauto/$IP/Protocols/Echo/nc/nc.txt" "Echo netcat connection"
+	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc/nc.txt" "Echo netcat connection"
 
 	nc -vn $IP $port | tee Netauto/$IP/Protocols/Echo/nc/nc_vn.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc/nc.txt" "Echo verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/Echo/nmap
-	path_check "Netauto/$IP/Protocols/Echo/nmap" "NMAP Echo"
+	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nmap" "NMAP Echo"
 
 	nmap -p 7 $IP -oN Netauto/$IP/Protocols/Echo/nmap/port.nmap
-	path_check "Netauto/$IP/Protocols/Echo/nmap/port.nmap" "NMAP Echo port scan"
+	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nmap/port.nmap" "NMAP Echo port scan"
 
 	echo " "
 }
@@ -406,32 +397,25 @@ ftp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap/anon.nmap" "NMAP FTP anonymous enumeration scan"
 	
 	nmap --script ftp-bounce -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/bounce.nmap
-	path_check 
-	"$(pwd)/Netauto/$IP/Protocols/ftp/nmap/bounce.nmap" "NMAP FTP bounce attack enumeration"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap/bounce.nmap" "NMAP FTP bounce attack enumeration"
 	
 	nmap --script ftp-libopie -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/libopie.nmap
-	path_check 
-	"$(pwd)/Netauto/$IP/Protocols/ftp/nmap/libopie.nmap" "NMAP FTP CVE-2010-1938 vulnerability scan"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap/libopie.nmap" "NMAP FTP CVE-2010-1938 vulnerability scan"
 
 	nmap --script ftp-proftpd-backdoor -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/proftpd-backdoor.nmap
-	path_check 
-	"$(pwd)/Netauto/$IP/Protocols/ftp/nmap/proftpd-backdoor.nmap" "NMAP FTP ProFTPD backdoor scan"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap/proftpd-backdoor.nmap" "NMAP FTP ProFTPD backdoor scan"
 
 	nmap --script ftp-syst -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/syst.nmap
-	path_check 
-	"$(pwd)/Netauto/$IP/Protocols/ftp/nmap/syst.nmap" "NMAP FTP SYST and STAT command enumeration"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap/syst.nmap" "NMAP FTP SYST and STAT command enumeration"
 
 	nmap --script ftp-vuln-cve2010-4221 -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/vuln-cve2010-4221.nmap
-	path_check 
-	"$(pwd)/Netauto/$IP/Protocols/ftp/nmap/vuln-cve2010-4221.nmap" "NMAP FTP CVE-2010-4221 vulnerability scan"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap/vuln-cve2010-4221.nmap" "NMAP FTP CVE-2010-4221 vulnerability scan"
 
 	nmap --script ftp-vuln* -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/vuln-all.nmap
-	path_check 
-	"$(pwd)/Netauto/$IP/Protocols/ftp/nmap/vuln-all.nmap" "full NMAP FTP vulnerability scan"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap/vuln-all.nmap" "full NMAP FTP vulnerability scan"
 
 	nmap --script "ftp-* and not brute"  -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/all.nmap
-	path_check 
-	"$(pwd)/Netauto/$IP/Protocols/ftp/nmap/all.nmap" "full NMAP FTP scan"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap/all.nmap" "full NMAP FTP scan"
 
 	echo " "
 }
@@ -539,11 +523,11 @@ smtp_scan() {
 	openssl s_client -starttls smtp -crlf -connect $IP:587 | tee Netauto/$IP/Protocols/SMTP/openssl/starttls-crlf.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/openssl/starttls-crlf.txt" "SMTP OpenSSL encrypted carriage return communication"
 
-	#mkdir -p Netauto/$IP/Protocols/SMTP/df
-	#path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/df" "SMTP disk space usage"
+	mkdir -p Netauto/$IP/Protocols/SMTP/df
+	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/df" "SMTP disk space usage"
 
-	#dif mx $IP | tee Netauto/$IP/Protocols/SMTP/df/smtp-mx-domains.txt
-	#path_check "Netauto/$IP/Protocols/SMTP/df/smtp-mx-domains.txt" 
+	dif mx $IP | tee Netauto/$IP/Protocols/SMTP/df/domains.txt
+	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/df/domains.txt" 
 	
 	mkdir -p Netauto/$IP/Protocols/SMTP/nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nmap" "NMAP SMTP"
@@ -618,8 +602,7 @@ dns_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating DNS on port 53${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/DNS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap" 
-	"NMAP DNS"
+	path_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap" "NMAP DNS"
 
 	nmap --script broadcast-dns-service-discovery -p- $IP -oN Netauto/$IP/Protocols/DNS/nmap/broadcast-dns-service-discovery.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap/broadcast-dns-service-discovery.nmap" "NMAP DNS Broadcast DNS service discovery enumeration scan"
@@ -636,11 +619,11 @@ dns_scan() {
 	nmap --script dns-client-subnet-scan -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/client-subnet-scan.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap/client-subnet-scan.nmap" "NMAP DNS client subnet scan"
 
-	nmap --script dns-fuzz -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/fuzz.nmap # Fuzz command would freeze
+	nmap --script dns-fuzz -p 53 $IP/24 -oN Netauto/$IP/Protocols/DNS/nmap/fuzz.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap/fuzz.nmap " "NMAP DNS Fuzz enumeration"
 	
 	nmap --script dns-ip6-arpa-scan -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/ip6-arpa-scan.nmap
-	path_check "Netauto/$IP/Protocols/DNS/nmap/ip6-arpa-scan.nmap" "NMAP DNS IPv6 Lookup Network Enumeration scan"
+	path_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap/ip6-arpa-scan.nmap" "NMAP DNS IPv6 Lookup Network Enumeration scan"
 
 	nmap --script dns-nsec3-enum -p 53 $IP -oN Netauto/$IP/Protocols/DNS/nmap/nsec3-enum.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap/nsec3-enum.nmap" "NMAP DNS Nsec3 Enumeration scan"
@@ -961,7 +944,7 @@ netbios_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmap/aggressive-udp.nmap" "NMAP NetBios aggressive UDP scan"
 	
 	nmap -sT -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/tcp.nmap
-	path_check "nmap -sT -p 137,139,445 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/tcp.nmap" "NMAP NetBios TCP scan"
+	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmap/tcp.nmap" "NMAP NetBios TCP scan"
 	
 	nmap -vv --reason -Pn -sU -sV -p137 --script="(nbstat or smb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="unsafe=1" $IP -oN Netauto/$IP/Protocols/NetBios/nmap/aggressive-tcp.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmap/aggressive-tcp.nmap" "NMAP NetBios aggressive TCP scan"
@@ -996,7 +979,7 @@ netbios_scan() {
 	nbtscan -rvh $IP | tee Netauto/$IP/Protocols/NetBios/nbtscan/verbose.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nbtscan/verbose.txt" "verbose NetBIOS enumeration scan"
 	
-	nbtscan $IP/30 | tee Netauto/$IP/Protocols/NetBios/nbtscan/range-30.txt # Command freezes
+	nbtscan $IP/30 | tee Netauto/$IP/Protocols/NetBios/nbtscan/range-30.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nbtscan/range-30.txt" "default NetBIOS ip range of 30 enumeration scan"
 
 	nbtscan -r $IP/24 | tee Netauto/$IP/Protocols/NetBios/nbtscan/range-24.txt
@@ -1021,7 +1004,7 @@ smb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SMB on port 445${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/nmap
-	path_check "mkdir -p Netauto/$IP/Protocols/SMB/nmap" "NMAP SMB"
+	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmap" "NMAP SMB"
 
 	nmap --script smb-enum-shares.nse,smb-enum-users.nse -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/enum-scripts.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmap/enum-scripts.nmap" "NMAP SMB shares and users script enumeration scan"
@@ -1290,9 +1273,6 @@ ldap_scan() {
 	mkdir -p Netauto/$IP/Protocols/LDAP/nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/LDAP/nmap" "NMAP LDAP"
 
-	# nmap --script ldap-brute --script-args ldap.base='"cn=users,dc=cqure,dc=net"' -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/brute.nmap
-	# path_check "$(pwd)/Netauto/$IP/Protocols/LDAP/nmap/brute.nmap" ""
-	
 	nmap --script ldap-search -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/search.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/LDAP/nmap/search.nmap" "NMAP LDAP"
 
@@ -1543,10 +1523,10 @@ ipp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPP on port 631${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IPP
-	path_check "mkdir -p Netauto/$IP/Protocols/IPP" "IPP"
+	path_check "$(pwd)/Netauto/$IP/Protocols/IPP" "IPP"
 
 	mkdir -p Netauto/$IP/Protocols/IPP/nmap
-	path_check "mkdir -p Netauto/$IP/Protocols/IPP/nmap" "NMAP IPP"
+	path_check "$(pwd)/Netauto/$IP/Protocols/IPP/nmap" "NMAP IPP"
 
 	nmap -sV -p631 --script=cups* $IP -oN Netauto/$IP/Protocols/IPP/nmap/all.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/IPP/nmap/all.nmap" "full NMAP IPP scan"
@@ -1726,15 +1706,6 @@ ibm_mq_scan() {
 	nmap -sC -sV -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/service-detection.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/IBM-MQ/nmap/service-detection.nmap" "NMAP IBM-MQ service and version detection scan"
 
-	#mkdir -p Netauto/$IP/Protocols/IBM-MQ/docker
-	#path_check "mkdir -p Netauto/$IP/Protocols/IBM-MQ/docker" "Created DHCP protocol output directory of target live host under '$(pwd)/Netauto/$IP/Protocols/DHCP" "
-
-	#sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 discover name | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-queue-manager.txt
-	#path_check "sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 discover name | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-queue-manager.txt" "
-
-	#sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 --username admin --password passw0rd discover channels | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-channels.txt
-	#path_check "sudo docker run --rm -ti leonjza/punch-q --host $IP --port 1414 --username admin --password passw0rd discover channels | tee Netauto/$IP/Protocols/IBM-MQ/docker/ibm-mq-docker-channels.txt" "
-
 	echo " "
 }
 
@@ -1885,7 +1856,7 @@ iscsi_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/ISCSI/" "ISCSI"
 
 	mkdir -p Netauto/$IP/Protocols/ISCSI/nmap
-	path_check "mkdir -p$(pwd)/Netauto/$IP/Protocols/ISCSI/nmap" "NMAP ISCSI"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ISCSI/nmap" "NMAP ISCSI"
 
 	nmap -sV --script=iscsi-info -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/ISCSI/nmap/info.nmap" "NMAP ISCSI info script enumeration scan"
@@ -1994,10 +1965,10 @@ ws-discovery_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WS Discovery on port 3702${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/ws-discovery/
-	path_check "mkdir -p Netauto/$IP/Protocols/ws-discovery/" "ws-discovery"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/" "ws-discovery"
 
 	mkdir -p Netauto/$IP/Protocols/ws-discovery/nmap
-	path_check "mkdir -p Netauto/$IP/Protocols/ws-discovery/nmap" "NMAP WS-Discovery"
+	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/nmap" "NMAP WS-Discovery"
 
 	nmap -sC -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/nmap/script.nmap" "NMAP WS-Discovery script scan"
@@ -2027,7 +1998,7 @@ epmd_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/epmd/nc/nc-vn.txt" "EPMD verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/epmd/nmap
-	path_check "mkdir -p Netauto/$IP/Protocols/epmd/nmap" "NMAP EPMD"
+	path_check "$(pwd)/Netauto/$IP/Protocols/epmd/nmap" "NMAP EPMD"
 
 	nmap -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/epmd/nmap/info.nmap" "NMAP EPMD info script scan"
@@ -2039,15 +2010,23 @@ epmd_scan() {
 }
 
 cisco_smart_install_scan() {
-	# Come back to this one and think whether this following scan is even worth to put here since it automatically exploits 
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating CISCO Smart Install${ENDCOLOR}\n"
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate CSIS${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/CSIS
 	path_check "$(pwd)/Netauto/$IP/Protocols/CSIS" "CSIS"
 
-	sudo python3 /opt/tools/CISCO_Smart_Install/SIETpy3/siet.py -g -i $IP | tee Netauto/$IP/Protocols/CSIS/siet.txt
-	path_check "$(pwd)/Netauto/$IP/Protocols/CSIS/siet.txt" "CSIS CVE-2018-0171 "
+	mkdir -p Netauto/$IP/Protocols/CSIS/nmap
+	path_check "$(pwd)/Netauto/$IP/Protocols/CSIS/nmap" "NMAP CSIS"
+
+	nmap -sC -p 3702 $IP -on Netauto/$IP/Protocols/CSIS/nmap/script.nmap
+	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/nmap/script.nmap" "NMAP CSIS script scan"
+
+	nmap -sV -p 3702 $IP -on Netauto/$IP/Protocols/CSIS/nmap/version.nmap
+	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/nmap/version.nmap" "NMAP CSIS version scan"
+
+	nmap -sC -sV -p 3702 $IP -on Netauto/$IP/Protocols/CSIS/nmap/service-version.nmap
+	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/nmap/service-version.nmap" "NMAP CSIS service and version detection scan"
 
 	echo " "
 }
@@ -2681,10 +2660,10 @@ memcached_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Memcached on port 11211${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached
-	path_check "mkdir -p Netauto/$IP/Protocols/Memcached" "Memcached"
+	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached" "Memcached"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/nc
-	path_check "mkdir -p Netauto/$IP/Protocols/Memcached/nc" "Memcached netcat"
+	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc" "Memcached netcat"
 
 	nc $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc/nc.txt" "Memcached netcat connection"
@@ -2986,7 +2965,7 @@ https_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS" "HTTPS"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/nmap
-	path_check "mkdir -p Netauto/$IP/Protocols/HTTPS/nmap" "NMAP HTTPS"
+	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/nmap" "NMAP HTTPS"
 
 	nmap --script http-auth --script-args http-auth.path=/login -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/auth-login.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/nmap/auth-login.nmap" "NMAP HTTPS login authentication enumeration"
@@ -3323,7 +3302,7 @@ oracledb_scan() {
 	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/ODAT" "ODAT"
 
 	odat sidguesser -s $IP | tee Netauto/$IP/Databases/OracleDB/ODAT/odat.txt
-	path_check "odat sidguesser -s $IP | tee Netauto/$IP/Databases/OracleDB/ODAT/odat.txt" "odat SID brute scan"
+	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/ODAT/odat.txt" "odat SID brute scan"
 
 	odat-libc2.12-x86_64 passwordguesser -s $IP -d XE --accounts-file accounts/default.txt | tee Netauto/$IP/Databases/OracleDB/ODAT/passwordguesser.txt
 	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/ODAT/passwordguesser.txt" "odat password brute scan"
@@ -3335,7 +3314,9 @@ oracledb_scan() {
 # Port Detection                                              #
 ###############################################################
 handle_ports() {
-	echo -e "${GRAY}------------------------------------ Full Port Scan -------------------------------------${ENDCOLOR}"
+	start_time=$(date +%s%N)
+
+	echo "[*] Starting full port scan at ${current_time}"	
 
 	DEFAULT_DIRECTORY=Netauto/$IP/Protocols/
 
@@ -3465,12 +3446,23 @@ handle_ports() {
 			*) ;;  # Default case if no specific action is needed for a port
 		esac
 	done
+
+	end_time=$(date +%s%N)
+
+	echo "[*] Ending full port scan at ${current_time}"	
+
+	duration=$(( end_time - start_time ))
+	seconds=$(( duration / 1000000000 ))
+
+	echo "[*] Full port scan execution time: ${seconds}s"	
 }
 
 ###############################################################
 # Network                                                     #
 ###############################################################
 default_nmap() {
+	start_time=$(date +%s%N)
+
 	echo "[*] Starting full reconnaissance scan at ${current_time}"	
 
 	echo " "
@@ -3478,22 +3470,21 @@ default_nmap() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Performing full reconnaissance scan${ENDCOLOR}\n"
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform reconnaissance scan${ENDCOLOR}\n"
 
-	mkdir -p Netauto/$IP/
-	path_check "$(pwd)/Netauto/$IP" "Created output directory of target live host under '$(pwd)/Netauto/$IP/'" "Failed to create output directory of target list host under '$(pwd)/Netauto/$IP/'"
+	mkdir -p Netauto/$IP
+	path_check "$(pwd)/Netauto/$IP" "target machine"
 
-	mkdir -p Netauto/$IP/DEFAULT
-	path_check "$(pwd)/Netauto/$IP" "Created default NMAP output directory of target live host under '$(pwd)/Netauto/$IP/DEFAULT'" "Failed to create default NMAP output directory of target list host under '$(pwd)/Netauto/$IP/DEFAULT'"
-
+	mkdir -p Netauto/$IP/Default
+	path_check "$(pwd)/Netauto/$IP/Default" "Default"
 
         # Scans ports only and no host discovery
         # Scans for all ports available
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing port scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -Pn $IP -p- -oN Netauto/$IP/DEFAULT/port_scan.txt
+		nmap -Pn $IP -p- -oN Netauto/$IP/Default/port.txt
 	else 
-		nmap $MINRATE -Pn $IP -p- -oN Netauto/$IP/DEFAULT/port_scan.txt
+		nmap $MINRATE -Pn $IP -p- -oN Netauto/$IP/Default/port.txt
 	fi
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/port_scan.txt" "Generated output data of port scan under '$(pwd)/Netauto/DEFAULT/port_scan.txt'" "Failed to generate output data of port scan under '$(pwd)/Netauto/DEFAULT/port_scan.txt'"
+	path_check "$(pwd)/Netauto/$IP/Default/port.txt" "port scan"
 
         echo " "
 
@@ -3503,11 +3494,11 @@ default_nmap() {
         # Useful for attempting to identify outdated version of service
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -sC -sV $IP -oN Netauto/$IP/DEFAULT/script_scan.txt
+		nmap -sC -sV $IP -oN Netauto/$IP/Default/script.txt
 	else 
-		nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/DEFAULT/script_scan.txt
+		nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/Default/script.txt
 	fi
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/script_scan.txt" "Generated output data of script scan under '$(pwd)/Netauto/DEFAULT/script_scan.txt'" "Failed to generate output data of script scan under '$(pwd)/Netauto/DEFAULT/script_scan.txt'"
+	path_check "$(pwd)/Netauto/$IP/Default/script.txt" "script scan"
 
         echo " "
 
@@ -3520,7 +3511,7 @@ default_nmap() {
 	else 
 		sudo nmap $MINRATE -sS -Pn -n $IP -oN Netauto/$IP/DEFAULT/stealth_scan.txt
 	fi
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/stealth_scan.txt" "Generated output data of stealth scan under '$(pwd)/Netauto/DEFAULT/stealth_scan.txt'" "Failed to generate output data of stealth scan under '$(pwd)/Netauto/DEFAULT/stealth_scan.txt'"
+	path_check "$(pwd)/Netauto/$IP/Default/stealth.txt" "stealth scan"
 
         echo " "
 
@@ -3534,7 +3525,7 @@ default_nmap() {
 	else 
 		nmap $MINRATE -p- -A $IP -oN Netauto/$IP/DEFAULT/aggressive_scan.txt
 	fi
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/aggressive_scan.txt" "Generated output data of aggressive scan under '$(pwd)/Netauto/DEFAULT/aggressive_scan.txt'" "Failed to generate output data of aggressive scan under '$(pwd)/Netauto/DEFAULT/aggressive_scan.txt'"
+	path_check "$(pwd)/Netauto/$IP/Default/aggressive.txt" "aggressive scan"
 
         echo " "
 
@@ -3546,7 +3537,7 @@ default_nmap() {
 	else
 		nmap $MINRATE -n -v -sT -A $IP -oN Netauto/$IP/DEFAULT/TCP_scan.txt
 	fi
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/TCP_scan.txt" "Generated output data of TCP scan under '$(pwd)/Netauto/DEFAULT/TCP_scan.txt'" "Failed to generate output data of TCP scan under '$(pwd)/Netauto/DEFAULT/TCP_scan.txt'"
+	path_check "$(pwd)/Netauto/$IP/Default/tcp.txt" "TCP"
 	
         echo " "
 
@@ -3557,14 +3548,23 @@ default_nmap() {
 	else
 		nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/DEFAULT/vulnerability_scan.txt
 	fi
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/vulnerability_scan.txt" "Generated output data of vulnerability scan under '$(pwd)/Netauto/DEFAULT/vulnerability_scan.txt'" "Failed to generate output data of vulnerability scan under '$(pwd)/Netauto/DEFAULT/vulnerability_scan.txt'"
+	path_check "$(pwd)/Netauto/$IP/Default/vuln.txt" "vulnerability scan"
 
         echo " "
 
+	end_time=$(date +%s%N)
+
 	echo "[*] Ending full reconnaissance scan at ${current_time}"	
+
+	duration=$(( end_time - start_time ))
+	seconds=$(( duration / 1000000000 ))
+
+	echo "[*] Full default scan execution time: ${seconds}s"	
 }
 
 tcp_nmap() {
+	start_time=$(date +%s%N)
+
 	echo "[*] Starting full TCP scan at ${current_time}"	
 
 	echo " "
@@ -3572,22 +3572,31 @@ tcp_nmap() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Performing full TCP scan${ENDCOLOR}\n"
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform TCP scan${ENDCOLOR}\n"
 
-	mkdir -p Netauto/$IP/DEFAULT/TCP
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/TCP" "Created full TCP output directory of target live host under '$(pwd)/Netauto/$IP/TCP'" "Failed to create full TCP output directory of target live host under '$(pwd)/Netauto/$IP/TCP'"
+	mkdir -p Netauto/$IP/TCP
+	path_check "$(pwd)/Netauto/$IP/TCP" "TCP"
 
-	nmap -n -v -sT -p- -T5 -oN Netauto/$IP/DEFAULT/TCP/full_scan.txt $IP
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/TCP/full_scan.txt" "Generated output data of full TCP scan under '$(pwd)/Netauto/DEFAULT/TCP/full_scan.txt'" "Failed to generate output data of full TCP scan under '$(pwd)/Netauto/DEFAULT/TCP/full_scan.txt'"
+	nmap -n -v -sT -p- -T5 -oN Netauto/$IP/TCP/port.txt $IP
+	path_check "$(pwd)/Netauto/$IP/TCP/port.txt" "full TCP port scan"
 
 
-	sudo nmap -T4 -F -sV -sC -oN Netauto/$IP/DEFAULT/TCP/extended_scan.txt --reason --stats-every 5s -p- $IP
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/TCP/extended_scan.txt" "Generated output data of extended TCP scan under '$(pwd)/Netauto/DEFAULT/TCP/extended_scan.txt'" "Failed to generate output data of extended TCP scan under '$(pwd)/Netauto/DEFAULT/TCP/extended_scan.txt'"
+	sudo nmap -T4 -F -sV -sC -oN Netauto/$IP/TCP/service-version.txt --reason --stats-every 5s -p- $IP
+	path_check "$(pwd)/Netauto/$IP/TCP/service-version.txt" "full TCP service and version detection scan"
 
         echo " "
 
+	end_time=$(date +%s%N)
+
 	echo "[*] Ending full TCP scan at ${current_time}"	
+
+	duration=$(( end_time - start_time ))
+	seconds=$(( duration / 1000000000 ))
+
+	echo "[*] Full TCP scan execution time: ${seconds}s"	
 }
 
 udp_nmap() {
+	start_time=$(date +%s%N)
+
 	echo "[*] Starting full UDP scan at ${current_time}"	
 
 	echo " "
@@ -3595,20 +3604,26 @@ udp_nmap() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Performing full UDP scan${ENDCOLOR}\n"
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform UDP scan${ENDCOLOR}\n"
 
-	mkdir -p Netauto/$IP/DEFAULT/UDP
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/UDP" "Generated full TCP output directory of target live host under '$(pwd)/Netauto/$IP/UDP'" "Failed to generate full TCP output directory of target live host under '$(pwd)/Netauto/$IP/UDP'"
+	mkdir -p Netauto/$IP/UDP
+	path_check "$(pwd)/Netauto/$IP/UDP" "UDP"
 
-        sudo nmap -n -v -sU -oN Netauto/$IP/DEFAULT/UDP/full_scan.txt $IP
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/UDP/full_scan.txt" "Generated output data of full UDP scan under '$(pwd)/Netauto/DEFAULT/UDP/full_scan.txt'" "Failed to generate output data of full UDP scan under '$(pwd)/Netauto/DEFAULT/UDP/full_scan.txt'"
-
+        sudo nmap -n -v -sU -oN Netauto/$IP/UDP/port.txt $IP
+	path_check "$(pwd)/Netauto/$IP/UDP/port.txt" "full UDP port scan"
         echo ""
 
-        sudo nmap -n -v -sU -p- -T5 -oN Netauto/$IP/DEFAULT/UDP/extended_scan.txt $IP
-	path_check "$(pwd)/Netauto/$IP/DEFAULT/UDP/extended_scan.txt" "Generated output data of extended UDP scan under '$(pwd)/Netauto/DEFAULT/UDP/extended_scan.txt'" "Failed to generate output data of extended UDP scan under '$(pwd)/Netauto/DEFAULT/UDP/extended_scan.txt'"
+        sudo nmap -n -v -sU -p- -T5 -oN Netauto/$IP/UDP/service-version.txt $IP
+	path_check "$(pwd)/Netauto/$IP/UDP/service-version.txt" "full UDP service and version detection scan"
 
         echo " "
 
+	end_time=$(date +%s%N)
+
 	echo "[*] Ending full UPD scan at ${current_time}"	
+
+	duration=$(( end_time - start_time ))
+	seconds=$(( duration / 1000000000 ))
+
+	echo "[*] Full UDP scan execution time: ${seconds}s"	
 }
 
 ###############################################################

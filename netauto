@@ -78,13 +78,12 @@ ITALIC="\e[3m"
 current_time=$(date +"%T")
 
 ###############################################################
-# Path Check		      				      #
+# Directory and File Check		      		      #
 ###############################################################
-path_check() {
+directory_check() {
 	local path=$1
 	local scan=$2
 
-	# Directory Path
 	if [[ -d $1 ]]; then
 		echo " "
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Created $2 output directory of target live host under '$1'${ENDCOLOR}\n"
@@ -92,8 +91,12 @@ path_check() {
 		echo " "
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${WARNING}YELLOW${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to $2 output directory of target live host under '$1'${ENDCOLOR}\n" 
 	fi
+}
 
-	# File Path
+file_check() {
+	local path=$1
+	local scan=$2
+
 	if [[ -e $1 ]]; then
 		echo " "
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Generated output data for $2 of target live host under '$1'${ENDCOLOR}\n"
@@ -101,7 +104,9 @@ path_check() {
 		echo " "
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${WARNING}YELLOW${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to generate output data for $2 of target live host under '$1'${ENDCOLOR}\n" 
 	fi
+
 }
+
 
 ###############################################################
 # Banner 				 	      	      # 
@@ -141,10 +146,10 @@ dhcp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate DHCP scan${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/DHCP
-	path_check "$(pwd)/Netauto/$IP/Protocols/DHCP" "DHCP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/DHCP" "DHCP"
 	
 	mkdir -p Netauto/$IP/Protocols/DHCP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/DHCP/nmap" "NMAP DHCP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/DHCP/nmap" "NMAP DHCP"
 
 	sudo nmap -sU --script dhcp-discover -p 67,68 $IP -oN Netauto/$IP/Protocols/DHCP/nmap/dhcp_discover.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/DHCP/nmap/dhcp_discover.txt" "NMAP DHCP discovery scan"
@@ -162,10 +167,10 @@ snmp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SNMP on port 161${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SNMP
-	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP" "SNMP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SNMP" "SNMP"
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/nmap" "NMAP SNMP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SNMP/nmap" "NMAP SNMP"
 
 	nmap -p 161 -sU -oA nmap_udp_snmp $IP -oN Netauto/$IP/Protocols/SNMP/nmap/udp.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/nmap/udp.nmap" "NMAP SNMP UDP scan"
@@ -207,7 +212,7 @@ snmp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/nmap/all.nmap" "full NMAP SNMP scan"
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk
-	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk" "SNMP snmpwalk enumeration scan"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk" "SNMP snmpwalk enumeration scan"
 
 	snmpwalk -v1 -c public -m ALL $IP:161 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v1.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v1.txt" "SNMP snmpwalk v1 enumeration scan"
@@ -222,13 +227,13 @@ snmp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v3.txt" "SNMP snmpwalk v3 enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmp-check
-	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmp-check" "snmp-check"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmp-check" "snmp-check"
 
 	snmp-check $IP -p 161 -c public | tee Netauto/$IP/Protocols/SSH/snmp-check/snmp-check.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmp-check/snmp-check.txt" "SNMP snmp-check enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk/v1
-	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk/v1" "snmpwalk v1"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk/v1" "snmpwalk v1"
 
 	# Interfaces
 	snmpwalk -c public -v1 $IP 1.3.6.1.2.1.2.2 | tee Netauto/$IP/Protocols/SNMP/snmpwalk/v1/interfaces.txt
@@ -268,7 +273,7 @@ snmp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk/v1/syslocation.txt" "snmpwalk v1 syslocation"
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk/v2c
-	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk/v2c" "snmpwalk v2c"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk/v2c" "snmpwalk v2c"
 
 	# Interfaces
 	snmpwalk -c public -v2c $IP 1.3.6.1.2.1.2.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v2c/interfaces.txt
@@ -307,7 +312,7 @@ snmp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/snmpwalk/v2c/syslocation.txt" "snmpwalk v2c syslocation"
 
 	mkdir -p Netauto/$IP/Protocols/SNMP/snmpwalk/v3
-	path_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk/v3" "snmpwalk v3"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SNMP/snmpwalk/v3" "snmpwalk v3"
 
 	# Interfaces
 	snmpwalk -c public -v3 $IP 1.3.6.1.2.1.2.2 | tee Netauto/$IP/Protocols/SSH/snmpwalk/v3/v3_interfaces.txt
@@ -352,10 +357,10 @@ echo_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Echo on port 7${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Echo
-	path_check "$(pwd)/Netauto/$IP/Protocols/Echo" "Echo"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Echo" "Echo"
 
 	mkdir -p Netauto/$IP/Protocols/Echo/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc" "Echo netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc" "Echo netcat"
 
 	nc $IP $port | tee Netauto/$IP/Protocols/Echo/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc/nc.txt" "Echo netcat connection"
@@ -364,7 +369,7 @@ echo_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc/nc.txt" "Echo verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/Echo/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nmap" "NMAP Echo"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Echo/nmap" "NMAP Echo"
 
 	nmap -p 7 $IP -oN Netauto/$IP/Protocols/Echo/nmap/port.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Echo/nmap/port.nmap" "NMAP Echo port scan"
@@ -376,7 +381,7 @@ ftp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating FTP on port 21${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/ftp/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nc" "FTP netcat connection"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/ftp/nc" "FTP netcat connection"
 
 	nc $IP $port | tee Netauto/$IP/Protocols/ftp/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nc/nc.txt" "FTP netcat banner-grabbing connection"
@@ -385,13 +390,13 @@ ftp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nc/nc-nv.txt" "FTP netcat verbose connection"
 	
 	mkdir -p Netauto/$IP/Protocols/ftp/openssl
-	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/openssl" "FTP OpenSSL"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/ftp/openssl" "FTP OpenSSL"
 
 	openssl s_client -connect $IP:21 -starttls ftp | tee Netauto/$IP/Protocols/ftp/openssl/openssl.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/openssl/ftp-openssl.txt" "FTP OpenSSL banner-grabbing connection"
 
 	mkdir -p Netauto/$IP/Protocols/ftp/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap" "NMAP FTP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap" "NMAP FTP"
 
 	nmap --script ftp-anon -p 21 $IP -oN Netauto/$IP/Protocols/ftp/nmap/anon.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/ftp/nmap/anon.nmap" "NMAP FTP anonymous enumeration scan"
@@ -424,7 +429,7 @@ ssh_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SSH on port 22${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SSH/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc" "SSH netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc" "SSH netcat"
 
 	nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc/nc.txt" "SSH netcat connection"
@@ -433,19 +438,19 @@ ssh_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc/nc-nv.txt" "SSH netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/SSH/ssh-audit
-	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/ssh-audit""SSH ssh-audit"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/ssh-audit""SSH ssh-audit"
 
 	ssh-audit.py $IP | tee Netauto/$IP/Protocols/SSH/ssh-audit/ssh-audit.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/ssh-audit/ssh-audit.txt" "SSH ssh-audit auditing enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/SSH/ssh-keyscan
-	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/ssh-keyscan" "SSH ssh-keyscan"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/ssh-keyscan" "SSH ssh-keyscan"
 
 	ssh-keyscan -t rsa $IP -p 22 | tee Netauto/$IP/Protocols/SSH/ssh-keyscan/rsa.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/ssh-keyscan/rsa.txt" "SSH public keys rsa enumeration"
 
 	mkdir -p Netauto/$IP/Protocols/SSH/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/nmap" "NMAP SSH"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/nmap" "NMAP SSH"
 
 	nmap -p 22 $IP --script ssh2-enum-algos -oN Netauto/$IP/Protocols/SSH/nmap/enum-algos.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/SSH/nmap/enum-algos.nmap" "NMAP SSH algorithms enumeration scan"
@@ -478,7 +483,7 @@ telnet_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Telnet on port 23${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Telnet/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nc" "Telnet netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nc" "Telnet netcat"
 
 	nc $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nc/nc.txt" "Telnet netcat connection"
@@ -487,7 +492,7 @@ telnet_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nc/nc-nv.txt" "Telnet netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/Telnet/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nmap" "NMAP Telnet"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nmap" "NMAP Telnet"
 
 	nmap -n -sV -Pn --script "*telnet* and safe" -p 23 $IP -oN Netauto/$IP/Protocols/Telnet/nmap/scripts.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nmap/scripts.nmap" "full NMAP Telnet script scan"
@@ -503,7 +508,7 @@ smtp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SMTP on port 25, 465 & 587${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nc" "SMTP netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nc" "SMTP netcat"
 
 	nc $IP 25 | tee Netauto/$IP/Protocols/SMTP/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nc.txt""SMTP netcat connection"
@@ -512,7 +517,7 @@ smtp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nc-nv.txt" "SMTP netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/openssl
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/openssl" "SMTP OpenSSL"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMTP/openssl" "SMTP OpenSSL"
 
 	openssl s_client -starttls smtp -connect $IP:25 | tee Netauto/$IP/Protocols/SMTP/openssl/starttls.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/openssl/starttls.txt""SMTP OpenSSL encrypted communication"
@@ -524,13 +529,13 @@ smtp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/openssl/starttls-crlf.txt" "SMTP OpenSSL encrypted carriage return communication"
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/df
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/df" "SMTP disk space usage"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMTP/df" "SMTP disk space usage"
 
 	dif mx $IP | tee Netauto/$IP/Protocols/SMTP/df/domains.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/df/domains.txt" 
 	
 	mkdir -p Netauto/$IP/Protocols/SMTP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nmap" "NMAP SMTP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nmap" "NMAP SMTP"
 
 	nmap --script smtp-commands -p 25,465,587 $IP -oN Netauto/$IP/Protocols/SMTP/nmap/commands.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nmap/commands.nmap" "NMAP SMTP commands enumeration"
@@ -566,7 +571,7 @@ whois_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WHOIS on port 113${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/WHOIS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/WHOIS/nmap" "NMAP WHOIS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/WHOIS/nmap" "NMAP WHOIS"
 
 	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/WHOIS/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/WHOIS/script.nmap" "NMAP WHOIS script scan"
@@ -584,7 +589,7 @@ tacacs_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating TACACS on port 49${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/TACACS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/TACACS/nmap" "NMAP TACACS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/TACACS/nmap" "NMAP TACACS"
 
 	nmap -sC -p 49 $IP -oN Netauto/$IP/Protocols/TACACS/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/TACACS/script.nmap" "NMAP TACACS script scan"
@@ -602,7 +607,7 @@ dns_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating DNS on port 53${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/DNS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap" "NMAP DNS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap" "NMAP DNS"
 
 	nmap --script broadcast-dns-service-discovery -p- $IP -oN Netauto/$IP/Protocols/DNS/nmap/broadcast-dns-service-discovery.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap/broadcast-dns-service-discovery.nmap" "NMAP DNS Broadcast DNS service discovery enumeration scan"
@@ -674,7 +679,7 @@ tftp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating TFTP on port 69${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/TFTP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/TFTP/nmap" "NMAP TFTP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/TFTP/nmap" "NMAP TFTP"
 
 	nmap -sU -p 69 $IP -oN Netauto/$IP/Protocols/TFTP/nmap/open-ports.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/TFTP/nmap/open-ports.nmap" "NMAP TFTP open ports scan"
@@ -701,10 +706,10 @@ finger_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Finger on port 79${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Finger
-	path_check "$(pwd)/Netauto/$IP/Protocols/Finger" "Finger"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Finger" "Finger"
 
 	mkdir -p Netauto/$IP/Protocols/Finger/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/Finger/nc" "Finger netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Finger/nc" "Finger netcat"
 
 	nc $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Finger/nc/nc.txt" "finger netcat connection"
@@ -713,7 +718,7 @@ finger_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Finger/nc/nc-vn.txt" "finger netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/Finger/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Finger/nmap" "NMAP Finger"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Finger/nmap" "NMAP Finger"
 
 	nmap -sC -p 79 $IP -oN Netauto/$IP/Protocols/Finger/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Finger/script.nmap" "NMAP Finger script scan"
@@ -725,7 +730,7 @@ finger_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Finger/service-version.nmap" "NMAP Finger service and version detection"
 
 	mkdir -p Netauto/$IP/Protocols/Finger/enumeration
-	path_check "$(pwd)/Netauto/$IP/Protocols/Finger/enumeration" "finger enumeration"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Finger/enumeration" "finger enumeration"
 
 	finger @$IP | tee Netauto/$IP/Protocols/finger/enumeration/users.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/finger/enumeration/users.txt" "finger logged users enumeration"
@@ -761,7 +766,7 @@ kerberos_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Kerberos on port 88${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Kerberos/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Kerberos/nmap" "NMAP Kerberos"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Kerberos/nmap" "NMAP Kerberos"
 
 	nmap -sC -p 88 $IP -oN Netauto/$IP/Protocols/Kerberos/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Kerberos/nmap/script.nmap" "NMAP Kerberos script scan"
@@ -782,10 +787,10 @@ pop_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating POP on port 110${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/POP
-	path_check "$(pwd)/Netauto/$IP/Protocols/POP" "POP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/POP" "POP"
 
 	mkdir -p Netauto/$IP/Protocols/POP/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/POP/nc" "POP netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/POP/nc" "POP netcat"
 
 	nc $IP 110 | tee Netauto/$IP/Protocols/POP/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/POP/nc/nc.txt" "POP netcat connection"
@@ -794,13 +799,13 @@ pop_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/POP/nc/nc-vn.txt" "POP netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/POP/openssl
-	path_check "$(pwd)/Netauto/$IP/Protocols/POP/openssl" "POP OpenSSL"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/POP/openssl" "POP OpenSSL"
 
 	openssl s_client -connect $IP:995 -crlf -quiet | tee Netauto/$IP/Protocols/POP/openssl/crlf.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/POP/openssl/crlf.txt" "POP OpenSSL carriage return communication"
 
 	mkdir -p Netauto/$IP/Protocols/POP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/POP/nmap" "NMAP POP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/POP/nmap" "NMAP POP"
 
 	nmap --script "pop3-capabilities or pop3-ntlm-info" -sV -port 110,995 $IP -oN Netauto/$IP/Protocols/POP/nmap/cap-and-ntlm.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/POP/nmap/cap-and-ntlm.nmap" "NMAP POP capabilities or NTLM info enumeration scan"
@@ -818,7 +823,7 @@ portmapper_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Portmapper on port 111${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Portmapper/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Portmapper/nmap" "NMAP Portmapper"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Portmapper/nmap" "NMAP Portmapper"
 
 	nmap -sC -p 111 $IP -oN Netauto/$IP/Protocols/Portmapper/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Portmapper/script.nmap" "NMAP Portmapper script scan"
@@ -839,7 +844,7 @@ ident_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Ident on port 113${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Ident/nmap
-	path_check "mkdir -p Netauto/$IP/Protocols/Ident/nmap" "NMAP Ident"
+	directory_check "mkdir -p Netauto/$IP/Protocols/Ident/nmap" "NMAP Ident"
 
 	nmap -sC -p 113	$IP -oN Netauto/$IP/Protocols/Ident/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Ident/nmap/script.nmap" "NMAP Ident script scan"
@@ -857,10 +862,10 @@ ntp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NTP on port 123${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/NTP
-	path_check "$(pwd)/Netauto/$IP/Protocols/NTP" "NTP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NTP" "NTP"
 
 	mkdir -p Netauto/$IP/Protocols/NTP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/NTP/nmap" "NMAP NTP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NTP/nmap" "NMAP NTP"
 
 	nmap -sU --script ntp-info -p 123 $IP -oN Netauto/$IP/Protocols/NTP/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/NTP/nmap/info.nmap" "NMAP NTP info scan"
@@ -878,7 +883,7 @@ ntp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/NTP/nmap/aggressive-monlist.nmap" "NMAP NTP aggressive monitor data enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/NTP/ntpq
-	path_check "$(pwd)/Netauto/$IP/Protocols/NTP/ntpq" "NTPQ"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NTP/ntpq" "NTPQ"
 
 	ntpq -c readlist $IP | tee Netauto/$IP/Protocols/NTP/ntpq/readlist.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/NTP/ntpq/readlist.txt" "NTP NTPQ system variables enumeration"
@@ -899,7 +904,7 @@ msrpc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MSRPC on port 135${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/MSRPC/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/MSRPC/nmap" "NMAP MSRPC"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/MSRPC/nmap" "NMAP MSRPC"
 
 	nmap -sC -p 135	$IP -oN Netauto/$IP/Protocols/MSRPC/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/MSRPC/nmap/script.nmap" "NMAP MSRPC script scan"
@@ -914,7 +919,7 @@ msrpc_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/MSRPC/nmap/enum.nmap" "NMAP MSRPC enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/MSRPC/rpcdump
-	path_check "$(pwd)/Netauto/$IP/Protocols/MSRPC/rpcdump" "RPCDUMP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/MSRPC/rpcdump" "RPCDUMP"
 
 	impacket-rpcdump -port 135 $IP | tee Netauto/$IP/Protocols/MSRPC/rpcdump/impacket-rpcdump.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/MSRPC/rpcdump/impacket-rpcdump.txt" "RPC endpoints enumeration"
@@ -935,7 +940,7 @@ netbios_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NetBIOS on port 135, 137, 138, 139 & 445${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmap" ""
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmap" ""
 
 	nmap -sU -p 137,138,139 $IP -oN Netauto/$IP/Protocols/NetBios/nmap/udp.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmap/udp.nmap" "NMAP NetBios UDP scan"
@@ -965,13 +970,13 @@ netbios_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmap/nbstat.nmap" "NMAP NetBios nbstat enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/nmblookup
-	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmblookup" "nmblookup"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmblookup" "nmblookup"
 	
 	nmblookup -A $IP | tee Netauto/$IP/Protocols/NetBios/nmblookup/nmblookup.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmblookup/nmblookup.txt" "Node status query enumeration"
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/nbtscan
-	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nbtscan" "nbtscan"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nbtscan" "nbtscan"
 	
 	nbtscan $IP | tee Netauto/$IP/Protocols/NetBios/nbtscan/default.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nbtscan/default.txt" "default NetBIOS enumeration scan"
@@ -986,13 +991,13 @@ netbios_scan() {
 	path_check "$(pwd)/tee Netauto/$IP/Protocols/NetBios/nbtscan/range-24.txt" "verbose NetBIOS ip range of 24 enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/enum4linux
-	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/enum4linux" "enum4linux"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NetBios/enum4linux" "enum4linux"
 	
 	enum4linux -a -M -l -d $IP | tee Netauto/$IP/Protocols/NetBios/enum4linux/enum4linux.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/enum4linux/enum4linux.txt" "verbose enum4linux NetBIOS enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/rpcclient
-	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/rpcclient" "rpcclient"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NetBios/rpcclient" "rpcclient"
 	
 	rpcclient -U "" -P $IP | tee Netauto/$IP/Protocols/NetBios/rpcclient/null_session_attempt.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/NetBios/rpcclient/null_session_attempt.txt" "null session attempt rpcclient enumeration"
@@ -1004,7 +1009,7 @@ smb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SMB on port 445${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmap" "NMAP SMB"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmap" "NMAP SMB"
 
 	nmap --script smb-enum-shares.nse,smb-enum-users.nse -p 445 $IP -oN Netauto/$IP/Protocols/SMB/nmap/enum-scripts.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmap/enum-scripts.nmap" "NMAP SMB shares and users script enumeration scan"
@@ -1052,13 +1057,13 @@ smb_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmap/all.nmap" "full NMAP SMB scan"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/nmblookup
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmblookup" "nmblookup"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmblookup" "nmblookup"
 
 	nmblookup -A $IP | tee Netauto/$IP/Protocols/SMB/nmblookup/nmblookup.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmblookup/nmblookup.txt" "nmblookup node status query scan"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/nbtscan
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nbtscan" "nbtscan"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/nbtscan" "nbtscan"
 
 	nbtscan $IP | tee Netauto/$IP/Protocols/SMB/nbtscan/nbtscan.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nbtscan/nbtscan.txt" "nbtscan NetBIOS name information scan"
@@ -1067,7 +1072,7 @@ smb_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/nbtscan/recursive.txt" "nbtscan recursive NetBIOS name information ip range scan"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/enum4linux
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/enum4linux" "enum4linux"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/enum4linux" "enum4linux"
 
 	enum4linux $IP | tee Netauto/$IP/Protocols/SMB/enum4linux/enum4linux.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/enum4linux/enum4linux.txt" "enum4linux samba share enumeration scan"
@@ -1082,7 +1087,7 @@ smb_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/enum4linux/extended.txt" "extended enum4linux samba share enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/enum4linux-ng
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/enum4linux-ng" "enum4linux-ng"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/enum4linux-ng" "enum4linux-ng"
 	
 	enum4linux-ng -A $IP | tee Netauto/$IP/Protocols/SMB/enum4linux-ng/all.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/enum4linux-ng/smb-enum4linux-ng-all.txt" "enum4linux-ng all simple enumeration scan"
@@ -1091,7 +1096,7 @@ smb_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/enum4linux-ng/smb-enum4linux-short-all.txt" "enum4linux-ng all short simple enumeration scan"
 	
 	mkdir -p Netauto/$IP/Protocols/SMB/netexec
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/netexec" "netexec"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/netexec" "netexec"
 
 	netexec smb $IP/24 | tee Netauto/$IP/Protocols/SMB/netexec/range-scan.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/netexec/range-scan.txt" "network execution ip range SMB scan"
@@ -1106,7 +1111,7 @@ smb_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/netexec/target-ip-scan.txt" "network execution SMB target IP scan"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/smbmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/smbmap" "smbmap"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/smbmap" "smbmap"
 
 	smbmap -H $IP | tee Netauto/$IP/Protocols/SMB/smbmap/enumeration.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/smbmap/enumeration.txt" "smbmap SMB shares enumeration"
@@ -1121,13 +1126,13 @@ smb_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/smbmap/command-execution.txt" "smbmap SMB share command execution enumeration"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/crackmapexec
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/crackmapexec" "crackmapexec"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/crackmapexec" "crackmapexec"
 
 	crackmapexec smb $IP -u '' -p '' --shares | tee Netauto/$IP/Protocols/SMB/crackmapexec/null-session.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/crackmapexec/null-session.txt" "crackmapexec null users share enumeration"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/smbclient
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/smbclient" "smbclient"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/smbclient" "smbclient"
 
 	smbclient -L $IP | tee Netauto/$IP/Protocols/SMB/smbclient/directories.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/smbclient/directories.txt" "SMBclient directory enumeration scan"
@@ -1142,13 +1147,13 @@ smb_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/smbclient/null-user.txt" "SMBclient null user enumeration"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/rpcclient
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/rpcclient" "rpcclient"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/rpcclient" "rpcclient"
 	
 	rpcclient -U "" -N $IP | tee Netauto/$IP/Protocols/SMB/rpcclient/null-sessions.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/rpcclient/null-sessions.txt" "rpcclient SMB null session enumeration"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/RID-Cycling-Attack
-	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/RID-Cycling-Attack" "RID Cycling Attack"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/RID-Cycling-Attack" "RID Cycling Attack"
 
 	impacket-lookupsid example.local/anonymous@$IP 20000 -no-pass | tee Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/anon-nopass.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/SMB/RID-Cycling-Attack/anon-nopass.txt" "looksupid anonymous no pass authentication enumeration"
@@ -1166,10 +1171,10 @@ imap_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IMAP on port 143 & 993${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IMAP
-	path_check "$(pwd)/Netauto/$IP/Protocols/IMAP" "IMAP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IMAP" "IMAP"
 
 	mkdir -p Netauto/$IP/Protocols/IMAP/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nc" "IMAP netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nc" "IMAP netcat"
 
 	nc $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nc/nc.txt" "IMAP netcat connection"
@@ -1178,7 +1183,7 @@ imap_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nc/nc-vn.txt" "IMAP verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/IMAP/openssl
-	path_check "$(pwd)/Netauto/$IP/Protocols/IMAP/openssl" "IMAP OpenSSL"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IMAP/openssl" "IMAP OpenSSL"
 
 	openssl s_client -connect $IP:993 | tee Netauto/$IP/Protocols/IMAP/openssl/openssl.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/IMAP/openssl/openssl.txt" "IMAP OpenSSL communication"
@@ -1187,7 +1192,7 @@ imap_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/IMAP/openssl/quiet.txt" "IMAP OpenSSL quiet communication"
 
 	mkdir -p Netauto/$IP/Protocols/IMAP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nmap" "NMAP IMAP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nmap" "NMAP IMAP"
 
 	nmap --script imap-capabilities -p 143,993 $IP -oN Netauto/$IP/Protocols/IMAP/nmap/capabilities.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nmap/capabilities.nmap" "NMAP IMAP capabilities scan"
@@ -1202,10 +1207,10 @@ irc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IRC on port 194 & from 6660 to 7000${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IRC
-	path_check "$(pwd)/Netauto/$IP/Protocols/IRC" "IRC"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IRC" "IRC"
 
 	mkdir -p Netauto/$IP/Protocols/IRC/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/IRC/nc" "IRC netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IRC/nc" "IRC netcat"
 
 	nc $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/IRC/nc/nc.txt" "IRC netcat connection"
@@ -1214,7 +1219,7 @@ irc_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/IRC/nc/nc-vn.txt" "IRC verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/IRC/openssl
-	path_check "$(pwd)/Netauto/$IP/Protocols/IRC/openssl" "IRC OpenSSL"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IRC/openssl" "IRC OpenSSL"
 
 	openssl s_client -connect $IP:194 | tee Netauto/$IP/Protocols/IRC/openssl/openssl.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/IRC/openssl/openssl.txt" "IRC OpenSSL communication"
@@ -1229,7 +1234,7 @@ irc_scan() {
 	path_check "$(pwd)/tee Netauto/$IP/Protocols/IRC/openssl/quiet-port6667.txt" "IRC port 6667 quiet communication"
 
 	mkdir -p Netauto/$IP/Protocols/IRC/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/IRC/nmap" "NMAP IRC"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IRC/nmap" "NMAP IRC"
 
 	nmap --script irc-info,irc-botnet-channels,irc-unrealircd-backdoor -p 194,6660-7000 $IP -oN Netauto/$IP/Protocols/IRC/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/IRC/nmap/info.nmap" "NMAP IRC info scan"
@@ -1247,10 +1252,10 @@ checkpoint_firewall_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Checkpoint Firewall on port 264${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Checkpoint-Firewall
-	path_check "$(pwd)/Netauto/$IP/Protocols/Checkpoint_Firewall" "Checkpoint Firewall"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Checkpoint_Firewall" "Checkpoint Firewall"
 
 	mkdir -p Netauto/$IP/Protocols/Checkpoint-Firewall/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Checkpoint-Firewall/nmap" "NMAP Checkpoint Firewall"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Checkpoint-Firewall/nmap" "NMAP Checkpoint Firewall"
 
 	nmap -sC -p 264 -oN Netauto/$IP/Protocols/Checkpoint-Firewall/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Checkpoint_Firewall-1/nmap/script.nmap" "NMAP Checkpoint Firewall script scan"
@@ -1268,10 +1273,10 @@ ldap_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating LDAP on port 389${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/LDAP
-	path_check "$(pwd)/Netauto/$IP/Protocols/LDAP" "LDAP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/LDAP" "LDAP"
 	
 	mkdir -p Netauto/$IP/Protocols/LDAP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/LDAP/nmap" "NMAP LDAP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/LDAP/nmap" "NMAP LDAP"
 
 	nmap --script ldap-search -p 389 $IP -oN Netauto/$IP/Protocols/LDAP/nmap/search.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/LDAP/nmap/search.nmap" "NMAP LDAP"
@@ -1289,7 +1294,7 @@ ldap_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/LDAP/nmap/all-version.nmap" "full NMAP LDAP version scan"
 
 	mkdir -p Netauto/$IP/Protocols/LDAP/ldapsearch
-	path_check "$(pwd)/Netauto/$IP/Protocols/LDAP/ldapsearch" "ldapsearch"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/LDAP/ldapsearch" "ldapsearch"
 
 	ldapsearch -LLL -x -H ldap://$IP -b ‘’ -s base '(objectclass=*)' | tee Netauto/$IP/Protocols/LDAP/ldapsearch/anon-cred-dump.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/LDAP/ldapsearch/anon-cred-dump.txt" "LDAPsearch Anonymous Credential Dumping"
@@ -1307,10 +1312,10 @@ ipsec_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPSEC on port 500${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IKE
-	path_check "$(pwd)/Netauto/$IP/Protocols/IKE" "IKE"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IKE" "IKE"
 
 	mkdir -p Netauto/$IP/Protocols/IKE/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/IKE/nmap" "NMAP IKE"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IKE/nmap" "NMAP IKE"
 
 	nmap -sU -p 500 $IP -oN Netauto/$IP/Protocols/IKE/nmap/udp.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/IKE/nmap/udp.nmap" "NMAP IKE UDP scan"
@@ -1322,7 +1327,7 @@ ipsec_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/IKE/nmap/http-cisco-anyconnect.nmap" "NMAP IKE AnyConnect client information scan"
 
 	mkdir -p Netauto/$IP/Protocols/IKE/ike-scan
-	path_check "$(pwd)/Netauto/$IP/Protocols/IKE/ike-scan" "ike-scan"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IKE/ike-scan" "ike-scan"
 
 	ike-scan -M $IP | tee Netauto/$IP/Protocols/IKE/ike-scan/default.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/IKE/ike-scan/default.txt" "IKE scan discovery enumeration scan"
@@ -1340,10 +1345,10 @@ modbus_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Modbus on port 502${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Modbus
-	path_check "$(pwd)/Netauto/$IP/Protocols/Modbus" "Modbus"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Modbus" "Modbus"
 	
 	mkdir -p Netauto/$IP/Protocols/Modbus/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Modbus/nmap" "NMAP Modbus"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Modbus/nmap" "NMAP Modbus"
 
 	nmap -sC -p 502 -oN Netauto/$IP/Protocols/Modbus/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Modbus/nmap/script.nmap" "NMAP Modbus script scan"
@@ -1367,10 +1372,10 @@ rexec_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rexec on port 512${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rexec
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rexec" "Rexec"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rexec" "Rexec"
 
 	mkdir -p Netauto/$IP/Protocols/Rexec/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rexec/nmap" "NMAP Rexec"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rexec/nmap" "NMAP Rexec"
 
 	nmap -sC -p 512 $IP -oN Netauto/$IP/Protocols/Rexec/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rexec/nmap/script.nmap" "NMAP Rexec script scan"
@@ -1388,10 +1393,10 @@ rlogin_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rlogin on port 513${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rlogin
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rlogin" "Rlogin"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rlogin" "Rlogin"
 
 	mkdir -p Netauto/$IP/Protocols/Rlogin/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rlogin/nmap" "NMAP Rlogin"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rlogin/nmap" "NMAP Rlogin"
 
 	nmap -sC -p 513 $IP -oN Netauto/$IP/Protocols/Rlogin/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rlogin/nmap/script.nmap" "NMAP Rlogin script scan"
@@ -1409,10 +1414,10 @@ rsh_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rsh on port 514${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rsh
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rsh" "Rsh"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rsh" "Rsh"
 
 	mkdir -p Netauto/$IP/Protocols/Rsh/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rsh/nmap" "NMAP Rsh"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rsh/nmap" "NMAP Rsh"
 
 	nmap -sC -p 514 $IP -oN Netauto/$IP/Protocols/Rsh/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rsh/nmap/script.nmap" "NMAP Rsh script scan"
@@ -1430,10 +1435,10 @@ lpd_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating LPD on port 515${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/LPD
-	path_check "$(pwd)/Netauto/$IP/Protocols/LPD" "LPD"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/LPD" "LPD"
 	
 	mkdir -p Netauto/$IP/Protocols/LPD/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/LPD/nmap" "NMAP LPD"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/LPD/nmap" "NMAP LPD"
 
 	nmap -sC -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/LPD/nmap/script.nmap" "NMAP LPD script scan"
@@ -1451,10 +1456,10 @@ afp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating AFP on port 548${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/AFP
-	path_check "$(pwd)/Netauto/$IP/Protocols/AFP" "AFP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/AFP" "AFP"
 
 	mkdir -p Netauto/$IP/Protocols/AFP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/AFP/nmap" "NMAP AFP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/AFP/nmap" "NMAP AFP"
 	
 	nmap --script afp-ls -p 548 $IP -oN Netauto/$IP/Protocols/AFP/nmap/list.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/AFP/nmap/list.nmap" "NMAP AFP directories enumeration scan"
@@ -1478,10 +1483,10 @@ rtsp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RTSP on port 554 & 8554${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/RTSP
-	path_check "$(pwd)/Netauto/$IP/Protocols/RTSP" "RTSP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/RTSP" "RTSP"
 
 	mkdir -p Netauto/$IP/Protocols/RTSP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/RTSP/nmap" "NMAP RTSP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/RTSP/nmap" "NMAP RTSP"
 
 	nmap --script rtsp-url-brute -p 554 $IP -oN Netauto/$IP/Protocols/RTSP/nmap/url-brute.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/RTSP/nmap/url-brute.nmap" "NMAP RTSP url brute enumeration scan"
@@ -1502,10 +1507,10 @@ ipmi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPMI on port 623${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IPMI
-	path_check "$(pwd)/Netauto/$IP/Protocols/IPMI" "IPMI"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IPMI" "IPMI"
 
 	mkdir -p Netauto/$IP/Protocols/IPMI/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/IPMI/nmap" "NMAP IPMI"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IPMI/nmap" "NMAP IPMI"
 
 	nmap -n -p 623 $IP -oN Netauto/$IP/Protocols/IPMI/nmap/scan.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/IPMI/nmap/scan.nmap" "NMAP IPMI network scan"
@@ -1523,10 +1528,10 @@ ipp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPP on port 631${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IPP
-	path_check "$(pwd)/Netauto/$IP/Protocols/IPP" "IPP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IPP" "IPP"
 
 	mkdir -p Netauto/$IP/Protocols/IPP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/IPP/nmap" "NMAP IPP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IPP/nmap" "NMAP IPP"
 
 	nmap -sV -p631 --script=cups* $IP -oN Netauto/$IP/Protocols/IPP/nmap/all.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/IPP/nmap/all.nmap" "full NMAP IPP scan"
@@ -1541,7 +1546,7 @@ ipp_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/IPP/curl.txt" "IPP HTTP curl request"
 
 	mkdir -p Netauto/$IP/Protocols/IPP/PRET
-	path_check "$(pwd)/Netauto/$IP/Protocols/IPP/PRET" "PRET"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IPP/PRET" "PRET"
 
 	python2 /opt/tools/IPP/PRET/pret.py $IP:631 ps | tee Netauto/$IP/Protocols/IPP/PRET/ps.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/IPP/PRET/ps.txt" "PRET PostScript enumeration scan"
@@ -1559,10 +1564,10 @@ epp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating EPP on port 700${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/EPP
-	path_check "$(pwd)/Netauto/$IP/Protocols/EPP" "EPP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/EPP" "EPP"
 
 	mkdir -p Netauto/$IP/Protocols/EPP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/EPP/nmap" "NMAP EPP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/EPP/nmap" "NMAP EPP"
 
 	nmap -sC -p 700 $IP -oN Netauto/$IP/Protocols/EPP/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/EPP/nmap/script.nmap" "NMAP EPP script scan"
@@ -1580,16 +1585,16 @@ rsync_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rsync on port 873${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rsync
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rsync" "Rsync"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rsync" "Rsync"
 
 	mkdir -p Netauto/$IP/Protocols/Rsync/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rsync/nmap" "NMAP Rsync"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rsync/nmap" "NMAP Rsync"
 
 	nmap --script rsync-list-modules -p 873 $IP -oN Netauto/$IP/Protocols/Rsync/nmap/modules.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rsync/nmap/modules.nmap" "NMAP Rsync modules availability enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/Rsync/rsync
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rsync/rsync" "rsync"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rsync/rsync" "rsync"
 
 	rsync $IP:: | tee Netauto/$IP/Protocols/Rsync/rsync/data.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rsync/rsync/data.txt" "rsync list sync data enumeration"
@@ -1604,7 +1609,7 @@ rsync_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rsync/rsync/recursive.txt" "recurisve subdirectory and file enumeration"
 
 	mkdir -p Netauto/$IP/Protocols/Rsync/rsync/shares
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rsync/rsync/shares" "rsync shares"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rsync/rsync/shares" "rsync shares"
 
 	rsync $IP::shares | tee Netauto/$IP/Protocols/Rsync/rsync/shares/shares.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rsync/rsync/shares/shares.txt" "rsync share enumeration"
@@ -1619,10 +1624,10 @@ rusersd_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rusersd on port 1026${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Rusersd
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rusersd" "Rusersd"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rusersd" "Rusersd"
 
 	mkdir -p Netauto/$IP/Protocols/Rusersd/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rusersd/nmap" "NMAP Rusersd"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rusersd/nmap" "NMAP Rusersd"
 
 	nmap -sC -p 1026 $IP -oN Netauto/$IP/Protocols/Rusersd/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rusersd/nmap/script.nmap" "NMAP Rusersd script scan"
@@ -1634,7 +1639,7 @@ rusersd_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rusersd/nmap/script-and-version.nmap" "NMAP Rusersd service and version detection scan"
 
 	mkdir -p Netauto/$IP/Protocols/Rusersd/rusers
-	path_check "$(pwd)/Netauto/$IP/Protocols/Rusersd/rusers" "rusers"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Rusersd/rusers" "rusers"
 	
 	rusers -l $IP | tee Netauto/$IP/Protocols/Rusersd/rusers/ls.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Rusersd/rusers/ls.txt" "rusers active users enumeration"
@@ -1646,10 +1651,10 @@ socks_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SOCKS on port 1080${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SOCKS
-	path_check "$(pwd)/Netauto/$IP/Protocols/SOCKS" "SOCKS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SOCKS" "SOCKS"
 	
 	mkdir -p Netauto/$IP/Protocols/SOCKS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/SOCKS/nmap" "NMAP SOCKS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SOCKS/nmap" "NMAP SOCKS"
 
 	nmap -p 1080 $IP --script socks-auth-info -oN Netauto/$IP/Protocols/SOCKS/nmap/auth-info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/SOCKS/nmap/auth-info.nmap" "NMAP SOCKS authentication info enumeration"
@@ -1664,10 +1669,10 @@ java_rmi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Java RMI${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Java-RMI
-	path_check "$(pwd)/Netauto/$IP/Protocols/Java-RMI" ""
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Java-RMI" ""
 	
 	mkdir -p Netauto/$IP/Protocols/Java-RMI/nmap/
-	path_check "$(pwd)/Netauto/$IP/Protocols/Java-RMI/nmap/" "NMAP Java RMI"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Java-RMI/nmap/" "NMAP Java RMI"
 
 	nmap -p- $IP -oN Netauto/$IP/Protocols/Java-RMI/nmap/port.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Java-RMI/nmap/port.nmap" "NMAP Java RMI port enumeration scan"
@@ -1692,10 +1697,10 @@ ibm_mq_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate IBM MQ${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/IBM-MQ
-	path_check "$(pwd)/Netauto/$IP/Protocols/IBM-MQ" "IBM-MQ"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IBM-MQ" "IBM-MQ"
 
 	mkdir -p Netauto/$IP/Protocols/IBM-MQ/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/IBM-MQ/nmap" "NMAP IBM-MQ"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/IBM-MQ/nmap" "NMAP IBM-MQ"
 
 	nmap -sC -p 1414 $IP -oN Netauto/$IP/Protocols/IBM-MQ/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/IBM-MQ/nmap/script.nmap" "NMAP IBM-MQ script scan"
@@ -1713,10 +1718,10 @@ pptp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating PPTP on port 1723${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/PPTP/
-	path_check "$(pwd)/Netauto/$IP/Protocols/PPTP/" "PPTP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/PPTP/" "PPTP"
 	
 	mkdir -p Netauto/$IP/Protocols/PPTP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/PPTP/nmap" "NMAP PPTP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/PPTP/nmap" "NMAP PPTP"
 
 	nmap –Pn -sSV -p1723 $IP -oN Netauto/$IP/Protocols/PPTP/nmap/ports.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/PPTP/nmap/ports.nmap" "NMAP PPTP port enumeration scan"
@@ -1731,10 +1736,10 @@ mqtt_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MQTT on port 1883${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/MQTT/
-	path_check "$(pwd)/Netauto/$IP/Protocols/MQTT/" "MQTT"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/MQTT/" "MQTT"
 
 	mkdir -p Netauto/$IP/Protocols/MQTT/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/MQTT/nmap" "NMAP MQTT"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/MQTT/nmap" "NMAP MQTT"
 
 	nmap --script mqtt-subscribe -p 1883 $IP -oN Netauto/$IP/Protocols/MQTT/nmap/mqtt-subscribe.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/MQTT/nmap/mqtt-subscribe.nmap" "NMAP MQTT message traffic enumeration"
@@ -1747,10 +1752,10 @@ nfs_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate NFS${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/NFS/
-	path_check "$(pwd)/Netauto/$IP/Protocols/NFS/" "NFS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NFS/" "NFS"
 
 	mkdir -p Netauto/$IP/Protocols/NFS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/NFS/nmap" "NMAP NFS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NFS/nmap" "NMAP NFS"
 
 	nmap -sC -p2049 $IP -oN Netauto/$IP/Protocols/NFS/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/NFS/nmap/script.nmap" "NMAP NFS script scan"
@@ -1774,13 +1779,13 @@ nfs_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/NFS/nmap/rpcinfo.nmap" "NMAP NFS rpcinfo script scan"
 
 	mkdir -p Netauto/$IP/Protocols/NFS/showmount
-	path_check "$(pwd)/Netauto/$IP/Protocols/NFS/showmount" "showmount"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NFS/showmount" "showmount"
 
 	showmount -e $IP | tee Netauto/$IP/Protocols/NFS/showmount/showmount.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/NFS/showmount/showmount.txt" "showmount NFS export enumeration scan"
 
 	mkdir -p Netauto/$IP/Protocols/NFS/rpcinfo
-	path_check "$(pwd)/Netauto/$IP/Protocols/NFS/rpcinfo" "rpcinfo"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NFS/rpcinfo" "rpcinfo"
 
 	rpcinfo -p $IP | tee Netauto/$IP/Protocols/NFS/showmount/rpcinfo/rpcinfo.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/NFS/showmount/rpcinfo/rpcinfo.txt" "rpcinfo RPC service enumeration"
@@ -1792,10 +1797,10 @@ compaq_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Compaq${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/compaq/
-	path_check "$(pwd)/Netauto/$IP/Protocols/compaq/" "Compaq"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/compaq/" "Compaq"
 
 	mkdir -p Netauto/$IP/Protocols/compaq/nmap/
-	path_check "$(pwd)/Netauto/$IP/Protocols/compaq/nmap/" "NMAP Compaq"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/compaq/nmap/" "NMAP Compaq"
 
 	nmap -p- $IP -oN Netauto/$IP/Protocols/compaq/nmap/port.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/compaq/nmap/port.nmap" "NMAP Compaq port enumeration scan"
@@ -1822,10 +1827,10 @@ docker_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Docker on port 2375 & 2376${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Docker/
-	path_check "$(pwd)/Netauto/$IP/Protocols/Docker/" "Docker"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Docker/" "Docker"
 
 	mkdir -p Netauto/$IP/Protocols/Docker/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Docker/nmap" "NMAP Docker"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Docker/nmap" "NMAP Docker"
 
 	map --script docker-version -p 2375,2376 $IP -oN Netauto/$IP/Protocols/Docker/nmap/version.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Docker/nmap/version.nmap" "NMAP Docker version script scan"
@@ -1840,7 +1845,7 @@ squid_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Squid on port 3128${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Squid/
-	path_check "$(pwd)/Netauto/$IP/Protocols/Squid/" "Squid"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Squid/" "Squid"
 
 	curl --proxy http://$IP:3128 http://$IP | tee Netauto/$IP/Protocols/Squid/proxy.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Squid/proxy.txt" "HTTP Squid curl proxy request"
@@ -1853,10 +1858,10 @@ iscsi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating ISCSI on port 3260${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/ISCSI/
-	path_check "$(pwd)/Netauto/$IP/Protocols/ISCSI/" "ISCSI"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/ISCSI/" "ISCSI"
 
 	mkdir -p Netauto/$IP/Protocols/ISCSI/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/ISCSI/nmap" "NMAP ISCSI"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/ISCSI/nmap" "NMAP ISCSI"
 
 	nmap -sV --script=iscsi-info -p 3260 $IP -oN Netauto/$IP/Protocols/ISCSI/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/ISCSI/nmap/info.nmap" "NMAP ISCSI info script enumeration scan"
@@ -1872,10 +1877,10 @@ rdp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate RDP${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/RDP/
-	path_check "$(pwd)/Netauto/$IP/Protocols/RDP/" "RDP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/RDP/" "RDP"
 
 	mkdir -p Netauto/$IP/Protocols/RDP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/RDP/nmap" "NMAP RDP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/RDP/nmap" "NMAP RDP"
 
 	nmap --script rdp-enum-encryption -p 3389 $IP -oN Netauto/$IP/Protocols/RDP/nmap/enc.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/RDP/nmap/enc.nmap" "NMAP RDP enumerating encryption scan"
@@ -1902,10 +1907,10 @@ saprouter_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SAPRouter on port 3299${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/SAPRouter/
-	path_check "$(pwd)/Netauto/$IP/Protocols/SAPRouter/" "SAPRouter"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SAPRouter/" "SAPRouter"
 
 	mkdir -p Netauto/$IP/Protocols/SAPRouter/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/SAPRouter/nmap" "NMAP SAPRouter"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SAPRouter/nmap" "NMAP SAPRouter"
 
 	nmap -sC -p 3299 $IP -oN Netauto/$IP/Protocols/SAPRouter/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/SAPRouter/nmap/script.nmap" "NMAP SAPRouter script scan"
@@ -1923,10 +1928,10 @@ distcc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Distcc on port 3632${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/distcc/
-	path_check "$(pwd)/Netauto/$IP/Protocols/distcc/" "distcc"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/distcc/" "distcc"
 
 	mkdir -p Netauto/$IP/Protocols/distcc/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/distcc/nmap" "NMAP distcc"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/distcc/nmap" "NMAP distcc"
 	
 	nmap -p 3632 $IP --script distcc-cve2004-2687 --script-args="distcc-exec.cmd='id'" -oN Netauto/$IP/Protocols/distcc/nmap/cve2004-2687.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/distcc/nmap/cve2004-2687.nmap" "NMAP distcc CVE-2004-2687 vulnerability scan"
@@ -1938,10 +1943,10 @@ subversion_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Subversion on port 3690${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/subversion/
-	path_check "$(pwd)/Netauto/$IP/Protocols/subversion" "subversion"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/subversion" "subversion"
 
 	mkdir -p Netauto/$IP/Protocols/subversion/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/subversion/nc" "subversion netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/subversion/nc" "subversion netcat"
 
 	nc $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/subversion/nc/nc.txt" "subversion netcat connection"
@@ -1950,7 +1955,7 @@ subversion_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/subversion/nc/nc-vn.txt" "subversion verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/subversion/svn
-	path_check "$(pwd)/Netauto/$IP/Protocols/subversion/svn" "svn"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/subversion/svn" "svn"
 
 	svn ls svn://$IP | tee Netauto/$IP/Protocols/subversion/svn/ls.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/subversion/svn/ls.txt" "subversion svn list enumeration"
@@ -1965,10 +1970,10 @@ ws-discovery_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WS Discovery on port 3702${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/ws-discovery/
-	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/" "ws-discovery"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/" "ws-discovery"
 
 	mkdir -p Netauto/$IP/Protocols/ws-discovery/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/nmap" "NMAP WS-Discovery"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/nmap" "NMAP WS-Discovery"
 
 	nmap -sC -p 3702 $IP -on Netauto/$IP/Protocols/ws-discovery/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/nmap/script.nmap" "NMAP WS-Discovery script scan"
@@ -1986,10 +1991,10 @@ epmd_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating EPMD on port 4369${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/epmd/
-	path_check "$(pwd)/Netauto/$IP/Protocols/epmd/" "EPMD"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/epmd/" "EPMD"
 
 	mkdir -p Netauto/$IP/Protocols/epmd/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/epmd/nc" "EPMD netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/epmd/nc" "EPMD netcat"
 
 	nc $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/epmd/nc/nc.txt" "EPMD netcat connection"
@@ -1998,7 +2003,7 @@ epmd_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/epmd/nc/nc-vn.txt" "EPMD verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/epmd/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/epmd/nmap" "NMAP EPMD"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/epmd/nmap" "NMAP EPMD"
 
 	nmap -p 4369 --script epmd-info $IP -oN Netauto/$IP/Protocols/epmd/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/epmd/nmap/info.nmap" "NMAP EPMD info script scan"
@@ -2014,10 +2019,10 @@ cisco_smart_install_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate CSIS${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/CSIS
-	path_check "$(pwd)/Netauto/$IP/Protocols/CSIS" "CSIS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/CSIS" "CSIS"
 
 	mkdir -p Netauto/$IP/Protocols/CSIS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/CSIS/nmap" "NMAP CSIS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/CSIS/nmap" "NMAP CSIS"
 
 	nmap -sC -p 3702 $IP -on Netauto/$IP/Protocols/CSIS/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/nmap/script.nmap" "NMAP CSIS script scan"
@@ -2035,10 +2040,10 @@ opc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating OPC on port 4840${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/OPC
-	path_check "$(pwd)/Netauto/$IP/Protocols/OPC" "OPC"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/OPC" "OPC"
 
 	mkdir -p Netauto/$IP/nmap/Protocols/OPC/nmap
-	path_check "$(pwd)/Netauto/$IP/nmap/Protocols/OPC/nmap" "NMAP OPC"
+	directory_check "$(pwd)/Netauto/$IP/nmap/Protocols/OPC/nmap" "NMAP OPC"
 
 	nmap -sC -p 4840 $IP -on Netauto/$IP/nmap/Protocols/OPC/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/nmap/Protocols/OPC/nmap/script.nmap" "NMAP OPC script scan"
@@ -2059,10 +2064,10 @@ docker_registry_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Docker Registry on port 5000${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/docker_registry/
-	path_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/" "Docker Registry"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/" "Docker Registry"
 
 	mkdir -p Netauto/$IP/Protocols/docker_registry/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/nmap" "NMAP Docker Registry"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/nmap" "NMAP Docker Registry"
 
 	nmap -sC -p 5000 $IP -on Netauto/$IP/Protocols/docker_registry/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/nmap/script.nmap" "NMAP Docker Registry script scan"
@@ -2074,7 +2079,7 @@ docker_registry_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/nmap/service-version.nmap" "NMAP Docker Registry service and version detection scan"
 
 	mkdir -p Netauto/$IP/Protocols/docker_registry/curl
-	path_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/curl" "curl"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/curl" "curl"
 
 	curl -s http://$IP:5000/v2/_catalog | tee Netauto/$IP/Protocols/docker_registry/curl/http-catalog.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/curl/http-catalog.txt" "Docker Registry curl HTTP catalog request"
@@ -2089,7 +2094,7 @@ docker_registry_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/https-auth.txt" "Docker Registry curl HTTPS authentication request"
 
 	mkdir -p Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber
-	path_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber" "DockerRegistryGrabber"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber" "DockerRegistryGrabber"
 
 	python /opt/tools/Docker_Registry/DockerRegistryGrabber/drg.py http://$IP --list | tee Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/list.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/DockerRegistryGrabber/list.txt" "Docker Registry list enumeration"
@@ -2107,10 +2112,10 @@ mdns_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MDNS on port 5353${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/mDNS/
-	path_check "$(pwd)/Netauto/$IP/Protocols/mDNS" "mDNS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/mDNS" "mDNS"
 
 	mkdir -p Netauto/$IP/Protocols/mDNS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/mDNS/nmap" "NMAP mDNS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/mDNS/nmap" "NMAP mDNS"
 
 	nmap --script dns-service-discovery -p 5353 $IP -oN Netauto/$IP/Protocols/mDNS/nmap/service-discovery.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/mDNS/nmap/service-discovery.nmap" "NMAP mDNS DNS service discovery enumeration script scan"
@@ -2125,10 +2130,10 @@ redshift_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RedShift on port 5439${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/redshift/
-	path_check "$(pwd)/Netauto/$IP/Protocols/redshift/" "redshift"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/redshift/" "redshift"
 
 	mkdir -p Netauto/$IP/Protocols/redshift/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/redshift/nmap" "NMAP redshift"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/redshift/nmap" "NMAP redshift"
 
 	nmap -sC -p 5439 $IP -on Netauto/$IP/Protocols/redshift/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/redshift/nmap/script.nmap" "NMAP redshift script scan"
@@ -2146,10 +2151,10 @@ android_debug_bridge_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Android Debug Bridge on port 5555${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/ADB
-	path_check "$(pwd)/Netauto/$IP/Protocols/ADB" "ADB"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/ADB" "ADB"
 
 	mkdir -p Netauto/$IP/Protocols/ADB/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/ADB/nmap" "NMAP ADB"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/ADB/nmap" "NMAP ADB"
 
 	nmap -sC -p 5555 $IP -oN Netauto/$IP/Protocols/ADB/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/ADB/nmap/script.nmap" "NMAP ADB script scan"
@@ -2167,10 +2172,10 @@ kibana_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Kibana on port 5601${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Kibana
-	path_check "$(pwd)/Netauto/$IP/Protocols/Kibana" "Kibana"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Kibana" "Kibana"
 
 	mkdir -p Netauto/$IP/Protocols/Kibana/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Kibana/nmap" "NMAP Kibana"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Kibana/nmap" "NMAP Kibana"
 
 	nmap -sC -p 5601 $IP -oN Netauto/$IP/Protocols/Kibana/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Kibana/nmap/script.nmap" "NMAP Kibana script scan"
@@ -2188,10 +2193,10 @@ amqp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating AMQP on port 5672${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/AMQP
-	path_check "$(pwd)/Netauto/$IP/Protocols/AMQP" "AMQP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/AMQP" "AMQP"
 
 	mkdir -p Netauto/$IP/Protocols/AMQP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/AMQP/nmap" "NMAP AMQP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/AMQP/nmap" "NMAP AMQP"
 
 	nmap -p 5672 --script amqp-info $IP -oN Netauto/$IP/Protocols/AMQP/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/AMQP/nmap/info.nmap" "NMAP AMQP info script scan"
@@ -2207,10 +2212,10 @@ vnc_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate VNC${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/VNC
-	path_check "$(pwd)/Netauto/$IP/Protocols/VNC" "VNC"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/VNC" "VNC"
 
 	mkdir -p Netauto/$IP/Protocols/VNC/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/VNC/nmap" "NMAP VNC"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/VNC/nmap" "NMAP VNC"
 
 	nmap -p 5900 --script vnc-title $IP -oN Netauto/$IP/Protocols/VNC/nmap/title.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/VNC/nmap/title.nmap" "NMAP VNC title script enumeration scan"
@@ -2237,10 +2242,10 @@ winrm_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WinRM on port 5985 & 5986${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/WinRM
-	path_check "$(pwd)/Netauto/$IP/Protocols/WinRM" "WinRM"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/WinRM" "WinRM"
 
 	mkdir -p Netauto/$IP/Protocols/WinRM/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/WinRM/nmap" "NMAP WinRM"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/WinRM/nmap" "NMAP WinRM"
 
 	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/WinRM/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/WinRM/nmap/script.nmap" "NMAP WinRM script scan"
@@ -2258,10 +2263,10 @@ omi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating OMI on port 5985 & 5986${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/OMI
-	path_check "$(pwd)/Netauto/$IP/Protocols/OMI" "OMI"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/OMI" "OMI"
 
 	mkdir -p Netauto/$IP/Protocols/OMI/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/OMI/nmap" "NMAP OMI"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/OMI/nmap" "NMAP OMI"
 
 	nmap -sC -p 5985,5986 $IP -oN Netauto/$IP/Protocols/OMI/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/OMI/nmap/script.nmap" "NMAP OMI script scan"
@@ -2280,10 +2285,10 @@ x11_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate X11${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/X11
-	path_check "$(pwd)/Netauto/$IP/Protocols/X11/" "X11"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/X11/" "X11"
 
 	mkdir -p Netauto/$IP/Protocols/X11/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/X11/nmap" "NMAP X11"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/X11/nmap" "NMAP X11"
 
 	nmap --script x11-access -p 6000 $IP -oN Netauto/$IP/Protocols/X11/nmap/access.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/X11/nmap/access.nmap" "NMAP X11 access authentication scan"
@@ -2301,10 +2306,10 @@ ajp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating AJP on port 8009${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/AJP/
-	path_check "$(pwd)/Netauto/$IP/Protocols/AJP" "AJP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/AJP" "AJP"
 
 	mkdir -p Netauto/$IP/Protocols/AJP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/AJP/nmap" "NMAP AJP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/AJP/nmap" "NMAP AJP"
 
 	nmap --script ajp-auth -p 8009 $IP -oN Netauto/$IP/Protocols/AJP/nmap/auth.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/AJP/nmap/auth.nmap" "NMAP AJP authentication enumeration"
@@ -2331,10 +2336,10 @@ splunk_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Splunk on port 8089${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Splunk
-	path_check "$(pwd)/Netauto/$IP/Protocols/Splunk" "Splunk"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Splunk" "Splunk"
 
 	mkdir -p Netauto/$IP/Protocols/Splunk/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Splunk/nmap" "NMAP Splunk"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Splunk/nmap" "NMAP Splunk"
 
 	nmap -sC -p 8089 $IP -oN Netauto/$IP/Protocols/Splunk/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Splunk/nmap/script.nmap" "NMAP Splunk script scan"
@@ -2354,10 +2359,10 @@ bitcoin_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate Bitcoin${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Bitcoin
-	path_check "$(pwd)/Netauto/$IP/Protocols/Bitcoin" "Bitcoin"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Bitcoin" "Bitcoin"
 
 	mkdir -p Netauto/$IP/Protocols/Bitcoin/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Bitcoin/nmap" "NMAP Bitcoin"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Bitcoin/nmap" "NMAP Bitcoin"
 
 	sudo nmap -p 8333 --script bitcoin-info $IP -oN Netauto/$IP/Protocols/Bitcoin/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Bitcoin/nmap/info.nmap" "NMAP Bitcoin main gateway info enumeration scan"
@@ -2381,10 +2386,10 @@ fastcgi_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating FastCGI on port 9000${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/FastCGI
-	path_check "$(pwd)/Netauto/$IP/Protocols/FastCGI/" "FastCGI"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/FastCGI/" "FastCGI"
 
 	mkdir -p Netauto/$IP/Protocols/FastCGI/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/FastCGI/nmap" "NMAP FastCGI"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/FastCGI/nmap" "NMAP FastCGI"
 
 	nmap -sC -p 9000 $IP -oN Netauto/$IP/Protocols/FastCGI/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/FastCGI/nmap/script.nmap" "NMAP FastCGI script scan"
@@ -2402,10 +2407,10 @@ hsqldb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating HSQLDB on port 9001${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/HSQLDB
-	path_check "$(pwd)/Netauto/$IP/Protocols/HSQLDB" "HSQLDB"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HSQLDB" "HSQLDB"
 
 	mkdir -p Netauto/$IP/Protocols/HSQLDB/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/HSQLDB/nmap" "NMAP HSQLDB"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HSQLDB/nmap" "NMAP HSQLDB"
 
 	nmap -sC -p 9001 $IP -oN Netauto/$IP/nmap/Protocols/HSQLDB/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/nmap/Protocols/HSQLDB/nmap/script.nmap" "NMAP HSQLDB script scan"
@@ -2423,10 +2428,10 @@ cassandra_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Cassandra on port 9042 & 9160${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Cassandra
-	path_check "$(pwd)/Netauto/$IP/Protocols/Cassandra" "Cassandra"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Cassandra" "Cassandra"
 
 	mkdir -p Netauto/$IP/Protocols/Cassandra/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Cassandra/nmap" "NMAP Cassandra"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Cassandra/nmap" "NMAP Cassandra"
 
 	nmap --script cassandra-info -p 9042,9160 $IP -oN Netauto/$IP/Protocols/Cassandra/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Cassandra/nmap/info.nmap" "NMAP Cassandra info script scan"
@@ -2441,10 +2446,10 @@ raw_printing_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Raw Printing on port 9100${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/raw_printing
-	path_check "$(pwd)/Netauto/$IP/Protocols/raw_printing" "Raw Printing"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/raw_printing" "Raw Printing"
 
 	mkdir -p Netauto/$IP/Protocols/raw_printing/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/raw_printing/nmap" "NMAP Raw Printing"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/raw_printing/nmap" "NMAP Raw Printing"
 
 	nmap --script pjl-ready-message -p 9100 $IP -oN Netauto/$IP/Protocols/raw_printing/nmap/pjl-ready-message.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/raw_printing/nmap/pjl-ready-message.nmap" "NMAP Raw Printing Printer Job Language enumeration"
@@ -2459,19 +2464,19 @@ elasticsearch_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Elasticsearch on port 9200${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch" "Elasticsearch"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch" "Elasticsearch"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl" "Elasticsearch curl"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl" "Elasticsearch curl"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/_xpack/security
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/_xpack/security" "Elasticsearch _xpack security"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/_xpack/security" "Elasticsearch _xpack security"
 
 	curl -X GET "$IP:9200/_xpack/security/user" | tee Netauto/$IP/Protocols/Elasticsearch/curl/_xpack/security/user.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_xpack/security/user.txt" "HTTP Elasticsearch curl _xpack security user request"
 
 	mkdir -p netauto/$ip/protocols/elasticsearch/curl/_security
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch" "Elasticsearch _security"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch" "Elasticsearch _security"
 
 	curl -X GET "$IP:9200/_security/role" | tee Netauto/$IP/Protocols/Elasticsearch/curl/security/role.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_security/role.txt" "HTTP Elasticsearch curl security role request"
@@ -2480,7 +2485,7 @@ elasticsearch_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_security/user.txt" "HTTP Elasticsearch curl security user request"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat" "_cat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat" "_cat"
 
 	curl -X GET "$IP:9200/_cat/segments" | tee Netauto/$IP/Protocols/Elasticsearch/curl/_cat/segments.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/segments.txt" "HTTP Elasticsearch curl segments request"
@@ -2513,13 +2518,13 @@ elasticsearch_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/thread_pool.txt" "HTTP Elasticsearch curl thread pool request"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml" "ml"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml" "ml"
 
 	curl -X GET "$IP:9200/_cat/ml/trained_models" | tee Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml/trained_models.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml/trained_models.txt" "HTTP Elasticsearch curl ml trained models request"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat/transforms
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/transforms" "transforms"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/transforms" "transforms"
 
 	curl -X GET "$IP:9200/_cat/transforms/_all" | tee Netauto/$IP/Protocols/Elasticsearch/curl/curl/_cat/transforms/_all.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/curl/_cat/transforms/_all.txt" "HTTP Elasticsearch curl all transforms request"
@@ -2537,7 +2542,7 @@ elasticsearch_scan() {
 	path_check "curl -X GET "$IP:9200/_cat/count" | tee Netauto/$IP/Protocols/Elasticsearch/curl/_cat/count.txt" "HTTP Elasticsearch curl count request"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml/data_frame
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml/data_frame" "data_frame"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml/data_frame" "data_frame"
 
 	curl -X GET "$IP:9200/_cat/ml/data_frame/analytics" | tee Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml/data_frame/analytics.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/ml/data_frame/analytics.txt" "HTTP Elasticsearch curl analytics request"
@@ -2564,10 +2569,10 @@ elasticsearch_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cat/nodes.txt" "HTTP Elasticsearch curl nodes request"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cluster
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cluster" "_cluster"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cluster" "_cluster"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_cluster/allocation
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cluster/allocation" "allocation"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cluster/allocation" "allocation"
 
 	curl -X GET "$IP:9200/_cluster/allocation/explain" | tee Netauto/$IP/Protocols/Elasticsearch/curl/_cluster/allocation/explain.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cluster/allocation/explain.txt" "HTTP Elasticsearch curl explain request"
@@ -2588,7 +2593,7 @@ elasticsearch_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_cluster/pending_tasks.txt" "HTTP Elasticsearch curl pending_tasks request"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_nodes
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_nodes" "_nodes"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_nodes" "_nodes"
 
 	curl -X GET "$IP:9200/_nodes" | tee Netauto/$IP/Protocols/Elasticsearch/curl/_nodes.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_nodes.txt" "HTTP Elasticsearch curl _nodes request"
@@ -2603,16 +2608,16 @@ elasticsearch_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_nodes/stats.txt" "HTTP Elasticsearch curl stats request"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_tasks
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_tasks" "_tasks"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_tasks" "_tasks"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_tasks/allocation
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_tasks/allocation" "allocation"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_tasks/allocation" "allocation"
 
 	curl -X GET "$IP:9200/_tasks/allocation/explain" | tee Netauto/$IP/Protocols/Elasticsearch/curl/_tasks/allocation/explain.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_tasks/allocation/explain.txt" "HTTP Elasticsearch curl explain request"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch/curl/_remote
-	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_remote" "_remote"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_remote" "_remote"
 
 	curl -X GET "$IP:9200/_remote/info" | tee Netauto/$IP/Protocols/Elasticsearch/curl/_remote/info.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch/curl/_remote/info.txt" "HTTP Elasticsearch curl info request"
@@ -2639,10 +2644,10 @@ ndmp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NDMP on port 10000${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/NDMP
-	path_check "$(pwd)/Netauto/$IP/Protocols/NDMP" "NDMP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NDMP" "NDMP"
 
 	mkdir -p Netauto/$IP/Protocols/NDMP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/NDMP/nmap" "NMAP NDMP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/NDMP/nmap" "NMAP NDMP"
 
 	nmap --script ndmp-version -p 10000 $IP -oN Netauto/$IP/Protocols/NDMP/nmap/version.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/NDMP/nmap/version.nmap" "NMAP NDMP script version scan"
@@ -2660,10 +2665,10 @@ memcached_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Memcached on port 11211${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached
-	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached" "Memcached"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Memcached" "Memcached"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/nc
-	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc" "Memcached netcat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc" "Memcached netcat"
 
 	nc $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc/nc.txt" "Memcached netcat connection"
@@ -2675,19 +2680,19 @@ memcached_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc/w.txt" "Memcached timeout verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/memcstat
-	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/memcstat" "memcstat"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Memcached/memcstat" "memcstat"
 
 	memcstat --servers=$IP | tee Netauto/$IP/Protocols/Memcached/memcstat/stats.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/memcstat/stats.txt" "Memcached Memcstat stats enumeration"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/memcdump
-	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/memcdump" "memcdump"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Memcached/memcdump" "memcdump"
 
 	memcdump --servers=$IP | tee Netauto/$IP/Protocols/Memcached/memcdump/items.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/memcdump/items.txt" "Memcached Memcdump items enumeration"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nmap" "NMAP Memcached"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nmap" "NMAP Memcached"
 	
 	nmap -n -sV --script memcached-info -p 11211 $IP | tee Netauto/$IP/Protocols/Memcached/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nmap/info.nmap" "NMAP Memcached script info scan"
@@ -2699,10 +2704,10 @@ rabbitmq_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RabbitMQ on port 15672${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/RabbitMQ
-	path_check "$(pwd)/Netauto/$IP/Protocols/RabbitMQ" "RabbitMQ"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/RabbitMQ" "RabbitMQ"
 
 	mkdir -p Netauto/$IP/Protocols/RabbitMQ/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/RabbitMQ/nmap" "NMAP RabbitMQ"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/RabbitMQ/nmap" "NMAP RabbitMQ"
 
 	nmap -sC -p 15672 $IP -oN Netauto/$IP/Protocols/RabbitMQ/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/RabbitMQ/nmap/script.nmap" "NMAP RabbitMQ script scan"
@@ -2721,10 +2726,10 @@ glusterfs_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate GlusterFS${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/GlusterFS
-	path_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS" "GlusterFS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS" "GlusterFS"
 
 	mkdir -p Netauto/$IP/Protocols/GlusterFS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS/nmap" "NMAP GlusterFS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS/nmap" "NMAP GlusterFS"
 
 	nmap -sC -p 24007,49152 $IP -oN Netauto/$IP/Protocols/GlusterFS/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS/nmap/script.nmap" "NMAP GlusterFS script scan"
@@ -2736,7 +2741,7 @@ glusterfs_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS/nmap/service-version.nmap" "NMAP GlusterFS service and version detection scan"
 
 	mkdir -p Netauto/$IP/Protocols/GlusterFS/gluster
-	path_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS/gluster" "gluster"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS/gluster" "gluster"
 
 	sudo gluster --remote-host=$IP volume list | tee Netauto/$IP/Protocols/GlusterFS/gluster/volumes.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS/gluster/volumes.txt" "GlusterFS volume list enumeration"
@@ -2749,10 +2754,10 @@ tiller_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate Tiller${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Tiller
-	path_check "$(pwd)/Netauto/$IP/Protocols/Tiller" "Tiller"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Tiller" "Tiller"
 
 	mkdir -p Netauto/$IP/Protocols/Tiller/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Tiller/nmap" "NMAP Tiller"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Tiller/nmap" "NMAP Tiller"
 
 	nmap -sC -p 44134 $IP -oN Netauto/$IP/Protocols/Tiller/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Tiller/nmap/script.nmap" "NMAP Tiller script scan"
@@ -2773,10 +2778,10 @@ ethernetip_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating EthernetIP on port 44818${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/EthernetIP
-	path_check "$(pwd)/Netauto/$IP/Protocols/EthernetIP" "EthernetIP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/EthernetIP" "EthernetIP"
 
 	mkdir -p Netauto/$IP/Protocols/EthernetIP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/EthernetIP/nmap" "NMAP EthernetIP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/EthernetIP/nmap" "NMAP EthernetIP"
 
 	nmap -sC -p 44818 $IP -oN Netauto/$IP/Protocols/EthernetIP/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/EthernetIP/nmap/script.nmap" "NMAP EthernetIP script scan"
@@ -2800,10 +2805,10 @@ bacnet_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating BACNet on port 47808${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/BACNet
-	path_check "$(pwd)/Netauto/$IP/Protocols/BACNet" "BACNet"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/BACNet" "BACNet"
 
 	mkdir -p Netauto/$IP/Protocols/BACNet/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/BACNet/nmap" "NMAP BACNet"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/BACNet/nmap" "NMAP BACNet"
 
 	nmap -sC -p 47808 $IP -oN Netauto/$IP/Protocols/BACNet/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/BACNet/nmap/script.nmap" "NMAP BACNet script scan"
@@ -2824,10 +2829,10 @@ hadoop_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Hadoop on port 50030, 50060, 50070 & 50090${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/Hadoop
-	path_check "$(pwd)/Netauto/$IP/Protocols/Hadoop" "Hadoop"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Hadoop" "Hadoop"
 
 	mkdir -p Netauto/$IP/Protocols/Hadoop/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/Hadoop/nmap" "NMAP Hadoop"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/Hadoop/nmap" "NMAP Hadoop"
 
 	nmap --script hadoop-jobtracker-info -p 50030 $IP -oN Netauto/$IP/Protocols/Hadoop/nmap/jobtracker.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/Hadoop/nmap/jobtracker.nmap" "NMAP Hadoop jobtracker info script scan"
@@ -2857,10 +2862,10 @@ http_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating HTTP on port 80${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP" "HTTP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP" "HTTP"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/nmap" "NMAP HTTP"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP/nmap" "NMAP HTTP"
 
 	nmap --script http-auth --script-args http-auth.path=/login -p 80 $IP -oN Netauto/$IP/Protocols/HTTP/nmap/auth-login.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/nmap/auth-login.nmap" "NMAP HTTP login authentication enumeration"
@@ -2890,16 +2895,16 @@ http_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/nmap/wp-all.nmap" "full NMAP HTTP wordpress scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners" "automatic scanners"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners" "automatic scanners"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto" "nikto"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto" "nikto"
 
 	nikto -h http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto/nikto.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/nikto/nikto.txt" "HTTP niko automatic scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb" "whatweb"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb" "whatweb"
 
 	whatweb http://$IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/default.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/default.txt" "HTTP default whatweb scan"
@@ -2914,25 +2919,25 @@ http_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/whatweb/extreme.txt" "HTTP extreme whatweb scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech" "webtech"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech" "webtech"
 
 	webtech -u $IP | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech/webtech.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/webtech/webtech.txt" "HTTP webtech scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze" "webanalyze"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze" "webanalyze"
 
 	webanalyze -host $IP -crawl 2 | tee Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze/webanalyze.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/webanalyze/webanalyze.txt" "HTTP webanalyze scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti" "wapiti"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti" "wapiti"
 
 	wapiti -u http://$IP -o Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti/wapiti.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/automatic_scanners/wapiti/wapiti.txt" "HTTP wapiti scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/Firewall
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/Firewall" "Firewall"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP/Firewall" "Firewall"
 
 	wafw00f http://$IP | tee Netauto/$IP/Protocols/HTTP/Firewall/wafw00f.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/Firewall/wafw00f.txt" "HTTP Firewall wafw00f scan"
@@ -2941,7 +2946,7 @@ http_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/Firewall/http-whatwaf.txt" "HTTP Firewall WhatWaf scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP/CMSScan
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/CMSScan" "CMSScan"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP/CMSScan" "CMSScan"
 
 	cmsmap -F -d http://$IP | tee Netauto/$IP/Protocols/HTTP/CMSScan/cms.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/CMSScan/cms.txt" "HTTP CMSMap CMS enumeration scan"
@@ -2962,10 +2967,10 @@ https_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating HTTPS on port 443 & 1443${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS" "HTTPS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS" "HTTPS"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/nmap
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/nmap" "NMAP HTTPS"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/nmap" "NMAP HTTPS"
 
 	nmap --script http-auth --script-args http-auth.path=/login -p 443,1443 $IP -oN Netauto/$IP/Protocols/HTTPS/nmap/auth-login.nmap
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/nmap/auth-login.nmap" "NMAP HTTPS login authentication enumeration"
@@ -2995,16 +3000,16 @@ https_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/nmap/wp-all.nmap" "full NMAP HTTPS wordpress scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners" "automatic scanners"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners" "automatic scanners"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto" "nikto"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto" "nikto"
 
 	nikto -h https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto/nikto.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/nikto/nikto.txt" "HTTPS nikto automatic scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb" "whatweb"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb" "whatweb"
 
 	whatweb https://$IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/default.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/default.txt" "HTTPS default whatweb scan"
@@ -3019,25 +3024,25 @@ https_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/whatweb/extreme.txt" "HTTPS extreme whatweb scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech" "webtech"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech" "webtech"
 
 	webtech -u $IP | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech/webtech.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/webtech/webtech.txt" "HTTPS webtech scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/webanalyze
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/webanalyze" "webanalyze"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/webanalyze" "webanalyze"
 
 	webanalyze -host $IP -crawl 2 | tee Netauto/$IP/Protocols/HTTPS/automatic_scanners/webanalyze/webanalyze.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/webanalyze/webanalyze.txt" "HTTPS webanalyze scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/automatic_scanners/wapiti
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/wapiti" "wapiti"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/wapiti" "wapiti"
 
 	wapiti -u https://$IP -o Netauto/$IP/Protocols/HTTPS/automatic_scanners/wapiti/wapiti.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/automatic_scanners/wapiti/wapiti.txt" "HTTPS wapiti scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/Firewall
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/Firewall" "Firewall"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/Firewall" "Firewall"
 
 	wafw00f https://$IP | tee Netauto/$IP/Protocols/HTTPS/Firewall/wafw00f.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/Firewall/wafw00f.txt" "HTTPS Firewall wafw00f scan"
@@ -3046,7 +3051,7 @@ https_scan() {
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/Firewall/http-whatwaf.txt" "HTTPS Firewall WhatWaf scan"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS/CMSScan
-	path_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/CMSScan" "CMSScan"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS/CMSScan" "CMSScan"
 
 	cmsmap -F -d https://$IP | tee Netauto/$IP/Protocols/HTTPS/CMSScan/cms.txt
 	path_check "$(pwd)/Netauto/$IP/Protocols/HTTP/CMSScan/cms.txt" "HTTPS CMSMap CMS enumeration scan"
@@ -3068,10 +3073,10 @@ mysql_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MySQL on port 3306${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/MySQL
-	path_check "$(pwd)/Netauto/$IP/Databases/MySQL" "MySQL"
+	directory_check "$(pwd)/Netauto/$IP/Databases/MySQL" "MySQL"
 
 	mkdir -p Netauto/$IP/Databases/MySQL/nmap
-	path_check "$(pwd)/Netauto/$IP/Databases/MySQL/nmap" "NMAP MySQL"
+	directory_check "$(pwd)/Netauto/$IP/Databases/MySQL/nmap" "NMAP MySQL"
 
 	nmap --script mysql-info -p 3306 $IP -oN Netauto/$IP/Databases/MySQL/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Databases/MySQL/nmap/info.nmap" "NMAP MySQL info script scan"
@@ -3116,10 +3121,10 @@ couchdb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating CouchDB on port 5984 & 6384${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/CouchDB
-	path_check "$(pwd)/Netauto/$IP/Databases/CouchDB" "CouchDB"
+	directory_check "$(pwd)/Netauto/$IP/Databases/CouchDB" "CouchDB"
 	
 	mkdir -p Netauto/$IP/Databases/CouchDB/nmap
-	path_check "$(pwd)/Netauto/$IP/Databases/CouchDB/nmap" "NMAP CouchDB"
+	directory_check "$(pwd)/Netauto/$IP/Databases/CouchDB/nmap" "NMAP CouchDB"
 
 	nmap --script couchdb-databases -p 5984,6384 $IP -oN Netauto/$IP/Databases/CouchDB/nmap/databases.nmap
 	path_check "$(pwd)/Netauto/$IP/Databases/CouchDB/nmap/databases.nmap" "NMAP CouchDB databases enumeration script scan"
@@ -3134,7 +3139,7 @@ influxdb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating InfluxDB on port 8086${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/InfluxDB
-	path_check "$(pwd)/Netauto/$IP/Databases/InfluxDB" "InfluxDB"
+	directory_check "$(pwd)/Netauto/$IP/Databases/InfluxDB" "InfluxDB"
 
 	curl http://$IP:8086/debug/requests | tee Netauto/$IP/Databases/InfluxDB/users.txt
 	path_check "$(pwd)/Netauto/$IP/Databases/InfluxDB/users.txt" "HTTP InfluxDB curl debug users requests"
@@ -3146,10 +3151,10 @@ mongodb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MongoDB on port 27017${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/MongoDB
-	path_check "$(pwd)/Netauto/$IP/Databases/MongoDB" "MongoDB"
+	directory_check "$(pwd)/Netauto/$IP/Databases/MongoDB" "MongoDB"
 
 	mkdir -p Netauto/$IP/Databases/MongoDB/nmap
-	path_check "$(pwd)/Netauto/$IP/Databases/MongoDB/nmap" "NMAP MongoDB"
+	directory_check "$(pwd)/Netauto/$IP/Databases/MongoDB/nmap" "NMAP MongoDB"
 
 	nmap --script mongodb-info -p 27017 $IP -oN Netauto/$IP/Databases/MongoDB/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Databases/MongoDB/nmap/info.nmap" "NMAP MongoDB info script scan"
@@ -3167,10 +3172,10 @@ mssql_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MSSQL on port 1433${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/MSSQL
-	path_check "$(pwd)/Netauto/$IP/Databases/MSSQL" "MSSQL"
+	directory_check "$(pwd)/Netauto/$IP/Databases/MSSQL" "MSSQL"
 
 	mkdir -p Netauto/$IP/Databases/MSSQL/nmap
-	path_check "$(pwd)/Netauto/$IP/Databases/MSSQL/nmap" "NMAP MSSQL"
+	directory_check "$(pwd)/Netauto/$IP/Databases/MSSQL/nmap" "NMAP MSSQL"
 
 	nmap --script broadcast-ms-sql-discover -p 1433 $IP -oN Netauto/$IP/Databases/MSSQL/nmap/broadcast-ms-sql-discover.nmap
 	path_check "$(pwd)/Netauto/$IP/Databases/MSSQL/nmap/broadcast-ms-sql-discover.nmap" "NMAP MSSQL broadcast mssql discovery scan"
@@ -3218,10 +3223,10 @@ postgresql_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating PostgreSQL on port 5432${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/PostgreSQL
-	path_check "$(pwd)/Netauto/$IP/Databases/PostgreSQL" "PostgreSQL"
+	directory_check "$(pwd)/Netauto/$IP/Databases/PostgreSQL" "PostgreSQL"
 
 	mkdir -p Netauto/$IP/Databases/PostgreSQL/nmap
-	path_check "$(pwd)/Netauto/$IP/Databases/PostgreSQL/nmap" "NMAP PostgreSQL"
+	directory_check "$(pwd)/Netauto/$IP/Databases/PostgreSQL/nmap" "NMAP PostgreSQL"
 
 	nmap -sC -p 5432 $IP -oN Netauto/$IP/Databases/PostgreSQL/nmap/script.nmap
 	path_check "$(pwd)/Netauto/$IP/Databases/PostgreSQL/nmap/script.nmap" "NMAP PostgreSQL script scan"
@@ -3239,10 +3244,10 @@ redis_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Redis on port 6379${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/Redis
-	path_check "$(pwd)/Netauto/$IP/Databases/Redis" "Redis"
+	directory_check "$(pwd)/Netauto/$IP/Databases/Redis" "Redis"
 
 	mkdir -p Netauto/$IP/Databases/Redis/nc
-	path_check "$(pwd)/Netauto/$IP/Databases/Redis/nc" "Redis netcat"
+	directory_check "$(pwd)/Netauto/$IP/Databases/Redis/nc" "Redis netcat"
 
 	nc $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/nc.txt
 	path_check "$(pwd)/Netauto/$IP/Databases/Redis/nc/nc.txt" "Redis netcat connection"
@@ -3251,7 +3256,7 @@ redis_scan() {
 	path_check "$(pwd)/Netauto/$IP/Databases/Redis/nc/nc-nv.txt" "Redis verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Databases/Redis/nmap
-	path_check "$(pwd)/Netauto/$IP/Databases/Redis/nmap" "NMAP Redis"
+	directory_check "$(pwd)/Netauto/$IP/Databases/Redis/nmap" "NMAP Redis"
 
 	nmap --script redis-info -p 6379 $IP -oN Netauto/$IP/Databases/Redis/nmap/info.nmap
 	path_check "$(pwd)/Netauto/$IP/Databases/Redis/nmap/info.nmap" "NMAP Redis info script scan"
@@ -3260,7 +3265,7 @@ redis_scan() {
 	path_check "$(pwd)/Netauto/$IP/Databases/Redis/nmap/info-ext.nmap" "NMAP Redis info version script scan"
 
 	mkdir -p Netauto/$IP/Databases/Redis/redis-cli
-	path_check "$(pwd)/Netauto/$IP/Databases/Redis/redis-cli" "redis-cli"
+	directory_check "$(pwd)/Netauto/$IP/Databases/Redis/redis-cli" "redis-cli"
 
 	redis-cli -h $IP | tee Netauto/$IP/Databases/Redis/redis-cli/redis-cli.txt
 	path_check "$(pwd)/Netauto/$IP/Databases/Redis/redis-cli/redis-cli.txt" "redis-cli connection"
@@ -3272,10 +3277,10 @@ oracledb_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating OracleDB on port 1521${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/Databases/OracleDB
-	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB" "OracleDB"
+	directory_check "$(pwd)/Netauto/$IP/Databases/OracleDB" "OracleDB"
 
 	mkdir -p Netauto/$IP/Databases/OracleDB/nmap
-	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/nmap" "NMAP OracleDB"
+	directory_check "$(pwd)/Netauto/$IP/Databases/OracleDB/nmap" "NMAP OracleDB"
 
 	nmap --script oracle-tns-version -p 1521 $IP -oN Netauto/$IP/Databases/OracleDB/nmap/tns-version.nmap
 	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/nmap/tns-version.nmap" "NMAP OracleDB tns version enumeration script scan"
@@ -3287,19 +3292,19 @@ oracledb_scan() {
 	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/nmap/enum-users.nmap" "NMAP OracleDB users enumeration scan"
 
 	mkdir -p Netauto/$IP/Databases/OracleDB/oscanner
-	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/oscanner" "oscanner"
+	directory_check "$(pwd)/Netauto/$IP/Databases/OracleDB/oscanner" "oscanner"
 
 	oscanner -s $IP -P 1521 | tee Netauto/$IP/Databases/OracleDB/oscanner/oscanner.txt
 	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/oscanner/oscanner.txt" "OracleDB oscanner enumeration scan"
 
 	mkdir -p Netauto/$IP/Databases/OracleDB/tnscmd10g
-	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/tnscmd10g" "tnscmd10g"
+	directory_check "$(pwd)/Netauto/$IP/Databases/OracleDB/tnscmd10g" "tnscmd10g"
 
 	tnscmd10g version -h $IP | tee Netauto/$IP/Databases/OracleDB/tnscmd10g/oracledb_tnscmd10g.txt
 	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/tnscmd10g/tnscmd10g.txt" "tnscmd10g TNS version fingerprinting scan"
 
 	mkdir -p Netauto/$IP/Databases/OracleDB/ODAT
-	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/ODAT" "ODAT"
+	directory_check "$(pwd)/Netauto/$IP/Databases/OracleDB/ODAT" "ODAT"
 
 	odat sidguesser -s $IP | tee Netauto/$IP/Databases/OracleDB/ODAT/odat.txt
 	path_check "$(pwd)/Netauto/$IP/Databases/OracleDB/ODAT/odat.txt" "odat SID brute scan"
@@ -3471,20 +3476,20 @@ default_nmap() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform reconnaissance scan${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP
-	path_check "$(pwd)/Netauto/$IP" "target machine"
+	directory_check "$(pwd)/Netauto/$IP" "target machine"
 
 	mkdir -p Netauto/$IP/Default
-	path_check "$(pwd)/Netauto/$IP/Default" "Default"
+	directory_check "$(pwd)/Netauto/$IP/Default" "Default"
 
         # Scans ports only and no host discovery
         # Scans for all ports available
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing port scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -Pn $IP -p- -oN Netauto/$IP/Default/port.txt
+		nmap -Pn $IP -p- -oN Netauto/$IP/Default/port.nmap
 	else 
-		nmap $MINRATE -Pn $IP -p- -oN Netauto/$IP/Default/port.txt
+		nmap $MINRATE -Pn $IP -p- -oN Netauto/$IP/Default/port.nmap
 	fi
-	path_check "$(pwd)/Netauto/$IP/Default/port.txt" "port scan"
+	path_check "$(pwd)/Netauto/$IP/Default/port.nmap" "port scan"
 
         echo " "
 
@@ -3494,11 +3499,11 @@ default_nmap() {
         # Useful for attempting to identify outdated version of service
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -sC -sV $IP -oN Netauto/$IP/Default/script.txt
+		nmap -sC -sV $IP -oN Netauto/$IP/Default/script.nmap
 	else 
-		nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/Default/script.txt
+		nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/Default/script.nmap
 	fi
-	path_check "$(pwd)/Netauto/$IP/Default/script.txt" "script scan"
+	path_check "$(pwd)/Netauto/$IP/Default/script.nmap" "script scan"
 
         echo " "
 
@@ -3507,11 +3512,11 @@ default_nmap() {
         # Scans ports only and no host discovery
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing stealth scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		sudo nmap -sS -Pn -n $IP -oN Netauto/$IP/DEFAULT/stealth_scan.txt
+		sudo nmap -sS -Pn -n $IP -oN Netauto/$IP/Default/stealth.nmap
 	else 
-		sudo nmap $MINRATE -sS -Pn -n $IP -oN Netauto/$IP/DEFAULT/stealth_scan.txt
+		sudo nmap $MINRATE -sS -Pn -n $IP -oN Netauto/$IP/Default/stealth.nmap
 	fi
-	path_check "$(pwd)/Netauto/$IP/Default/stealth.txt" "stealth scan"
+	path_check "$(pwd)/Netauto/$IP/Default/stealth.nmap" "stealth scan"
 
         echo " "
 
@@ -3521,11 +3526,11 @@ default_nmap() {
         # Useful for detailed reconnaissane and vulnerability assessment
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing aggressive scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -p- -A $IP -oN Netauto/$IP/DEFAULT/aggressive_scan.txt
+		nmap -p- -A $IP -oN Netauto/$IP/Default/aggressive.nmap
 	else 
-		nmap $MINRATE -p- -A $IP -oN Netauto/$IP/DEFAULT/aggressive_scan.txt
+		nmap $MINRATE -p- -A $IP -oN Netauto/$IP/Default/aggressive.nmap
 	fi
-	path_check "$(pwd)/Netauto/$IP/Default/aggressive.txt" "aggressive scan"
+	path_check "$(pwd)/Netauto/$IP/Default/aggressive.nmap" "aggressive scan"
 
         echo " "
 
@@ -3533,22 +3538,22 @@ default_nmap() {
         # runs all the scripts and checks on them
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing TCP scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -n -v -sT -A $IP -oN Netauto/$IP/DEFAULT/TCP_scan.txt
+		nmap -n -v -sT -A $IP -oN Netauto/$IP/Default/tcp.nmap
 	else
-		nmap $MINRATE -n -v -sT -A $IP -oN Netauto/$IP/DEFAULT/TCP_scan.txt
+		nmap $MINRATE -n -v -sT -A $IP -oN Netauto/$IP/Default/tcp.nmap
 	fi
-	path_check "$(pwd)/Netauto/$IP/Default/tcp.txt" "TCP"
+	path_check "$(pwd)/Netauto/$IP/Default/tcp.nmap" "TCP"
 	
         echo " "
 
         # Run Vulnerability Script to perform NSE Vulnerability Scan
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -sV --script vuln $IP -oN Netauto/$IP/DEFAULT/vulnerability_scan.txt
+		nmap -sV --script vuln $IP -oN Netauto/$IP/Default/vuln.nmap
 	else
-		nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/DEFAULT/vulnerability_scan.txt
+		nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/Default/vuln.nmap
 	fi
-	path_check "$(pwd)/Netauto/$IP/Default/vuln.txt" "vulnerability scan"
+	path_check "$(pwd)/Netauto/$IP/Default/vuln.nmap" "vulnerability scan"
 
         echo " "
 
@@ -3573,14 +3578,13 @@ tcp_nmap() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform TCP scan${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/TCP
-	path_check "$(pwd)/Netauto/$IP/TCP" "TCP"
+	directory_check "$(pwd)/Netauto/$IP/TCP" "TCP"
 
-	nmap -n -v -sT -p- -T5 -oN Netauto/$IP/TCP/port.txt $IP
-	path_check "$(pwd)/Netauto/$IP/TCP/port.txt" "full TCP port scan"
+	nmap -n -v -sT -p- -T5 -oN Netauto/$IP/TCP/port.nmap $IP
+	path_check "$(pwd)/Netauto/$IP/TCP/port.nmap" "full TCP port scan"
 
-
-	sudo nmap -T4 -F -sV -sC -oN Netauto/$IP/TCP/service-version.txt --reason --stats-every 5s -p- $IP
-	path_check "$(pwd)/Netauto/$IP/TCP/service-version.txt" "full TCP service and version detection scan"
+	sudo nmap -T4 -F -sV -sC -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
+	path_check "$(pwd)/Netauto/$IP/TCP/service-version.nmap" "full TCP service and version detection scan"
 
         echo " "
 
@@ -3605,14 +3609,14 @@ udp_nmap() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform UDP scan${ENDCOLOR}\n"
 
 	mkdir -p Netauto/$IP/UDP
-	path_check "$(pwd)/Netauto/$IP/UDP" "UDP"
+	directory_check "$(pwd)/Netauto/$IP/UDP" "UDP"
 
-        sudo nmap -n -v -sU -oN Netauto/$IP/UDP/port.txt $IP
-	path_check "$(pwd)/Netauto/$IP/UDP/port.txt" "full UDP port scan"
+        sudo nmap -n -v -sU -oN Netauto/$IP/UDP/port.nmap $IP
+	path_check "$(pwd)/Netauto/$IP/UDP/port.nmap" "full UDP port scan"
         echo ""
 
-        sudo nmap -n -v -sU -p- -T5 -oN Netauto/$IP/UDP/service-version.txt $IP
-	path_check "$(pwd)/Netauto/$IP/UDP/service-version.txt" "full UDP service and version detection scan"
+        sudo nmap -n -v -sU -p- -T5 -oN Netauto/$IP/UDP/service-version.nmap $IP
+	path_check "$(pwd)/Netauto/$IP/UDP/service-version.nmap" "full UDP service and version detection scan"
 
         echo " "
 
@@ -3630,32 +3634,32 @@ udp_nmap() {
 # Help                                                        #
 ###############################################################
 usage() {
-        echo "Usage: Netauto -i <ip_address> [-u, --usage] [-h, --help] [-i, --ip] [-p, --ports] [-t, --timing] [-m, --mode] [-o, --output]"
+        echo "Usage: Netauto -i <host> [options]"
 }
 
 help() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
-        echo "Usage: Netauto -i <ip_address> [-u, --usage] [-h, --help] [-i, --ip] [-p, --ports] [-t, --timing] [-m, --mode] [-o, --output]"
+        echo "Usage: Netauto -i <host> [options]"
 	echo " "
         echo "Options:"
         printf "  ${BOLD}-h, --help${ENDCOLOR}              	  Help & Usage\n"
-        printf "  ${BOLD}-i, --ip${ENDCOLOR}              	  Scan IP address of the target device\n"
-        printf "  ${BOLD}-p, --ports${ENDCOLOR}              	  Scan ports of the targets device\n"
-        printf "  ${BOLD}-t, --timing${ENDCOLOR}              	  Set NMAP timing minrate option\n"
-        printf "  ${BOLD}-m, --mode${ENDCOLOR}              	  Set type of scan to perform\n"
-        printf "  ${BOLD}-o, --output${ENDCOLOR}              	  Sets the output destination for scan results\n"
+        printf "  ${BOLD}-i, --ip${ENDCOLOR}              	  Specify target host\n"
+        printf "  ${BOLD}-p, --ports${ENDCOLOR}              	  Scan ports of target host\n"
+        printf "  ${BOLD}-t, --timing${ENDCOLOR}              	  Specify minrate option\n"
+        printf "  ${BOLD}-m, --mode${ENDCOLOR}              	  Specify scan mode\n"
+        printf "  ${BOLD}-o, --output${ENDCOLOR}              	  Output destination\n"
         echo " "
         echo "Timing minrate options:"
-        printf "  ${BOLD}-T0${ENDCOLOR}              	  Paranoid\n"
-        printf "  ${BOLD}-T1${ENDCOLOR}              	  Sneaky\n"
-        printf "  ${BOLD}-T2${ENDCOLOR}              	  Polite\n"
-	printf "  ${BOLD}-T3${ENDCOLOR}              	  Normal (Default)\n"
-        printf "  ${BOLD}-T4${ENDCOLOR}              	  Aggressive\n"
-        printf "  ${BOLD}-T5${ENDCOLOR}              	  Insane\n"
+        printf "  ${BOLD}0${ENDCOLOR}              	  Paranoid\n"
+        printf "  ${BOLD}1${ENDCOLOR}              	  Sneaky\n"
+        printf "  ${BOLD}2${ENDCOLOR}              	  Polite\n"
+	printf "  ${BOLD}3${ENDCOLOR}              	  Normal (Default)\n"
+        printf "  ${BOLD}4${ENDCOLOR}              	  Aggressive\n"
+        printf "  ${BOLD}5${ENDCOLOR}              	  Insane\n"
 	echo " "
 	echo "Mode options: "
-	printf " ${BOLD}recon${ENDCOLOR}			  Full Reconnaissance Scan\n"
+	printf " ${BOLD}recon${ENDCOLOR}			  Recon Scan\n"
 	printf " ${BOLD}tcp${ENDCOLOR}			  TCP Scan\n"
 	printf " ${BOLD}udp${ENDCOLOR}			  UDP Scan\n"
 	printf " ${BOLD}script${ENDCOLOR}			  Script Scan\n"

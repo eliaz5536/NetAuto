@@ -21,8 +21,7 @@ Requirements of utilizing this tool must be met by installing the latest availab
 sudo apt-get update
 ```
 
-Additionally, it requires the usage of Python, Python 2, Python 3 and pip, which can be installed on Kali Linux by performing the following commands:
-If you want to ensure that all of these packages are installed, perform those following commands instead:
+If you want to ensure that all packages are installed, perform those following commands:
 ```
 sudo apt-get install python python2 python3 python3-pip pip pipx
 ```

@@ -112,9 +112,9 @@ netauto -i 192.168.69.10 -p 40,60,80
 ```
 
 # Results
-The following results of these scans will produce NMAP directory and the rest of enumeration programs for each of the following ports through its name that will store and output all enumeration results of specified protocols through either -oN flag from NMAP or use tee to output the results into specified location 
+The following results of these scans will produce output directories and the rest of enumeration programs for each of the following ports which output all enumeration scans of specified ports.
 
-## Reconnaissance
+## Reconnaissance Output Directory
 ```
 Netauto
 └── XXX.XXX.XX.XX
@@ -127,7 +127,7 @@ Netauto
         └── vuln.nmap
 ```
 
-## Port and Service Scanning
+## Port Enumeration Output Directory
 ```
 Netauto
 └── XXX.XXX.XX.XX

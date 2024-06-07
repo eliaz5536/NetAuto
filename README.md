@@ -29,28 +29,18 @@ sudo apt-get install python python2 python3 python3-pip pip pipx
 
 The following tools that are utilized for pure port scanning and service discovery requires installation
 These following tools need to be installed and put in /opt directory in order to utilize the following script:
-| [Nmap](https://nmap.org/) | OpenSSL | Netcat | [onesixtyone](https://github.com/trailofbits/onesixtyone) | snmpwalk | snmp-check | dif |
-|--------------|------------|--------------------|-------------|-----------------------|---------------|-----------|
-| finger       | ntpq       | [impacket-rpcdump](https://github.com/fortra/impacket/tree/master) | [rpcdump](https://github.com/fortra/impacket/tree/master) | [rpcmap](https://github.com/fortra/impacket/tree/master) | [IOXIDResolver](https://github.com/mubix/IOXIDResolver) | nmblookup |
-| [nbtscan](https://github.com/charlesroelli/nbtscan) | [enum4linux](https://github.com/CiscoCXSecurity/enum4linux) | [rpcclient](https://github.com/cgrates/rpcclient) | [enum4linux](https://github.com/CiscoCXSecurity/enum4linux)  | [enum4linux-ng](https://github.com/cddmp/enum4linux-ng) | [netexec](https://github.com/Pennyw0rth/NetExec) | [smbmap](https://github.com/ShawnDEvans/smbmap) |
-| [crackmapexec](https://github.com/byt3bl33d3r/CrackMapExec) | smbclient | [impacket-looksupid](https://github.com/fortra/impacket/tree/master) | [IKE-Scan](https://github.com/royhills/ike-scan) | [PRET](https://github.com/RUB-NDS/PRET) | [rsync](https://github.com/RsyncProject/rsync) | rpcinfo |
-| [spose](https://github.com/aancw/spose) | svn | [SIETpy3](https://github.com/Sab0tag3d/SIETpy3) | OpalOPC | [DockerRegistryGrabber](https://github.com/Syzik/DockerRegistryGrabber) | [Nikto](https://github.com/sullo/nikto) | [WhatWeb](https://github.com/urbanadventurer/WhatWeb) |
-| [WebTech](https://github.com/ShielderSec/webtech) | [WebAnalyze](https://github.com/rverton/webanalyze) | [Wapiti](https://wapiti-scanner.github.io/) | [wafw00f](https://github.com/EnableSecurity/wafw00f) | [WhatWaf](https://github.com/Ekultek/WhatWaf) | [CMSMap](https://github.com/dionach/CMSmap) | [WPScan](https://github.com/wpscanteam/wpscan) |
-| [JoomScan](https://www.kali.org/tools/joomscan/) | [CMSeeK](https://github.com/Tuhinshubhra/CMSeeK)     |                    |             |                       |               |           |
+| Nmap         | OpenSSL          | Netcat             | snmpwalk   | snmp-check    | finger                |
+|--------------|------------------|--------------------|------------|---------------|-----------------------|
+| ntpq         | impacket-rpcdump | rpcdump            | rpcmap     | IOXIDResolver | nmblookup             |
+| nbtscan      | enum4linux       | enum4linux-ng      | rpcclient  | netexec       | smbmap                |
+| crackmapexec | smbclient        | impacket-looksupid | IKE-Scan   | PRET          | rsync                 |
+| rpcinfo      | spose            | svn                | SIETpy3    | OpalOPC       | DockerRegistryGrabber |
+| Nikto        | WhatWeb          | WebTech            | WebAnalyze | Wapiti        | wafw00f               |
+| WhatWaf      | CMSMap           | WPScan             | Joomscan   | CMSeeK        |                       |
 
 You can install most of the packages through apt package by doing the following 
 ```
 sudo apt-get install nmap snmpwalk snmpcheck openssl ssh-audit ssh-keyscan dif finger ntpq impacket-rdcdump nmblookup nbtscan enum4linux rpcclient netexec smbmap crackmapexec impacket-looksupid ldapsearch ike-scan curl rsync rusers rpcinfo svn opalopc nikto whatweb webtech webanalyze apiti wafw00f cmsmap wpscan redis-cli oscanner tnscmd10g  
-```
-
-Several third-party require cloning repositories to be cloned into a specified directory 
-```
-git clone <repositories over here>
-```
-
-Perform those following commands if you want to install simultaneously:
-```
-sudo apt-get install python python2 python3 python3-pip pip pipx
 ```
 
 It is recommended that you install most of the tools by default on **ParrotOS** or **Kali Linux**.

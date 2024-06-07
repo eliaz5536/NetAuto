@@ -37,19 +37,16 @@ It is recommended that you install the following tools on **Debian** based distr
 
 # Installation
 ```
+# Clone the following repository
 git clone https://github.com/eliaz5536/netauto.git # Clone repository
-chmod +x netauto # Change file permission to executable
 
+# Access the repository and change file permission of the script to be executable
+chmod +x netauto 
+
+# Launch NetAuto
+# ./netauto 
 ```
 
-Launch NetAuto bash script file:
-```shell
-./netauto -i <TARGET_IP_ADDRESS>
-```
-It will generate reports from NMAP that will display all ports that are running under the following target.
-
-Once it is generated, view the following ports and list all the ports that are reported for you to scan,
-by performing this following command:
 ```
 ./netauto -i <TARGET_HOST> -p <TARGET_PORTS>
 ```

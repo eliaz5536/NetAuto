@@ -44,7 +44,7 @@ git clone https://github.com/eliaz5536/netauto.git # Clone repository
 chmod +x netauto 
 
 # Launch NetAuto
-# ./netauto 
+./netauto 
 ```
 
 ```

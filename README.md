@@ -71,42 +71,31 @@ It is recommended that you run sudo on this script since it requires specific pe
 ```
 Network Enumeration Automator with Nmap
  
-Usage: Netauto -i <ip_address> [options]
+Usage: Netauto -i <host> [options]
  
 Options:
   -h, --help                      Help & Usage
-  -i, --ip                        Scan IP address of the target device
-  -p, --ports                     Scan ports of the targets device
-  -t, --timing                    Set NMAP timing minrate option
-  -m, --mode                      Set type of scan to perform
+  -i, --ip                        Specify target host
+  -p, --ports                     Scan ports of target host
+  -t, --timing                    Specify minrate option
+  -m, --mode                      Specify scan mode
+  -o, --output                    Output destination
  
 Timing minrate options:
-  -T0                     Paranoid
-  -T1                     Sneaky
-  -T2                     Polite
-  -T3                     Normal (Default)
-  -T4                     Aggressive
-  -T5                     Insane
+  0                       Paranoid
+  1                       Sneaky
+  2                       Polite
+  3                       Normal (Default)
+  4                       Aggressive
+  5                       Insane
  
 Mode options: 
- recon                    Full Reconnaissance Scan
+ recon                    Recon Scan
  tcp                      TCP Scan
  udp                      UDP Scan
  script                   Script Scan
- brute                    Brute Scan
  vuln                     Vulnerability Scan
- 
-If you input only the IP, it will perform default reconnaissance scan.
-If you input ports for scanning, it will perform a complete full reconnaissance scan.
- 
-Perform reconnaissance: 
-netauto -i 192.168.69.10
- 
-Perform reconnaissance with timing: 
-netauto -i 192.168.69.10 -t5
- 
-Perform protocols, port and service scan as default: 
-netauto -i 192.168.69.10 -p 40,60,80                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                        
 ```
 
 # Results

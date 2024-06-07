@@ -31,7 +31,7 @@ The tools that are utilized for enumeration requires installation of the followi
 | [Nikto](https://github.com/sullo/nikto)        | [WhatWeb](https://github.com/urbanadventurer/WhatWeb)          | [WebTech](https://github.com/ShielderSec/webtech)            | [WebAnalyze](https://github.com/rverton/webanalyze) | [Wapiti](https://github.com/wapiti-scanner/wapiti)        | [wafw00f](https://github.com/EnableSecurity/wafw00f)              |
 | [WhatWaf](https://github.com/Ekultek/WhatWaf)      | [CMSMap](https://github.com/dionach/CMSmap)           | [WPScan](https://github.com/wpscanteam/wpscan)             | [Joomscan](https://github.com/OWASP/joomscan)   | [CMSeeK](https://github.com/Tuhinshubhra/CMSeeK)        |                       |
 
-The following commands
+The following commands can be used from such resources such as [hacktricks](https://book.hacktricks.xyz/), [infrastructure](https://infra.newerasec.com/) & [0xffsec](https://0xffsec.com/handbook/).
 
 It is recommended that you install the following tools on **Debian** based distribution machine.
 
@@ -55,13 +55,7 @@ It will generate reports from NMAP that will display all ports that are running 
 Once it is generated, view the following ports and list all the ports that are reported for you to scan,
 by performing this following command:
 ```
-./netauto -i <TARGET_IP_ADDRESS> -p <TARGET_PORTS>
-```
-
-## Symlink Integration
-You can add symlink to call the following program without using 
-```
-
+./netauto -i <TARGET_HOST> -p <TARGET_PORTS>
 ```
 
 # Usage 

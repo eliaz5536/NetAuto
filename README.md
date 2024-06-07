@@ -38,13 +38,7 @@ These following tools need to be installed and put in /opt directory in order to
 | Nikto        | WhatWeb          | WebTech            | WebAnalyze | Wapiti        | wafw00f               |
 | WhatWaf      | CMSMap           | WPScan             | Joomscan   | CMSeeK        |                       |
 
-You can install most of the packages through apt package by doing the following 
-```
-sudo apt-get install nmap snmpwalk snmpcheck openssl ssh-audit ssh-keyscan dif finger ntpq impacket-rdcdump nmblookup nbtscan enum4linux rpcclient netexec smbmap crackmapexec impacket-looksupid ldapsearch ike-scan curl rsync rusers rpcinfo svn opalopc nikto whatweb webtech webanalyze apiti wafw00f cmsmap wpscan redis-cli oscanner tnscmd10g  
-```
-
-It is recommended that you install most of the tools by default on **Debian**.
-
+It is recommended that you install the following tools on **Debian** machine.
 
 # Installation
 ```

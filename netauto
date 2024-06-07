@@ -102,7 +102,7 @@ file_check() {
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Generated output data for $2 of target live host under '$1'${ENDCOLOR}\n"
 	else
 		echo " "
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${WARNING}YELLOW${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to generate output data for $2 of target live host under '$1'${ENDCOLOR}\n" 
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to generate output data for $2 of target live host under '$1'${ENDCOLOR}\n" 
 	fi
 
 }
@@ -429,10 +429,12 @@ ssh_scan() {
 	mkdir -p Netauto/$IP/Protocols/SSH/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc" "SSH netcat"
 
-	nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc.txt
+	# nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc.txt
+	nc -w 2 -z $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc/nc.txt" "SSH netcat connection"
 
-	nc -nv $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc-nv.txt
+	# nc -nv $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc-nv.txt
+	nc -nv -z $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc-nv.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc/nc-nv.txt" "SSH netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/SSH/ssh-audit

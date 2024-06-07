@@ -153,14 +153,14 @@ The following results of these scans will produce NMAP directory and the rest of
 ## Reconnaissance
 ```
 Netauto
-└── 192.168.69.10
-    └── DEFAULT
-        ├── TCP_scan.txt
-        ├── aggressive_scan.txt
-        ├── port_scans.txt
-        ├── script_scan.txt
-        ├── stealth_scan.txt
-        └── vulnerability_scan.txt
+└── <HOST>
+    └── Default
+        ├── tcp.nmap
+        ├── aggressive.nmap
+        ├── port.nmap
+        ├── script.nmap
+        ├── stealth.nmap
+        └── vuln.nmap
 ```
 
 ## Port and Service Scanning

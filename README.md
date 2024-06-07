@@ -8,10 +8,7 @@
 [![asciicast](https://asciinema.org/a/9E0OLYfkxGyrFROLYjASIZeM5.svg)](https://asciinema.org/a/9E0OLYfkxGyrFROLYjASIZeM5)
 
 # NetAuto
-NetAuto is a basic network reconnaissance tools that automates enumeration of services, protocols and ports, ideal for penetration testing environments and network scanning.
-This tool performs port scans and service detection to perform further enumeration scans using different third-party tools.
-It performs **no automated exploitation**.
-**Disclaimer:** Do not perform automated scans without the organization's permission when performing penetration tests.
+NetAuto is a customizable network reconnaissance tool that automates enumeration of services, protocols and ports, ideal for penetration testing environments and network scanning.
 
 # Requirements
 Requirements of utilizing this tool must be met by installing the latest available packages

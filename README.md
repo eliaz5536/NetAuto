@@ -33,7 +33,7 @@ The tools that are utilized for enumeration requires installation of the followi
 
 The following commands used in this script can be accessible from such resources such as [hacktricks](https://book.hacktricks.xyz/), [infrastructure](https://infra.newerasec.com/) & [0xffsec](https://0xffsec.com/handbook/).
 
-It is recommended that you install the following tools on **Debian** based distribution machine (_ParrotOS_ & _Kali Linux_).
+It is recommended that you install the following tools on **Debian** based distribution machine (_ParrotOS_ & _Kali Linux_) for the ease of installing third-party tools.
 
 # Installation
 ```

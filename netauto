@@ -89,7 +89,7 @@ directory_check() {
 		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Created $2 output directory of target live host under '$1'${ENDCOLOR}\n"
 	else
 		echo " "
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${WARNING}YELLOW${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to $2 output directory of target live host under '$1'${ENDCOLOR}\n" 
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to create $2 output directory of target live host under '$1'${ENDCOLOR}\n" 
 	fi
 }
 
@@ -106,7 +106,6 @@ file_check() {
 	fi
 
 }
-
 
 ###############################################################
 # Banner 				 	      	      # 

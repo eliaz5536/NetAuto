@@ -2,16 +2,11 @@
 
 # Demos
 ## Reconnaissance
-[![asciicast](https://asciinema.org/a/YaKGq6n861DWz1OF1RDJOsdMX.svg)](https://asciinema.org/a/YaKGq6n861DWz1OF1RDJOsdMX)
+[![asciicast](https://asciinema.org/a/ow43LeBg337iVj2zR5NOSINuD.svg)](https://asciinema.org/a/ow43LeBg337iVj2zR5NOSINuD)
 
 ## Port Enumeration
 ```
 insert asciinema of port enumeration scan demonstration here 
-```
-
-## Vulnerability Scan
-```
-insert asciinema of vulnerability scan demonstration here
 ```
 
 # NetAuto

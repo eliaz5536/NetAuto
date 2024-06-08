@@ -80,8 +80,7 @@ Mode options:
  tcp                      TCP Scan
  udp                      UDP Scan
  script                   Script Scan
- vuln                     Vulnerability Scan
-                                                                                                                                                                                                                                        
+ vuln                     Vulnerability Scan                                                                                                                                                                                                                                        
 ```
 
 # Examples

@@ -78,8 +78,31 @@ ITALIC="\e[3m"
 current_time=$(date +"%T")
 
 ###############################################################
-# Directory and File Check		      		      #
+# Check Functions					      # 
 ###############################################################
+input_check() {
+	echo " "
+
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Testing connection on target live host $IP${ENDCOLOR}\n"
+
+	test_connection_command=$(nmap -sn $IP)
+	if echo "$test_connection_command" | grep -q "Host is up"; then 
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Target live host $IP is open${ENDCOLOR}\n"
+	else
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Invalid target live host connection${ENDCOLOR}\n"
+		exit 0
+	fi
+
+	if [[ -n "$PORTS" ]]; then
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Enumerating the following ports: $PORTS${ENDCOLOR}\n"
+	fi
+	if [[ -n "$MINRATE" ]]; then
+		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Applying the following minrate timing option: $MINRATE${ENDCOLOR}\n"
+	fi
+
+	echo " "
+}
+
 directory_check() {
 	local path=$1
 	local scan=$2
@@ -429,12 +452,10 @@ ssh_scan() {
 	mkdir -p Netauto/$IP/Protocols/SSH/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc" "SSH netcat"
 
-	# nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc.txt
-	nc -w 2 -z $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc.txt
+	nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc/nc.txt" "SSH netcat connection"
 
-	# nc -nv $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc-nv.txt
-	nc -nv -z $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc-nv.txt
+	nc -nv $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc-nv.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc/nc-nv.txt" "SSH netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/SSH/ssh-audit
@@ -3580,10 +3601,35 @@ tcp_nmap() {
 	mkdir -p Netauto/$IP/TCP
 	directory_check "$(pwd)/Netauto/$IP/TCP" "TCP"
 
-	nmap -n -v -sT -p- -T5 -oN Netauto/$IP/TCP/port.nmap $IP
+	if [ "$MINRATE" == "" ]; then
+		if [ -z "$PORTS"]; then
+			nmap -n -v -sT -p- -T5 -oN Netauto/$IP/TCP/port.nmap $IP
+		else
+			nmap -n -v -sT -p$PORTS -T5 -oN Netauto/$IP/TCP/port.nmap $IP
+		fi
+	else	
+		if [ -z "$PORTS"]; then
+			nmap -n -v -sT -p- $MINRATE -oN Netauto/$IP/TCP/port.nmap $IP
+		else
+			nmap -n -v -sT -p$PORTS $MINRATE -oN Netauto/$IP/TCP/port.nmap $IP
+		fi
+	fi
 	file_check "$(pwd)/Netauto/$IP/TCP/port.nmap" "full TCP port scan"
 
-	sudo nmap -T4 -F -sV -sC -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
+
+	if [ "$MINRATE" == "" ]; then
+		if [ -z "$PORTS"]; then
+			sudo nmap -T4 -F -sV -sC -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
+		else
+			sudo nmap -T4 -F -sV -sC -p$PORTS -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
+		fi
+	else
+		if [ -z "$PORTS"]; then
+			sudo nmap $MINRATE -F -sV -sC -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
+		else
+			sudo nmap $MINRATE -F -sV -sC -p$PORTS -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
+		fi
+	fi
 	file_check "$(pwd)/Netauto/$IP/TCP/service-version.nmap" "full TCP service and version detection scan"
 
         echo " "
@@ -3611,11 +3657,37 @@ udp_nmap() {
 	mkdir -p Netauto/$IP/UDP
 	directory_check "$(pwd)/Netauto/$IP/UDP" "UDP"
 
-        sudo nmap -n -v -sU -oN Netauto/$IP/UDP/port.nmap $IP
+	if [ "$MINRATE" == "" ]; then
+		if [ -z "$PORTS" ]; then
+			sudo nmap -n -v -sU -oN Netauto/$IP/UDP/port.nmap $IP
+		else
+			sudo nmap -n -v -sU -oN -p$PORTS Netauto/$IP/UDP/port.nmap $IP
+		fi
+	else 
+		if [ -z "$PORTS" ]; then
+			sudo nmap -n -v $MINRATE -sU -oN Netauto/$IP/UDP/port.nmap $IP
+		else
+			sudo nmap -n -v $MINRATE -sU -oN -p$PORTS Netauto/$IP/UDP/port.nmap $IP
+		fi
+	fi 
 	file_check "$(pwd)/Netauto/$IP/UDP/port.nmap" "full UDP port scan"
+
         echo ""
 
-        sudo nmap -n -v -sU -p- -T5 -oN Netauto/$IP/UDP/service-version.nmap $IP
+	if [ "$MINRATE" == "" ]; then
+		if [ -z "$PORTS" ]; then
+			sudo nmap -n -v -sU -p- -T5 -oN Netauto/$IP/UDP/service-version.nmap $IP
+		else
+			sudo nmap -n -v -sU -p$PORTS -T5 -oN Netauto/$IP/UDP/service-version.nmap $IP
+		fi
+
+	else 
+		if [ -z "$PORTS" ]; then
+			sudo nmap -n -v -sU -p- -T$MINRATE -oN Netauto/$IP/UDP/service-version.nmap $IP
+		else
+			sudo nmap -n -v -sU -p$PORTS -T$MINRATE -oN Netauto/$IP/UDP/service-version.nmap $IP
+		fi
+	fi
 	file_check "$(pwd)/Netauto/$IP/UDP/service-version.nmap" "full UDP service and version detection scan"
 
         echo " "
@@ -3629,6 +3701,128 @@ udp_nmap() {
 
 	echo "[*] Full UDP scan execution time: ${seconds}s"	
 }
+
+script_scan() {
+	start_time=$(date +%s%N)
+
+	echo "[*] Starting full script scan at ${current_time}"	
+
+	mkdir -p Netauto/$IP/script
+	directory_check "$(pwd)/Netauto/$IP/script" "script"
+
+	end_time=$(date +%s%N)
+
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
+	if [ "$MINRATE" == "" ]; then
+		if [ -z "$PORTS" ]; then
+			nmap -sC $IP -oN Netauto/$IP/script/script.nmap
+		else
+			nmap -sC $IP -p$PORTS -oN Netauto/$IP/script/script.nmap
+		fi
+
+	else 
+		if [ -z "$PORTS" ]; then
+			nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/script/script.nmap
+		else
+			nmap $MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/script.nmap
+		fi
+	fi
+	file_check "$(pwd)/Netauto/$IP/Default/script.nmap" "script scan"
+
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
+	if [ "$MINRATE" == "" ]; then
+		if [ -z "$PORTS" ]; then
+			nmap -sV $IP -oN Netauto/$IP/script/version.nmap
+		else
+			nmap -sV $IP -p$PORTS -oN Netauto/$IP/script/version.nmap
+		fi
+	else 
+		if [ -z "$PORTS" ]; then
+			nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/script/version.nmap
+		else
+			nmap $MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/version.nmap
+		fi
+	fi
+	file_check "$(pwd)/Netauto/$IP/Default/script.nmap" "version scan"
+
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
+	if [ "$MINRATE" == "" ]; then
+		if [ -z "$PORTS" ]; then
+			nmap -sC -sV $IP -oN Netauto/$IP/script/service-version.nmap
+		else
+			nmap -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/service-version.nmap
+		fi
+	else 
+		if [ -z "$PORTS" ]; then
+			nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/script/service-version.nmap
+		else
+			nmap $MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/service-version.nmap
+		fi
+	fi
+	file_check "$(pwd)/Netauto/$IP/Default/service-version.nmap" "service and version detection scan"
+
+	echo "[*] Ending full script scan at ${current_time}"	
+
+	duration=$(( end_time - start_time ))
+	seconds=$(( duration / 1000000000 ))
+
+	echo "[*] Full script scan execution time: ${seconds}s"	
+}
+
+vuln_scan() {
+	start_time=$(date +%s%N)
+
+	echo "[*] Starting full vulnerability scan at ${current_time}"	
+
+	mkdir -p Netauto/$IP/UDP
+	directory_check "$(pwd)/Netauto/$IP/vuln" "vuln"
+
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability scan on target live host $IP${ENDCOLOR}\n"
+	if [ "$MINRATE" == "" ]; then
+		if [ -z "$PORTS"]; then
+			nmap --script vuln $IP -oN Netauto/$IP/Default/vuln.nmap
+		else 
+			nmap --script vuln -p$PORTS $IP -oN Netauto/$IP/Default/vuln.nmap
+		fi
+	else
+		if [ -z "$PORTS"]; then
+			nmap $MINRATE --script vuln $IP -oN Netauto/$IP/Default/vuln.nmap
+		else
+
+			nmap $MINRATE --script -p$PORTS vuln $IP -oN Netauto/$IP/Default/vuln.nmap
+		fi
+	fi
+	file_check "$(pwd)/Netauto/$IP/vuln/default.nmap" "default vulnerability scan"
+
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability scan on target live host $IP${ENDCOLOR}\n"
+	if [ "$MINRATE" == "" ]; then
+		if [ -z "$PORTS"]; then
+			nmap -sV --script vuln $IP -oN Netauto/$IP/Default/version.nmap
+		else
+			nmap --script vuln -p$PORTS $IP -oN Netauto/$IP/Default/version.nmap
+		fi
+
+	else
+		if [ -z "$PORTS"]; then
+			nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/Default/version.nmap
+		else
+			nmap $MINRATE -sV --script vuln -p$PORTS $IP -oN Netauto/$IP/Default/version.nmap
+		fi
+	fi
+	file_check "$(pwd)/Netauto/$IP/vuln/version.nmap" "vulnerability version scan"
+
+        echo " "
+
+	end_time=$(date +%s%N)
+
+	echo "[*] Ending full vulnerability scan at ${current_time}"	
+
+	duration=$(( end_time - start_time ))
+	seconds=$(( duration / 1000000000 ))
+
+	echo "[*] Full vulnerability scan execution time: ${seconds}s"	
+}
+
 
 ###############################################################
 # Help                                                        #
@@ -3663,8 +3857,151 @@ help() {
 	printf " ${BOLD}tcp${ENDCOLOR}			  TCP Scan\n"
 	printf " ${BOLD}udp${ENDCOLOR}			  UDP Scan\n"
 	printf " ${BOLD}script${ENDCOLOR}			  Script Scan\n"
-	printf " ${BOLD}brute${ENDCOLOR}			  Brute Scan\n"
 	printf " ${BOLD}vuln${ENDCOLOR}			  Vulnerability Scan\n"
+	echo " "
+	exit 1
+}
+
+
+
+recon_usage() {
+        echo "Usage: Netauto recon -i <host> [options]"
+}
+
+recon_help() {
+        printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
+	echo " "
+        echo "Usage: Netauto recon -i <host> [options]"
+	echo " "
+        echo "Options:"
+        printf "  ${BOLD}-h, --help${ENDCOLOR}              	  Help & Usage\n"
+        printf "  ${BOLD}-i, --ip${ENDCOLOR}              	  Specify target host\n"
+        printf "  ${BOLD}-p, --ports${ENDCOLOR}              	  Scan ports of target host\n"
+        printf "  ${BOLD}-t, --timing${ENDCOLOR}              	  Specify minrate option\n"
+        printf "  ${BOLD}-o, --output${ENDCOLOR}              	  Output destination\n"
+        echo " "
+        echo "Timing minrate options:"
+        printf "  ${BOLD}0${ENDCOLOR}              	  Paranoid\n"
+        printf "  ${BOLD}1${ENDCOLOR}              	  Sneaky\n"
+        printf "  ${BOLD}2${ENDCOLOR}              	  Polite\n"
+	printf "  ${BOLD}3${ENDCOLOR}              	  Normal (Default)\n"
+        printf "  ${BOLD}4${ENDCOLOR}              	  Aggressive\n"
+        printf "  ${BOLD}5${ENDCOLOR}              	  Insane\n"
+	echo " "
+	exit 1
+
+}
+
+
+tcp_usage() {
+        echo "Usage: Netauto tcp -i <host> [options]"
+}
+
+tcp_scan() {
+        printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
+	echo " "
+        echo "Usage: Netauto tcp -i <host> [options]"
+	echo " "
+        echo "Options:"
+        printf "  ${BOLD}-h, --help${ENDCOLOR}              	  Help & Usage\n"
+        printf "  ${BOLD}-i, --ip${ENDCOLOR}              	  Specify target host\n"
+        printf "  ${BOLD}-p, --ports${ENDCOLOR}              	  Scan ports of target host\n"
+        printf "  ${BOLD}-t, --timing${ENDCOLOR}              	  Specify minrate option\n"
+        printf "  ${BOLD}-o, --output${ENDCOLOR}              	  Output destination\n"
+        echo " "
+        echo "Timing minrate options:"
+        printf "  ${BOLD}0${ENDCOLOR}              	  Paranoid\n"
+        printf "  ${BOLD}1${ENDCOLOR}              	  Sneaky\n"
+        printf "  ${BOLD}2${ENDCOLOR}              	  Polite\n"
+	printf "  ${BOLD}3${ENDCOLOR}              	  Normal (Default)\n"
+        printf "  ${BOLD}4${ENDCOLOR}              	  Aggressive\n"
+        printf "  ${BOLD}5${ENDCOLOR}              	  Insane\n"
+	echo " "
+	exit 1
+}
+
+
+
+udp_usage() {
+        echo "Usage: Netauto udp -i <host> [options]"
+}
+
+udp_help() {
+        printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
+	echo " "
+        echo "Usage: Netauto udp -i <host> [options]"
+	echo " "
+        echo "Options:"
+        printf "  ${BOLD}-h, --help${ENDCOLOR}              	  Help & Usage\n"
+        printf "  ${BOLD}-i, --ip${ENDCOLOR}              	  Specify target host\n"
+        printf "  ${BOLD}-p, --ports${ENDCOLOR}              	  Scan ports of target host\n"
+        printf "  ${BOLD}-t, --timing${ENDCOLOR}              	  Specify minrate option\n"
+        printf "  ${BOLD}-m, --mode${ENDCOLOR}              	  Specify scan mode\n"
+        printf "  ${BOLD}-o, --output${ENDCOLOR}              	  Output destination\n"
+        echo " "
+        echo "Timing minrate options:"
+        printf "  ${BOLD}0${ENDCOLOR}              	  Paranoid\n"
+        printf "  ${BOLD}1${ENDCOLOR}              	  Sneaky\n"
+        printf "  ${BOLD}2${ENDCOLOR}              	  Polite\n"
+	printf "  ${BOLD}3${ENDCOLOR}              	  Normal (Default)\n"
+        printf "  ${BOLD}4${ENDCOLOR}              	  Aggressive\n"
+        printf "  ${BOLD}5${ENDCOLOR}              	  Insane\n"
+	echo " "
+	exit 1
+}
+
+
+
+script_usage() {
+        echo "Usage: Netauto script -i <host> [options]"
+}
+
+script_help() {
+        printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
+	echo " "
+        echo "Usage: Netauto script -i <host> [options]"
+	echo " "
+        echo "Options:"
+        printf "  ${BOLD}-h, --help${ENDCOLOR}              	  Help & Usage\n"
+        printf "  ${BOLD}-i, --ip${ENDCOLOR}              	  Specify target host\n"
+        printf "  ${BOLD}-p, --ports${ENDCOLOR}              	  Scan ports of target host\n"
+        printf "  ${BOLD}-t, --timing${ENDCOLOR}              	  Specify minrate option\n"
+        printf "  ${BOLD}-o, --output${ENDCOLOR}              	  Output destination\n"
+        echo " "
+        echo "Timing minrate options:"
+        printf "  ${BOLD}0${ENDCOLOR}              	  Paranoid\n"
+        printf "  ${BOLD}1${ENDCOLOR}              	  Sneaky\n"
+        printf "  ${BOLD}2${ENDCOLOR}              	  Polite\n"
+	printf "  ${BOLD}3${ENDCOLOR}              	  Normal (Default)\n"
+        printf "  ${BOLD}4${ENDCOLOR}              	  Aggressive\n"
+        printf "  ${BOLD}5${ENDCOLOR}              	  Insane\n"
+	echo " "
+	exit 1
+}
+
+vuln_usage() {
+        echo "Usage: Netauto script -i <host> [options]"
+}
+
+vuln_help() {
+        printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
+	echo " "
+        echo "Usage: Netauto vuln -i <host> [options]"
+	echo " "
+        echo "Options:"
+        printf "  ${BOLD}-h, --help${ENDCOLOR}              	  Help & Usage\n"
+        printf "  ${BOLD}-i, --ip${ENDCOLOR}              	  Specify target host\n"
+        printf "  ${BOLD}-p, --ports${ENDCOLOR}              	  Scan ports of target host\n"
+        printf "  ${BOLD}-t, --timing${ENDCOLOR}              	  Specify minrate option\n"
+        printf "  ${BOLD}-o, --output${ENDCOLOR}              	  Output destination\n"
+        echo " "
+        echo "Timing minrate options:"
+        printf "  ${BOLD}0${ENDCOLOR}              	  Paranoid\n"
+        printf "  ${BOLD}1${ENDCOLOR}              	  Sneaky\n"
+        printf "  ${BOLD}2${ENDCOLOR}              	  Polite\n"
+	printf "  ${BOLD}3${ENDCOLOR}              	  Normal (Default)\n"
+        printf "  ${BOLD}4${ENDCOLOR}              	  Aggressive\n"
+        printf "  ${BOLD}5${ENDCOLOR}              	  Insane\n"
 	echo " "
 	exit 1
 }
@@ -3689,6 +4026,11 @@ while [[ "$#" -gt 0 ]]; do
         -i|--ip) IP="$2"; shift ;;
         -p|--ports) PORTS="$2"; shift ;;
         -m|--minrate) MINRATE="$2"; shift ;;
+	recon) shift; recon_mode "$@"; break ;;
+	tcp) shift; tcp_mode "$@"; break ;;
+	udp) shift; udp_mode "$@"; break ;;
+	script) shift; script_mode "$@"; break ;;
+	vuln) shift; vuln_mode "$@"; break ;;
 	*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
     esac
     shift
@@ -3735,28 +4077,117 @@ if [[ -n "$MINRATE" ]]; then
 fi 
 
 # --------------------------------------------------------------
+# Modes
+# --------------------------------------------------------------
+# --------------------------------------------------------------
+# Directory Mode
+# --------------------------------------------------------------
+dir_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) dir_help ;;
+		-u|--usage) dir_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+
+	dir_scan	
+}
+
+# --------------------------------------------------------------
+# TCP Mode
+# --------------------------------------------------------------
+tcp_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) tcp_help ;;
+		-u|--usage) tcp_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+
+	tcp_scan
+}
+
+# --------------------------------------------------------------
+# UDP Mode
+# --------------------------------------------------------------
+udp_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) udp_help ;;
+		-u|--usage) udp_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+
+	udp_scan
+}
+
+# --------------------------------------------------------------
+# Script Mode
+# --------------------------------------------------------------
+script_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) script_help ;;
+		-u|--usage) script_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+
+	script_scan
+}
+
+# --------------------------------------------------------------
+# Vulnerability Mode
+# --------------------------------------------------------------
+vuln_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) script_help ;;
+		-u|--usage) script_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+
+	vuln_scan
+}
+
+# --------------------------------------------------------------
 # Printing output options...
 # --------------------------------------------------------------
-echo " "
-
-printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Testing connection on target live host $IP${ENDCOLOR}\n"
-
-test_connection_command=$(nmap -sn $IP)
-if echo "$test_connection_command" | grep -q "Host is up"; then 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Target live host $IP is open${ENDCOLOR}\n"
-else
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Invalid target live host connection${ENDCOLOR}\n"
-	exit 0
-fi
-
-if [[ -n "$PORTS" ]]; then
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Enumerating the following ports: $PORTS${ENDCOLOR}\n"
-fi
-if [[ -n "$MINRATE" ]]; then
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Applying the following minrate timing option: $MINRATE${ENDCOLOR}\n"
-fi
-
-echo " "
+input_check
 
 if [ -z "$PORTS" ]; then
 	default_nmap

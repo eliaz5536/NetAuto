@@ -84,7 +84,7 @@ Mode options:
                                                                                                                                                                                                                                         
 ```
 
-# Results
+# Examples
 The following will produce output directories for each of the selected ports which that will output all enumeration scans.
 ## Reconnaissance Output Directory
 ```

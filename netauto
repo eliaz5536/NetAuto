@@ -3866,6 +3866,7 @@ help() {
 
 recon_usage() {
         echo "Usage: Netauto recon -i <host> [options]"
+	exit 1
 }
 
 recon_help() {
@@ -3895,9 +3896,10 @@ recon_help() {
 
 tcp_usage() {
         echo "Usage: Netauto tcp -i <host> [options]"
+	exit 1
 }
 
-tcp_scan() {
+tcp_help() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
         echo "Usage: Netauto tcp -i <host> [options]"
@@ -3924,6 +3926,7 @@ tcp_scan() {
 
 udp_usage() {
         echo "Usage: Netauto udp -i <host> [options]"
+	exit 1
 }
 
 udp_help() {
@@ -3954,6 +3957,7 @@ udp_help() {
 
 script_usage() {
         echo "Usage: Netauto script -i <host> [options]"
+	exit 1
 }
 
 script_help() {
@@ -3980,7 +3984,8 @@ script_help() {
 }
 
 vuln_usage() {
-        echo "Usage: Netauto script -i <host> [options]"
+        echo "Usage: Netauto vuln -i <host> [options]"
+	exit 1
 }
 
 vuln_help() {
@@ -4004,6 +4009,109 @@ vuln_help() {
         printf "  ${BOLD}5${ENDCOLOR}              	  Insane\n"
 	echo " "
 	exit 1
+}
+
+# --------------------------------------------------------------
+# Modes
+# --------------------------------------------------------------
+# --------------------------------------------------------------
+# Reconnaissance Mode
+# --------------------------------------------------------------
+recon_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) recon_help ;;
+		-u|--usage) recon_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+	dir_scan	
+}
+
+# --------------------------------------------------------------
+# TCP Mode
+# --------------------------------------------------------------
+tcp_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) tcp_help ;;
+		-u|--usage) tcp_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+	tcp_scan
+}
+
+# --------------------------------------------------------------
+# UDP Mode
+# --------------------------------------------------------------
+udp_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) udp_help ;;
+		-u|--usage) udp_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+	udp_scan
+}
+
+# --------------------------------------------------------------
+# Script Mode
+# --------------------------------------------------------------
+script_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) script_help ;;
+		-u|--usage) script_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+	script_scan
+}
+
+# --------------------------------------------------------------
+# Vulnerability Mode
+# --------------------------------------------------------------
+vuln_mode() {
+	while [[ "$#" -gt 0 ]]; do
+	    case $1 in
+		-h|--help) vuln_help ;;
+		-u|--usage) vuln_usage ;;
+		-i|--ip) IP="$2"; shift ;;
+		-p|--ports) PORTS="$2"; shift ;;
+		-m|--minrate) MINRATE="$2"; shift ;;
+		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	    esac
+	    shift
+	done
+
+	input_check
+	vuln_scan
 }
 
 ###############################################################
@@ -4076,113 +4184,6 @@ if [[ -n "$MINRATE" ]]; then
 	fi
 fi 
 
-# --------------------------------------------------------------
-# Modes
-# --------------------------------------------------------------
-# --------------------------------------------------------------
-# Directory Mode
-# --------------------------------------------------------------
-dir_mode() {
-	while [[ "$#" -gt 0 ]]; do
-	    case $1 in
-		-h|--help) dir_help ;;
-		-u|--usage) dir_usage ;;
-		-i|--ip) IP="$2"; shift ;;
-		-p|--ports) PORTS="$2"; shift ;;
-		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
-	    esac
-	    shift
-	done
-
-	input_check
-
-	dir_scan	
-}
-
-# --------------------------------------------------------------
-# TCP Mode
-# --------------------------------------------------------------
-tcp_mode() {
-	while [[ "$#" -gt 0 ]]; do
-	    case $1 in
-		-h|--help) tcp_help ;;
-		-u|--usage) tcp_usage ;;
-		-i|--ip) IP="$2"; shift ;;
-		-p|--ports) PORTS="$2"; shift ;;
-		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
-	    esac
-	    shift
-	done
-
-	input_check
-
-	tcp_scan
-}
-
-# --------------------------------------------------------------
-# UDP Mode
-# --------------------------------------------------------------
-udp_mode() {
-	while [[ "$#" -gt 0 ]]; do
-	    case $1 in
-		-h|--help) udp_help ;;
-		-u|--usage) udp_usage ;;
-		-i|--ip) IP="$2"; shift ;;
-		-p|--ports) PORTS="$2"; shift ;;
-		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
-	    esac
-	    shift
-	done
-
-	input_check
-
-	udp_scan
-}
-
-# --------------------------------------------------------------
-# Script Mode
-# --------------------------------------------------------------
-script_mode() {
-	while [[ "$#" -gt 0 ]]; do
-	    case $1 in
-		-h|--help) script_help ;;
-		-u|--usage) script_usage ;;
-		-i|--ip) IP="$2"; shift ;;
-		-p|--ports) PORTS="$2"; shift ;;
-		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
-	    esac
-	    shift
-	done
-
-	input_check
-
-	script_scan
-}
-
-# --------------------------------------------------------------
-# Vulnerability Mode
-# --------------------------------------------------------------
-vuln_mode() {
-	while [[ "$#" -gt 0 ]]; do
-	    case $1 in
-		-h|--help) script_help ;;
-		-u|--usage) script_usage ;;
-		-i|--ip) IP="$2"; shift ;;
-		-p|--ports) PORTS="$2"; shift ;;
-		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
-	    esac
-	    shift
-	done
-
-	input_check
-
-	vuln_scan
-}
 
 # --------------------------------------------------------------
 # Printing output options...

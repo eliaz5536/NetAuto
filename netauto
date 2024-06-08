@@ -3589,7 +3589,7 @@ recon_scan() {
 	echo "[*] Full default scan execution time: ${seconds}s"	
 }
 
-tcp_nmap() {
+tcp_scan() {
 	start_time=$(date +%s%N)
 
 	echo "[*] Starting full TCP scan at ${current_time}"	
@@ -3645,7 +3645,7 @@ tcp_nmap() {
 	echo "[*] Full TCP scan execution time: ${seconds}s"	
 }
 
-udp_nmap() {
+udp_scan() {
 	start_time=$(date +%s%N)
 
 	echo "[*] Starting full UDP scan at ${current_time}"	
@@ -3711,8 +3711,6 @@ script_scan() {
 	mkdir -p Netauto/$IP/script
 	directory_check "$(pwd)/Netauto/$IP/script" "script"
 
-	end_time=$(date +%s%N)
-
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS" ]; then
@@ -3761,6 +3759,8 @@ script_scan() {
 		fi
 	fi
 	file_check "$(pwd)/Netauto/$IP/script/service-version.nmap" "service and version detection scan"
+
+	end_time=$(date +%s%N)
 
 	echo "[*] Ending full script scan at ${current_time}"	
 

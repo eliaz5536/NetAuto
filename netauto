@@ -3486,7 +3486,8 @@ handle_ports() {
 ###############################################################
 # Network                                                     #
 ###############################################################
-default_nmap() {
+# default_nmap() {
+recon_scan() {
 	start_time=$(date +%s%N)
 
 	echo "[*] Starting full reconnaissance scan at ${current_time}"	
@@ -3499,18 +3500,18 @@ default_nmap() {
 	mkdir -p Netauto/$IP
 	directory_check "$(pwd)/Netauto/$IP" "target machine"
 
-	mkdir -p Netauto/$IP/Default
-	directory_check "$(pwd)/Netauto/$IP/Default" "Default"
+	mkdir -p Netauto/$IP/recon
+	directory_check "$(pwd)/Netauto/$IP/recon" "recon"
 
         # Scans ports only and no host discovery
         # Scans for all ports available
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing port scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -Pn $IP -p- -oN Netauto/$IP/Default/port.nmap
+		nmap -Pn $IP -p- -oN Netauto/$IP/recon/port.nmap
 	else 
-		nmap $MINRATE -Pn $IP -p- -oN Netauto/$IP/Default/port.nmap
+		nmap $MINRATE -Pn $IP -p- -oN Netauto/$IP/recon/port.nmap
 	fi
-	file_check "$(pwd)/Netauto/$IP/Default/port.nmap" "port scan"
+	file_check "$(pwd)/Netauto/$IP/recon/port.nmap" "port scan"
 
         echo " "
 
@@ -3520,11 +3521,11 @@ default_nmap() {
         # Useful for attempting to identify outdated version of service
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -sC -sV $IP -oN Netauto/$IP/Default/script.nmap
+		nmap -sC -sV $IP -oN Netauto/$IP/recon/script.nmap
 	else 
-		nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/Default/script.nmap
+		nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/recon/script.nmap
 	fi
-	file_check "$(pwd)/Netauto/$IP/Default/script.nmap" "script scan"
+	file_check "$(pwd)/Netauto/$IP/recon/script.nmap" "script scan"
 
         echo " "
 
@@ -3533,11 +3534,11 @@ default_nmap() {
         # Scans ports only and no host discovery
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing stealth scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		sudo nmap -sS -Pn -n $IP -oN Netauto/$IP/Default/stealth.nmap
+		sudo nmap -sS -Pn -n $IP -oN Netauto/$IP/recon/stealth.nmap
 	else 
-		sudo nmap $MINRATE -sS -Pn -n $IP -oN Netauto/$IP/Default/stealth.nmap
+		sudo nmap $MINRATE -sS -Pn -n $IP -oN Netauto/$IP/recon/stealth.nmap
 	fi
-	file_check "$(pwd)/Netauto/$IP/Default/stealth.nmap" "stealth scan"
+	file_check "$(pwd)/Netauto/$IP/recon/stealth.nmap" "stealth scan"
 
         echo " "
 
@@ -3547,11 +3548,11 @@ default_nmap() {
         # Useful for detailed reconnaissane and vulnerability assessment
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing aggressive scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -p- -A $IP -oN Netauto/$IP/Default/aggressive.nmap
+		nmap -p- -A $IP -oN Netauto/$IP/recon/aggressive.nmap
 	else 
-		nmap $MINRATE -p- -A $IP -oN Netauto/$IP/Default/aggressive.nmap
+		nmap $MINRATE -p- -A $IP -oN Netauto/$IP/recon/aggressive.nmap
 	fi
-	file_check "$(pwd)/Netauto/$IP/Default/aggressive.nmap" "aggressive scan"
+	file_check "$(pwd)/Netauto/$IP/recon/aggressive.nmap" "aggressive scan"
 
         echo " "
 
@@ -3559,22 +3560,22 @@ default_nmap() {
         # runs all the scripts and checks on them
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing TCP scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -n -v -sT -A $IP -oN Netauto/$IP/Default/tcp.nmap
+		nmap -n -v -sT -A $IP -oN Netauto/$IP/recon/tcp.nmap
 	else
-		nmap $MINRATE -n -v -sT -A $IP -oN Netauto/$IP/Default/tcp.nmap
+		nmap $MINRATE -n -v -sT -A $IP -oN Netauto/$IP/recon/tcp.nmap
 	fi
-	file_check "$(pwd)/Netauto/$IP/Default/tcp.nmap" "TCP"
+	file_check "$(pwd)/Netauto/$IP/recon/tcp.nmap" "TCP"
 	
         echo " "
 
         # Run Vulnerability Script to perform NSE Vulnerability Scan
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
-		nmap -sV --script vuln $IP -oN Netauto/$IP/Default/vuln.nmap
+		nmap -sV --script vuln $IP -oN Netauto/$IP/recon/vuln.nmap
 	else
-		nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/Default/vuln.nmap
+		nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/recon/vuln.nmap
 	fi
-	file_check "$(pwd)/Netauto/$IP/Default/vuln.nmap" "vulnerability scan"
+	file_check "$(pwd)/Netauto/$IP/recon/vuln.nmap" "vulnerability scan"
 
         echo " "
 
@@ -3727,7 +3728,7 @@ script_scan() {
 			nmap $MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/script.nmap
 		fi
 	fi
-	file_check "$(pwd)/Netauto/$IP/Default/script.nmap" "script scan"
+	file_check "$(pwd)/Netauto/$IP/script/script.nmap" "script scan"
 
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
@@ -3743,7 +3744,7 @@ script_scan() {
 			nmap $MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/version.nmap
 		fi
 	fi
-	file_check "$(pwd)/Netauto/$IP/Default/script.nmap" "version scan"
+	file_check "$(pwd)/Netauto/$IP/script/version.nmap" "version scan"
 
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
@@ -3759,7 +3760,7 @@ script_scan() {
 			nmap $MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/service-version.nmap
 		fi
 	fi
-	file_check "$(pwd)/Netauto/$IP/Default/service-version.nmap" "service and version detection scan"
+	file_check "$(pwd)/Netauto/$IP/script/service-version.nmap" "service and version detection scan"
 
 	echo "[*] Ending full script scan at ${current_time}"	
 
@@ -3774,39 +3775,39 @@ vuln_scan() {
 
 	echo "[*] Starting full vulnerability scan at ${current_time}"	
 
-	mkdir -p Netauto/$IP/UDP
+	mkdir -p Netauto/$IP/vuln
 	directory_check "$(pwd)/Netauto/$IP/vuln" "vuln"
 
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS"]; then
-			nmap --script vuln $IP -oN Netauto/$IP/Default/vuln.nmap
+			nmap --script vuln $IP -oN Netauto/$IP/vuln/vuln.nmap
 		else 
-			nmap --script vuln -p$PORTS $IP -oN Netauto/$IP/Default/vuln.nmap
+			nmap --script vuln -p$PORTS $IP -oN Netauto/$IP/vuln/vuln.nmap
 		fi
 	else
 		if [ -z "$PORTS"]; then
-			nmap $MINRATE --script vuln $IP -oN Netauto/$IP/Default/vuln.nmap
+			nmap $MINRATE --script vuln $IP -oN Netauto/$IP/vuln/vuln.nmap
 		else
 
-			nmap $MINRATE --script -p$PORTS vuln $IP -oN Netauto/$IP/Default/vuln.nmap
+			nmap $MINRATE --script -p$PORTS vuln $IP -oN Netauto/$IP/vuln/vuln.nmap
 		fi
 	fi
-	file_check "$(pwd)/Netauto/$IP/vuln/default.nmap" "default vulnerability scan"
+	file_check "$(pwd)/Netauto/$IP/vuln/vuln.nmap" "default vulnerability scan"
 
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS"]; then
-			nmap -sV --script vuln $IP -oN Netauto/$IP/Default/version.nmap
+			nmap -sV --script vuln $IP -oN Netauto/$IP/vuln/version.nmap
 		else
-			nmap --script vuln -p$PORTS $IP -oN Netauto/$IP/Default/version.nmap
+			nmap --script vuln -p$PORTS $IP -oN Netauto/$IP/vuln/version.nmap
 		fi
 
 	else
 		if [ -z "$PORTS"]; then
-			nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/Default/version.nmap
+			nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/vuln/version.nmap
 		else
-			nmap $MINRATE -sV --script vuln -p$PORTS $IP -oN Netauto/$IP/Default/version.nmap
+			nmap $MINRATE -sV --script vuln -p$PORTS $IP -oN Netauto/$IP/vuln/version.nmap
 		fi
 	fi
 	file_check "$(pwd)/Netauto/$IP/vuln/version.nmap" "vulnerability version scan"
@@ -4031,7 +4032,7 @@ recon_mode() {
 	done
 
 	input_check
-	dir_scan	
+	recon_scan	
 }
 
 # --------------------------------------------------------------
@@ -4188,13 +4189,13 @@ fi
 # --------------------------------------------------------------
 # Printing output options...
 # --------------------------------------------------------------
-input_check
+#input_check
 
-if [ -z "$PORTS" ]; then
-	default_nmap
-        exit 1
-else 
-	handle_ports $PORTS
-	exit 1
-fi
+#if [ -z "$PORTS" ]; then
+#	default_nmap
+#        exit 1
+#else 
+#	handle_ports $PORTS
+#	exit 1
+#fi
 

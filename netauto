@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# INSERT HEADER INFORMATION OVER HERE ABOUT THE AIM OF THIS FOLLOWING SCRIPT
+# INSERT HEADER INFORMATION OVER HERE ABOUT THE AIM OF THIS FOLLOWING SCRIPT IN GREAT DETAIL
 
 ###############################################################
 # TIME 				 	      	      	      # 
@@ -80,6 +80,11 @@ BOLD="\e[1m"
 ITALIC="\e[3m"
 
 info() {
+	local message=$1
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+}
+
+important_info() {
 	local message=$1
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }

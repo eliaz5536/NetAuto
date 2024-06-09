@@ -84,7 +84,7 @@ info() {
 
 important_info() {
 	local message=$1
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
 success() {
@@ -487,14 +487,14 @@ ssh_scan() {
 	mkdir -p Netauto/$IP/Protocols/SSH/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc" "SSH netcat"
 
-	nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc.txt
+	timeout 10 nc $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc/nc.txt" "SSH netcat connection"
 
-	nc -nv $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc-nv.txt
+	timeout 10 nc -nv $IP 22 | tee Netauto/$IP/Protocols/SSH/nc/nc-nv.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc/nc-nv.txt" "SSH netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/SSH/ssh-audit
-	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/ssh-audit""SSH ssh-audit"
+	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/ssh-audit" "SSH ssh-audit"
 
 	ssh-audit.py $IP | tee Netauto/$IP/Protocols/SSH/ssh-audit/ssh-audit.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/ssh-audit/ssh-audit.txt" "SSH ssh-audit auditing enumeration scan"
@@ -527,7 +527,7 @@ ssh_scan() {
 	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nmap/auth-methods-default.nmap" "NMAP SSH default authentication methods enumeration scan"
 
 	nmap -p 22 $IP --script ssh-auth-methods --script-args="ssh.user=root" -oN Netauto/$IP/Protocols/SSH/nmap/auth-methods-root.nmap
-	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nmap/auth-methods-root.nmap""NMAP SSH root authentication methods enumeration scan"
+	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nmap/auth-methods-root.nmap" "NMAP SSH root authentication methods enumeration scan"
 
 	nmap --script "ssh-* and not brute" -p 22 $IP -oN Netauto/$IP/Protocols/SSH/nmap/all.nmap
 	file_check "$(pwd)/Netauto/$IP/Protocols/SSH/nmap/all.nmap" "full NMAP SSH scan"
@@ -3542,7 +3542,7 @@ recon_scan() {
 	if [ "$MINRATE" == "" ]; then
 		nmap -Pn $IP -p- -oN Netauto/$IP/recon/port.nmap
 	else 
-		nmap $MINRATE -Pn $IP -p- -oN Netauto/$IP/recon/port.nmap
+		nmap -T$MINRATE -Pn $IP -p- -oN Netauto/$IP/recon/port.nmap
 	fi
 	file_check "$(pwd)/Netauto/$IP/recon/port.nmap" "port scan"
 
@@ -3556,7 +3556,7 @@ recon_scan() {
 	if [ "$MINRATE" == "" ]; then
 		nmap -sC -sV $IP -oN Netauto/$IP/recon/script.nmap
 	else 
-		nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/recon/script.nmap
+		nmap -T$MINRATE -sC -sV $IP -oN Netauto/$IP/recon/script.nmap
 	fi
 	file_check "$(pwd)/Netauto/$IP/recon/script.nmap" "script scan"
 
@@ -3569,7 +3569,7 @@ recon_scan() {
 	if [ "$MINRATE" == "" ]; then
 		sudo nmap -sS -Pn -n $IP -oN Netauto/$IP/recon/stealth.nmap
 	else 
-		sudo nmap $MINRATE -sS -Pn -n $IP -oN Netauto/$IP/recon/stealth.nmap
+		sudo nmap -T$MINRATE -sS -Pn -n $IP -oN Netauto/$IP/recon/stealth.nmap
 	fi
 	file_check "$(pwd)/Netauto/$IP/recon/stealth.nmap" "stealth scan"
 
@@ -3583,7 +3583,7 @@ recon_scan() {
 	if [ "$MINRATE" == "" ]; then
 		nmap -p- -A $IP -oN Netauto/$IP/recon/aggressive.nmap
 	else 
-		nmap $MINRATE -p- -A $IP -oN Netauto/$IP/recon/aggressive.nmap
+		nmap -T$MINRATE -p- -A $IP -oN Netauto/$IP/recon/aggressive.nmap
 	fi
 	file_check "$(pwd)/Netauto/$IP/recon/aggressive.nmap" "aggressive scan"
 
@@ -3595,7 +3595,7 @@ recon_scan() {
 	if [ "$MINRATE" == "" ]; then
 		nmap -n -v -sT -A $IP -oN Netauto/$IP/recon/tcp.nmap
 	else
-		nmap $MINRATE -n -v -sT -A $IP -oN Netauto/$IP/recon/tcp.nmap
+		nmap -T$MINRATE -n -v -sT -A $IP -oN Netauto/$IP/recon/tcp.nmap
 	fi
 	file_check "$(pwd)/Netauto/$IP/recon/tcp.nmap" "TCP"
 	
@@ -3606,7 +3606,7 @@ recon_scan() {
 	if [ "$MINRATE" == "" ]; then
 		nmap -sV --script vuln $IP -oN Netauto/$IP/recon/vuln.nmap
 	else
-		nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/recon/vuln.nmap
+		nmap -T$MINRATE -sV --script vuln $IP -oN Netauto/$IP/recon/vuln.nmap
 	fi
 	file_check "$(pwd)/Netauto/$IP/recon/vuln.nmap" "vulnerability scan"
 
@@ -3699,9 +3699,9 @@ udp_scan() {
 		fi
 	else 
 		if [ -z "$PORTS" ]; then
-			sudo nmap -n -v $MINRATE -sU -oN Netauto/$IP/UDP/port.nmap $IP
+			sudo nmap -n -v -T$MINRATE -sU -oN Netauto/$IP/UDP/port.nmap $IP
 		else
-			sudo nmap -n -v $MINRATE -sU -p$PORTS -oN Netauto/$IP/UDP/port.nmap $IP
+			sudo nmap -n -v -T$MINRATE -sU -p$PORTS -oN Netauto/$IP/UDP/port.nmap $IP
 		fi
 	fi 
 	file_check "$(pwd)/Netauto/$IP/UDP/port.nmap" "full UDP port scan"
@@ -3754,9 +3754,9 @@ script_scan() {
 
 	else 
 		if [ -z "$PORTS" ]; then
-			nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/script/script.nmap
+			nmap -T$MINRATE -sC -sV $IP -oN Netauto/$IP/script/script.nmap
 		else
-			nmap $MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/script.nmap
+			nmap -T$MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/script.nmap
 		fi
 	fi
 	file_check "$(pwd)/Netauto/$IP/script/script.nmap" "script scan"
@@ -3770,9 +3770,9 @@ script_scan() {
 		fi
 	else 
 		if [ -z "$PORTS" ]; then
-			nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/script/version.nmap
+			nmap -T$MINRATE -sC -sV $IP -oN Netauto/$IP/script/version.nmap
 		else
-			nmap $MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/version.nmap
+			nmap -T$MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/version.nmap
 		fi
 	fi
 	file_check "$(pwd)/Netauto/$IP/script/version.nmap" "version scan"
@@ -3786,9 +3786,9 @@ script_scan() {
 		fi
 	else 
 		if [ -z "$PORTS" ]; then
-			nmap $MINRATE -sC -sV $IP -oN Netauto/$IP/script/service-version.nmap
+			nmap -T$MINRATE -sC -sV $IP -oN Netauto/$IP/script/service-version.nmap
 		else
-			nmap $MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/service-version.nmap
+			nmap -T$MINRATE -sC -sV $IP -p$PORTS -oN Netauto/$IP/script/service-version.nmap
 		fi
 	fi
 	file_check "$(pwd)/Netauto/$IP/script/service-version.nmap" "service and version detection scan"
@@ -3820,10 +3820,10 @@ vuln_scan() {
 		fi
 	else
 		if [ -z "$PORTS"]; then
-			nmap $MINRATE --script vuln $IP -oN Netauto/$IP/vuln/vuln.nmap
+			nmap -T$MINRATE --script vuln $IP -oN Netauto/$IP/vuln/vuln.nmap
 		else
 
-			nmap $MINRATE --script -p$PORTS vuln $IP -oN Netauto/$IP/vuln/vuln.nmap
+			nmap -T$MINRATE --script -p$PORTS vuln $IP -oN Netauto/$IP/vuln/vuln.nmap
 		fi
 	fi
 	file_check "$(pwd)/Netauto/$IP/vuln/vuln.nmap" "default vulnerability scan"
@@ -3838,9 +3838,9 @@ vuln_scan() {
 
 	else
 		if [ -z "$PORTS"]; then
-			nmap $MINRATE -sV --script vuln $IP -oN Netauto/$IP/vuln/version.nmap
+			nmap -T$MINRATE -sV --script vuln $IP -oN Netauto/$IP/vuln/version.nmap
 		else
-			nmap $MINRATE -sV --script vuln -p$PORTS $IP -oN Netauto/$IP/vuln/version.nmap
+			nmap -T$MINRATE -sV --script vuln -p$PORTS $IP -oN Netauto/$IP/vuln/version.nmap
 		fi
 	fi
 	file_check "$(pwd)/Netauto/$IP/vuln/version.nmap" "vulnerability version scan"
@@ -4236,9 +4236,8 @@ input_check
 if [ -z "$PORTS" ]; then
 	recon_scan
         exit 0
-else 
-
-if [[ -n "$PORTS" ]]; then
+else
 	handle_ports $PORTS
 	exit 0
 fi
+

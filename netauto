@@ -1,14 +1,39 @@
 #!/bin/bash
 
-###############################################################
-# TIME 				 	      	      	      # 
-###############################################################
+#================================================================
+# HEADER
+#================================================================
+# Script Name   : NetAuto
+# Description   : Customizable network reconnaissance tool for 
+#		: enumerating services, protocols and ports.
+# Author        : Eliaz Simon
+# Date          : 2024-05-24
+# Version       : 1.0
+# Usage         : ./netauto -i <target_host> 
+# Notes         : Ensure you install all tools to use this script
+# Dependencies  : See README.md for more info on installation
+#================================================================
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#================================================================
+
+# Capture the current time
 current_time=$(date +"%T")
 
 ###############################################################
-# ANSI COLOR CODES & FUNCTIONS 			      	      #
+# ANSI COLOR CODE ESCAPE SEQUENCES
 ###############################################################
-# Default Font
+# Default
 BLACK="\e[30m"
 RED="\e[31m"
 GREEN="\e[32m"
@@ -77,36 +102,99 @@ WHITE_BG="\e[47m"
 BOLD="\e[1m"
 ITALIC="\e[3m"
 
+#================================================================
+# FUNCTION: info
+# DESCRIPTION:
+#     Prints info message using the provided parameter.
+# PARAMETERS:
+#     $1 - A message
+# RETURNS:
+#     None
+#================================================================
 info() {
 	local message=$1
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }
 
+#================================================================
+# FUNCTION: important_info
+# DESCRIPTION:
+#     Prints important info message using the provided parameter.
+# PARAMETERS:
+#     $1 - A message
+# RETURNS:
+#     None
+#================================================================
 important_info() {
 	local message=$1
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
+#================================================================
+# FUNCTION: success
+# DESCRIPTION:
+#     Prints success message using the provided parameter.
+# PARAMETERS:
+#     $1 - A message
+# RETURNS:
+#     None
+#================================================================
 success() {
 	local message=$1
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}SUCCESS${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
+#================================================================
+# FUNCTION: warning
+# DESCRIPTION:
+#     Prints warning message using the provided parameter.
+# PARAMETERS:
+#     $1 - A message
+# RETURNS:
+#     None
+#================================================================
 warning() {
 	local message=$1
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }
 
+#================================================================
+# FUNCTION: important_warning
+# DESCRIPTION:
+#     Prints important warning message using the provided parameter.
+# PARAMETERS:
+#     $1 - A message
+# RETURNS:
+#     None
+#================================================================
 important_warning() {
 	local message=$1
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
+#================================================================
+# FUNCTION: print_usage
+# DESCRIPTION:
+#     Prints error message using the provided parameter.
+# PARAMETERS:
+#     $1 - A message
+# RETURNS:
+#     None
+#================================================================
 error() {
 	local message=$1
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }
 
+#================================================================
+# FUNCTION: print_usage
+# DESCRIPTION:
+#     Prints important error message using the provided parameter.
+# PARAMETERS:
+#     $1 - A message
+# RETURNS:
+#     None
+#================================================================
 important_error() {
 	local message=$1
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
@@ -115,11 +203,20 @@ important_error() {
 ###############################################################
 # VERIFICATION FUNCTIONS				      # 
 ###############################################################
+#================================================================
+# FUNCTION: input_check
+# DESCRIPTION:
+#     Checks global variables before executing scan.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 input_check() {
 	echo " "
 
+	# Check connection if target live host is active 
 	info "Testing connection on target live host $IP"
-
 	test_connection_command=$(nmap -sn $IP)
 	if echo "$test_connection_command" | grep -q "Host is up"; then 
 		success "Target live host $IP is open"
@@ -128,9 +225,12 @@ input_check() {
 		exit 1
 	fi
 
+	# Check if user provided ports
 	if [[ -n "$PORTS" ]]; then
 		info "Enumerating the following ports: $PORTS"
 	fi
+
+	# Check if user provided minrate timing option
 	if [[ -n "$MINRATE" ]]; then
 		info "Applying the following minrate timing options: $MINRATE"
 	fi
@@ -138,6 +238,16 @@ input_check() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: directory_check
+# DESCRIPTION:
+#     Checks if a created directory path exists on the system for scan.
+# PARAMETERS:
+#     $1 - The directory path
+#     $2 - The name of the scan
+# RETURNS:
+#     None
+#================================================================
 directory_check() {
 	local path=$1
 	local scan=$2
@@ -151,6 +261,16 @@ directory_check() {
 	fi
 }
 
+#================================================================
+# FUNCTION: file_check
+# DESCRIPTION:
+#     Checks if a generated file exists on the system for scan.
+# PARAMETERS:
+#     $1 - The file path
+#     $2 - The name of the scan
+# RETURNS:
+#     None
+#================================================================
 file_check() {
 	local path=$1
 	local scan=$2
@@ -162,12 +282,12 @@ file_check() {
 		echo " "
 		warning "Failed to generate output data for $2 of target live host under '$1'"
 	fi
-
 }
 
 ###############################################################
 # BANNER 				 	      	      # 
 ###############################################################
+# Outputs banner using ANSI escape sequences to display colour
 bash -c "printf '\e[49m                                                  \e[m
 \e[49m               \e[38;5;239;49m▄\e[38;5;238;49m▄\e[38;5;239;49m▄\e[38;5;239;48;5;238m▄\e[38;5;239;48;5;239m▄\e[48;5;239m  \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[38;5;239;48;5;240m▄\e[38;5;239;49m▄▄▄\e[49m               \e[m
 \e[49m            \e[38;5;238;49m▄\e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[38;5;238;48;5;238m▄\e[48;5;238m \e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄▄\e[48;5;239m  \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;240m▄\e[38;5;239;49m▄\e[49m            \e[m
@@ -198,6 +318,15 @@ bash -c "printf '\e[49m                                                  \e[m
 ###############################################################
 # PROTOCOL & PORT SCANS 				      # 
 ###############################################################
+#================================================================
+# FUNCTION: dhcp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 67 & 68.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 dhcp_scan() {
 	important_info "Enumerating DHCP on port 67 & 68"
 	warning "Sudo privileges is required to enumerate DHCP scan"
@@ -220,6 +349,15 @@ dhcp_scan() {
 	echo " " 
 }
 
+#================================================================
+# FUNCTION: snmp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 161.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 snmp_scan() {
 	important_info "Enumerating SNMP on port 161"
 
@@ -409,6 +547,15 @@ snmp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: echo_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 7.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 echo_scan() {
 	important_info "Enumerating Echo on port 7"
 
@@ -433,6 +580,15 @@ echo_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ftp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 21.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ftp_scan() {
 	important_info "Enumerating FTP on port 21"
 
@@ -481,6 +637,15 @@ ftp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ssh_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 22.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ssh_scan() {
 	important_info "Enumerating SSH on port 22"
 
@@ -535,6 +700,15 @@ ssh_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: telnet_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 23.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 telnet_scan() {
 	important_info "Enumerating Telnet on port 23"
 
@@ -560,6 +734,15 @@ telnet_scan() {
 	file_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nmap/ntlm-info.nmap" "NMAP Telnet NTLM info enumeration scan"
 }
 
+#================================================================
+# FUNCTION: smtp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 25, 465 & 587.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 smtp_scan() {
 	important_info "Enumerating SMTP on port 25, 465 & 587"
 
@@ -623,6 +806,15 @@ smtp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: whois_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 113.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 whois_scan() {
 	important_info "Enumerating WHOIS on port 113"
 
@@ -641,6 +833,15 @@ whois_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: tacacs_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 49.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 tacacs_scan() {
 	important_info "Enumerating TACACS on port 49"
 
@@ -659,6 +860,15 @@ tacacs_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: dns_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 53.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 dns_scan() {
 	important_info "Enumerating DNS on port 53"
 
@@ -731,6 +941,15 @@ dns_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: tftp_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 69.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 tftp_scan() {
 	important_info "Enumerating TFTP on port 69"
 
@@ -758,6 +977,15 @@ tftp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: finger_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 79.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 finger_scan() {
 	important_info "Enumerating Finger on port 79"
 
@@ -818,6 +1046,15 @@ finger_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: kerberos_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 88.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 kerberos_scan() {
 	important_info "Enumerating Kerberos on port 88"
 
@@ -839,6 +1076,15 @@ kerberos_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: pop_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 110.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 pop_scan() {
 	important_info "Enumerating POP on port 110"
 
@@ -875,6 +1121,15 @@ pop_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: portmapper_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 111.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 portmapper_scan() {
 	important_info "Enumerating Portmapper on port 111"
 
@@ -896,6 +1151,15 @@ portmapper_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ident_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 113.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ident_scan() {
 	important_info "Enumerating Ident on port 113"
 
@@ -914,6 +1178,15 @@ ident_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ntp_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 123.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ntp_scan() {
 	important_info "Enumerating NTP on port 123"
 
@@ -956,6 +1229,15 @@ ntp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: msrpc_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 135.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 msrpc_scan() {
 	important_info "Enumerating MSRPC on port 135"
 
@@ -992,6 +1274,15 @@ msrpc_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: netbios_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 135, 137, 138, 139 & 445.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 netbios_scan() {
 	important_info "Enumerating NetBIOS on port 135, 137, 138, 139 & 445"
 
@@ -1061,6 +1352,15 @@ netbios_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: smb_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 445.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 smb_scan() {
 	important_info "Enumerating SMB on port 445"
 
@@ -1223,6 +1523,15 @@ smb_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: imap_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 143 & 993.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 imap_scan() {
 	important_info "Enumerating IMAP on port 143 & 993"
 
@@ -1259,6 +1568,15 @@ imap_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: irc_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 194 & from 6660 to 7000.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 irc_scan() {
 	important_info "Enumerating IRC on port 194 & from 6660 to 7000"
 
@@ -1304,6 +1622,15 @@ irc_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: checkpoint_firewall_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 264.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 checkpoint_firewall_scan() {
 	important_info "Enumerating Checkpoint Firewall on port 264"
 
@@ -1325,6 +1652,15 @@ checkpoint_firewall_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ldap_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 389.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ldap_scan() {
 	important_info "Enumerating LDAP on port 389"
 
@@ -1364,6 +1700,15 @@ ldap_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ipsec_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 500.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ipsec_scan() {
 	important_info "Enumerating IPSEC on port 500"
 
@@ -1397,6 +1742,15 @@ ipsec_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: modbus_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 502.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 modbus_scan() {
 	important_info "Enumerating Modbus on port 502"
 
@@ -1424,6 +1778,15 @@ modbus_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: rexec_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 512.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 rexec_scan() {
 	important_info "Enumerating Rexec on port 512"
 
@@ -1445,6 +1808,15 @@ rexec_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: rlogin_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 513.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 rlogin_scan() {
 	important_info "Enumerating Rlogin on port 513"
 
@@ -1466,6 +1838,15 @@ rlogin_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: rsh_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 514.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 rsh_scan() {
 	important_info "Enumerating Rsh on port 514"
 
@@ -1487,6 +1868,15 @@ rsh_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: lpd_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 515.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 lpd_scan() {
 	important_info "Enumerating LPD on port 515"
 
@@ -1503,11 +1893,20 @@ lpd_scan() {
 	file_check "$(pwd)/Netauto/$IP/Protocols/LPD/nmap/version.nmap" "NMAP LPD version scan"
 
 	nmap -sC -sV -p 515 $IP -oN Netauto/$IP/Protocols/LPD/nmap/service-version.nmap
-	file_check "$(pwd)/Netauto/$IP/Protocols/LPD/nmap/service-version.nmap" "NMAP LPD sercice and version detection scan"
+	file_check "$(pwd)/Netauto/$IP/Protocols/LPD/nmap/service-version.nmap" "NMAP LPD service and version detection scan"
 
 	echo " "
 }
 
+#================================================================
+# FUNCTION: afp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 548.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 afp_scan() {
 	important_info "Enumerating AFP on port 548"
 
@@ -1535,6 +1934,15 @@ afp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: rtsp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 554 & 8554.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 rtsp_scan() {
 	important_info "Enumerating RTSP on port 554 & 8554"
 
@@ -1559,6 +1967,15 @@ rtsp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ipmi_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 623.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ipmi_scan() {
 	important_info "Enumerating IPMI on port 623"
 
@@ -1580,6 +1997,15 @@ ipmi_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ipp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 631.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ipp_scan() {
 	important_info "Enumerating IPP on port 631"
 
@@ -1616,6 +2042,15 @@ ipp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: epp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 700.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 epp_scan() {
 	important_info "Enumerating EPP on port 700"
 
@@ -1637,6 +2072,15 @@ epp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: rsync_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 873.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 rsync_scan() {
 	important_info "Enumerating Rsync on port 873"
 
@@ -1676,6 +2120,15 @@ rsync_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: rusersd_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 1026.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 rusersd_scan() {
 	important_info "Enumerating Rusersd on port 1026"
 
@@ -1703,6 +2156,15 @@ rusersd_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: socks_scan
+# DESCRIPTION:
+#     Perform enumeration scan on port 1080.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 socks_scan() {
 	important_info "Enumerating SOCKS on port 1080"
 
@@ -1721,6 +2183,15 @@ socks_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: java_rmi_scan
+# DESCRIPTION:
+#     Performs enumeration scan on all ports that detect 'Java RMI' service.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 java_rmi_scan() {
 	important_info "Enumerating Java RMI"
 
@@ -1748,6 +2219,15 @@ java_rmi_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ibm_mq_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 1414.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ibm_mq_scan() {
 	important_info "Enumerating IBM MQ on port 1414"
 	warning "Sudo privileges is required to enumerating IBM MQ"
@@ -1770,6 +2250,15 @@ ibm_mq_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: pptp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 1723.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 pptp_scan() {
 	important_info "Enumerating PPTP on port 1723"
 
@@ -1788,6 +2277,15 @@ pptp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: mqtt_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 1883.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 mqtt_scan() {
 	important_info "Enumerating MQTT on port 1883"
 
@@ -1803,6 +2301,15 @@ mqtt_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: nfs_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 111 & 2049.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 nfs_scan() {
 	important_info "Enumerating NFS on port 111 & 2049"
 	warning "Sudo privileges is required to enumerate NFS"
@@ -1849,6 +2356,15 @@ nfs_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: compaq_scan
+# DESCRIPTION:
+#     Performs enumeration scan on all ports that run 'Compaq' service.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 compaq_scan() {
 	important_info "Enumerating Compaq"
 
@@ -1879,6 +2395,15 @@ compaq_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: docker_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 2375 & 2376.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 docker_scan() {
 	important_info "Enumerating Docker on port 2375 & 2376"
 
@@ -1897,6 +2422,15 @@ docker_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: squid_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 3128.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 squid_scan() {
 	important_info "Enumerating Squid on port 3128"
 
@@ -1910,6 +2444,15 @@ squid_scan() {
 	file_check "$(pwd)/Netauto/$IP/Protocols/Squid/spose.txt" "Spose open port enumeration scan"
 }
 
+#================================================================
+# FUNCTION: iscsi_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 3260.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 iscsi_scan() {
 	important_info "Enumerating ISCSI on port 3260"
 
@@ -1928,6 +2471,15 @@ iscsi_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: rdp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 3389.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 rdp_scan() {
 	important_info "Enumerating RDP on port 3389"
 	warning "Sudo privileges is required to enumerate RDP"
@@ -1959,6 +2511,15 @@ rdp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: saprouter_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 3299.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 saprouter_scan() {
 	important_info "Enumerating SAPRouter on port 3299"
 
@@ -1980,6 +2541,15 @@ saprouter_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: distcc_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 3632.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 distcc_scan() {
 	important_info "Enumerating Distcc on port 3632"
 
@@ -1995,6 +2565,15 @@ distcc_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: subversion_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 3690.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 subversion_scan() {
 	important_info "Enumerating Subversion on port 3690"
 
@@ -2022,6 +2601,15 @@ subversion_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ws-discovery_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 3702.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ws-discovery_scan() {
 	important_info "Enumerating WS Discovery on port 3702"
 
@@ -2043,6 +2631,15 @@ ws-discovery_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: epmd_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 4369.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 epmd_scan() {
 	important_info "Enumerating EPMD on port 4369"
 
@@ -2070,6 +2667,15 @@ epmd_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: cisco_smart_install_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 3702.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 cisco_smart_install_scan() {
 	important_info "Enumerating CISCO Smart Install"
 	warning "Sudo privileges is required to enumerate CSIS"
@@ -2092,6 +2698,15 @@ cisco_smart_install_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: opc_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 4840.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 opc_scan() {
 	important_info "Enumerating OPC on port 4840"
 
@@ -2116,6 +2731,15 @@ opc_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: docker_registry_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5000.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 docker_registry_scan() {
 	important_info "Enumerating Docker Registry on port 5000"
 
@@ -2164,6 +2788,15 @@ docker_registry_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: mdns_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5353.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 mdns_scan() {
 	important_info "Enumerating MDNS on port 5353"
 
@@ -2182,6 +2815,15 @@ mdns_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: redshift_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5439.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 redshift_scan() {
 	important_info "Enumerating RedShift on port 5439"
 
@@ -2203,6 +2845,15 @@ redshift_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: android_debug_bridge_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5555.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 android_debug_bridge_scan() {
 	important_info "Enumerating Android Debug Bridge on port 5555"
 
@@ -2224,6 +2875,15 @@ android_debug_bridge_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: kibana_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5601.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 kibana_scan() {
 	important_info "Enumerating Kibana on port 5601"
 
@@ -2245,6 +2905,15 @@ kibana_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: amqp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5672.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 amqp_scan() {
 	important_info "Enumerating AMQP on port 5672"
 
@@ -2263,6 +2932,15 @@ amqp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: vnc_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5900.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 vnc_scan() {
 	important_info "Enumerating VNC on port 5900"
 	warning "Sudo privileges is required to enumerate VNC"
@@ -2294,6 +2972,15 @@ vnc_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: winrm_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5985 & 5986.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 winrm_scan() {
 	important_info "Enumerating WinRM on port 5985 & 5986"
 
@@ -2315,6 +3002,15 @@ winrm_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: omi_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5985 & 5986.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 omi_scan() {
 	important_info "Enumerating OMI on port 5985 & 5986"
 
@@ -2336,6 +3032,15 @@ omi_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: x11_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 6000 & in range up to 6005.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 x11_scan() {
 	important_info "Enumerating X11 on port 6000 & in range up to 6005"
 	warning "Sudo privileges is required to enumerate X11"
@@ -2358,6 +3063,15 @@ x11_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ajp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 8009.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ajp_scan() {
 	important_info "Enumerating AJP on port 8009"
 
@@ -2388,6 +3102,15 @@ ajp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: splunk_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 8089.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 splunk_scan() {
 	important_info "Enumerating Splunk on port 8089"
 
@@ -2409,6 +3132,15 @@ splunk_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: bitcoin_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 8333, 18333, 38333 & 18444.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 bitcoin_scan() {
 	important_info "Enumerating Bitcoin on port 8333, 18333, 38333 & 18444"
 	warning "Sudo privileges is required to enumerate Bitcoin"
@@ -2437,6 +3169,15 @@ bitcoin_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: fastcgi_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 9000.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 fastcgi_scan() {
 	important_info "Enumerating FastCGI on port 9000"
 
@@ -2458,6 +3199,15 @@ fastcgi_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: hsqldb_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 9001.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 hsqldb_scan() {
 	important_info "Enumerating HSQLDB on port 9001"
 
@@ -2479,6 +3229,15 @@ hsqldb_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: cassandra_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 9042 & 9160.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 cassandra_scan() {
 	important_info "Enumerating Cassandra on port 9042 & 9160"
 
@@ -2497,6 +3256,15 @@ cassandra_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: raw_printing_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 9100.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 raw_printing_scan() {
 	important_info "Enumerating Raw Printing on port 9100"
 
@@ -2515,6 +3283,15 @@ raw_printing_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: elasticsearch_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 9200.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 elasticsearch_scan() {
 	important_info "Enumerating Elasticsearch on port 9200"
 
@@ -2695,6 +3472,15 @@ elasticsearch_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ndmp_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 10000.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ndmp_scan() {
 	important_info "Enumerating NDMP on port 10000"
 
@@ -2716,6 +3502,15 @@ ndmp_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: memcached_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 11211.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 memcached_scan() {
 	important_info "Enumerating Memcached on port 11211"
 
@@ -2755,6 +3550,15 @@ memcached_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: rabbitmq_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 15672.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 rabbitmq_scan() {
 	important_info "Enumerating RabbitMQ on port 15672"
 
@@ -2776,6 +3580,15 @@ rabbitmq_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: glusterfs_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 24007 & 49152.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 glusterfs_scan() {
 	important_info "Enumerating GlusterFS on port 24007 & 49152"
 	warning "Sudo privileges is required to enumerate GlusterFS"
@@ -2804,6 +3617,15 @@ glusterfs_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: tiller_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 44134.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 tiller_scan() {
 	important_info "Enumerating Tiller on port 44134"
 	warning "Sudo privileges is required to enumerate Tiller"
@@ -2829,6 +3651,15 @@ tiller_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: ethernetip_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 44818.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 ethernetip_scan() {
 	important_info "Enumerating EthernetIP on port 44818"
 
@@ -2856,6 +3687,15 @@ ethernetip_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: bacnet_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 47808.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 bacnet_scan() {
 	important_info "Enumerating BACNet on port 47808"
 
@@ -2880,6 +3720,15 @@ bacnet_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: hadoop_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 50030, 50060, 50070 & 50090.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 hadoop_scan() {
 	important_info "Enumerating Hadoop on port 50030, 50060, 50070 & 50090"
 
@@ -2913,6 +3762,15 @@ hadoop_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: http_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 80.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 http_scan() {
 	important_info "Enumerating HTTP on port 80"
 
@@ -3018,6 +3876,15 @@ http_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: https_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 443 & 1443.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 https_scan() {
 	important_info "Enumerating HTTPS on port 443 & 1443"
 
@@ -3124,6 +3991,15 @@ https_scan() {
 ###############################################################
 # Database Scans                           		      #
 ###############################################################
+#================================================================
+# FUNCTION: mysql_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 3306.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 mysql_scan() {
 	important_info "Enumerating MySQL on port 3306"
 
@@ -3172,6 +4048,15 @@ mysql_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: couchdb_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 5984 & 6384.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 couchdb_scan() {
 	important_info "Enumerating CouchDB on port 5984 & 6384"
 
@@ -3190,6 +4075,15 @@ couchdb_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: influxdb_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 8086.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 influxdb_scan() {
 	important_info "Enumerating InfluxDB on port 8086"
 
@@ -3202,6 +4096,15 @@ influxdb_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: mongodb_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 27017.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 mongodb_scan() {
 	important_info "Enumerating MongoDB on port 27017"
 
@@ -3223,6 +4126,15 @@ mongodb_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: mssql_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 1433.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 mssql_scan() {
 	important_info "Enumerating MSSQL on port 1433"
 
@@ -3274,6 +4186,15 @@ mssql_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: postgresql_scan
+# DESCRIPTION:
+#     Performs enumeration san on port 5432.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 postgresql_scan() {
 	important_info "Enumerating PostgreSQL on port 5432"
 
@@ -3295,6 +4216,15 @@ postgresql_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: redis_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 6379.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 redis_scan() {
 	important_info "Enumerating Redis on port 6379"
 
@@ -3328,6 +4258,15 @@ redis_scan() {
 	echo " "
 }
 
+#================================================================
+# FUNCTION: oracledb_scan
+# DESCRIPTION:
+#     Performs enumeration scan on port 1521.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 oracledb_scan() {
 	important_info "Enumerating OracleDB on port 1521"
 
@@ -3373,18 +4312,31 @@ oracledb_scan() {
 ###############################################################
 # PORT DETECTION                                              #
 ###############################################################
+#================================================================
+# FUNCTION: handle_ports
+# DESCRIPTION:
+#     Executes a port scan by its port number from its array.
+# PARAMETERS:
+#     $1 - Ports
+# RETURNS:
+#     None
+#================================================================
 handle_ports() {
+	# Initializes the time of the scan
 	start_time=$(date +%s%N)
 
 	echo "[*] Starting full port scan at ${current_time}"	
 
 	DEFAULT_DIRECTORY=Netauto/$IP/Protocols/
 
+	# Retrive parameter for ports
 	local ports=$1
 
+	# Separate the input of ports by ',' which is to be added to port_array for executing port scan
 	IFS=',' read -ra port_array <<< "$ports"
 	echo "$IFS"
 
+	# Loop through each port and execute the scan for each port from the array
 	for port in "${port_array[@]}"; do
 		case "$port" in
 			7) echo_scan ;;
@@ -3507,20 +4459,34 @@ handle_ports() {
 		esac
 	done
 
+	# Stop the time of the scan
 	end_time=$(date +%s%N)
 
 	echo "[*] Ending full port scan at ${current_time}"	
 
+	# Calculate its duration and convert duration from milliseconds to milliseconds
 	duration=$(( end_time - start_time ))
 	seconds=$(( duration / 1000000000 ))
 
+	# Print its execution time
 	echo "[*] Full port scan execution time: ${seconds}s"	
 }
 
 ###############################################################
 # NETWORK                                                     #
 ###############################################################
+
+#================================================================
+# FUNCTION: recon_scan
+# DESCRIPTION:
+#     Performs full reconnaissance scan.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 recon_scan() {
+	# Initializes the time of the scan
 	start_time=$(date +%s%N)
 
 	echo "[*] Starting full reconnaissance scan at ${current_time}"	
@@ -3612,17 +4578,30 @@ recon_scan() {
 
         echo " "
 
+	# Stop the time of the scan
 	end_time=$(date +%s%N)
 
 	echo "[*] Ending full reconnaissance scan at ${current_time}"	
 
+	# Calculate its duration and convert duration from milliseconds to milliseconds
 	duration=$(( end_time - start_time ))
 	seconds=$(( duration / 1000000000 ))
 
+	# Print its execution time
 	echo "[*] Full default scan execution time: ${seconds}s"	
 }
 
+#================================================================
+# FUNCTION: print_usage
+# DESCRIPTION:
+#     Performs enumeration scan only on TCP ports.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 tcp_scan() {
+	# Initializes the time of the scan
 	start_time=$(date +%s%N)
 
 	echo "[*] Starting full TCP scan at ${current_time}"	
@@ -3668,17 +4647,30 @@ tcp_scan() {
 
         echo " "
 
+	# Stop the time of the scan
 	end_time=$(date +%s%N)
 
 	echo "[*] Ending full TCP scan at ${current_time}"	
 
+	# Calculate its duration and convert duration from milliseconds to milliseconds
 	duration=$(( end_time - start_time ))
 	seconds=$(( duration / 1000000000 ))
 
+	# Print its execution time
 	echo "[*] Full TCP scan execution time: ${seconds}s"	
 }
 
+#================================================================
+# FUNCTION: udp_scan
+# DESCRIPTION:
+#     Performs enumeration scan only on UDP ports.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 udp_scan() {
+	# Initializes the time of the scan
 	start_time=$(date +%s%N)
 
 	echo "[*] Starting full UDP scan at ${current_time}"	
@@ -3726,17 +4718,30 @@ udp_scan() {
 
         echo " "
 
+	# Stop the time of the scan
 	end_time=$(date +%s%N)
 
 	echo "[*] Ending full UPD scan at ${current_time}"	
 
+	# Calculate its duration and convert duration from milliseconds to milliseconds
 	duration=$(( end_time - start_time ))
 	seconds=$(( duration / 1000000000 ))
 
+	# Print its execution time
 	echo "[*] Full UDP scan execution time: ${seconds}s"	
 }
 
+#================================================================
+# FUNCTION: script_scan
+# DESCRIPTION:
+#     Perform enumeration scan using default Nmap scripts and version detection.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 script_scan() {
+	# Initializes the time of the scan
 	start_time=$(date +%s%N)
 
 	echo "[*] Starting full script scan at ${current_time}"	
@@ -3793,17 +4798,30 @@ script_scan() {
 	fi
 	file_check "$(pwd)/Netauto/$IP/script/service-version.nmap" "service and version detection scan"
 
+	# Stop the time of the scan
 	end_time=$(date +%s%N)
 
 	echo "[*] Ending full script scan at ${current_time}"	
 
+	# Calculate its duration and convert duration from milliseconds to milliseconds
 	duration=$(( end_time - start_time ))
 	seconds=$(( duration / 1000000000 ))
 
+	# Print its execution time
 	echo "[*] Full script scan execution time: ${seconds}s"	
 }
 
+#================================================================
+# FUNCTION: vuln_scan
+# DESCRIPTION:
+#     Performs full vulnerability scan.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 vuln_scan() {
+	# Initializes the time of the scan
 	start_time=$(date +%s%N)
 
 	echo "[*] Starting full vulnerability scan at ${current_time}"	
@@ -3847,13 +4865,16 @@ vuln_scan() {
 
         echo " "
 
+	# Stop the time of the scan
 	end_time=$(date +%s%N)
 
 	echo "[*] Ending full vulnerability scan at ${current_time}"	
 
+	# Calculate its duration and convert duration from milliseconds to milliseconds
 	duration=$(( end_time - start_time ))
 	seconds=$(( duration / 1000000000 ))
 
+	# Print its execution time
 	echo "[*] Full vulnerability scan execution time: ${seconds}s"	
 }
 
@@ -3861,10 +4882,28 @@ vuln_scan() {
 ###############################################################
 # HELP                                                        #
 ###############################################################
+#================================================================
+# FUNCTION: usage
+# DESCRIPTION:
+#     Displays default usage information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 usage() {
         echo "Usage: Netauto -i <host> [options]"
 }
 
+#================================================================
+# FUNCTION: help
+# DESCRIPTION:
+#     Displays default help information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 help() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
@@ -3896,13 +4935,29 @@ help() {
 	exit 1
 }
 
-
-
+#================================================================
+# FUNCTION: recon_usage
+# DESCRIPTION:
+#     Displays the usage information for the script.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 recon_usage() {
         echo "Usage: Netauto recon -i <host> [options]"
 	exit 1
 }
 
+#================================================================
+# FUNCTION: print_usage
+# DESCRIPTION:
+#     Displays the usage information for the script.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 recon_help() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
@@ -3928,11 +4983,29 @@ recon_help() {
 }
 
 
+#================================================================
+# FUNCTION: tcp_usage
+# DESCRIPTION:
+#     Displays TCP usage information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 tcp_usage() {
         echo "Usage: Netauto tcp -i <host> [options]"
 	exit 1
 }
 
+#================================================================
+# FUNCTION: tcp_help
+# DESCRIPTION:
+#     Displays TCP help information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 tcp_help() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
@@ -3956,13 +5029,29 @@ tcp_help() {
 	exit 1
 }
 
-
-
+#================================================================
+# FUNCTION: udp_usage
+# DESCRIPTION:
+#     Displays UDP usage information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 udp_usage() {
         echo "Usage: Netauto udp -i <host> [options]"
 	exit 1
 }
 
+#================================================================
+# FUNCTION: udp_help
+# DESCRIPTION:
+#     Displays UDP help information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 udp_help() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
@@ -3987,13 +5076,29 @@ udp_help() {
 	exit 1
 }
 
-
-
+#================================================================
+# FUNCTION: script_usage
+# DESCRIPTION:
+#     Displays script usage information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 script_usage() {
         echo "Usage: Netauto script -i <host> [options]"
 	exit 1
 }
 
+#================================================================
+# FUNCTION: script_help
+# DESCRIPTION:
+#     Displays script help information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 script_help() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
@@ -4017,11 +5122,29 @@ script_help() {
 	exit 1
 }
 
+#================================================================
+# FUNCTION: vuln_usage
+# DESCRIPTION:
+#     Displays vulnerability usage information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 vuln_usage() {
         echo "Usage: Netauto vuln -i <host> [options]"
 	exit 1
 }
 
+#================================================================
+# FUNCTION: vuln_help
+# DESCRIPTION:
+#     Displays vulnerability help information.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 vuln_help() {
         printf "${BOLD}Network Enumeration Automator with Nmap${ENDCOLOR}\n"
 	echo " "
@@ -4052,6 +5175,15 @@ vuln_help() {
 # --------------------------------------------------------------
 # Reconnaissance Mode
 # --------------------------------------------------------------
+#================================================================
+# FUNCTION: recon_mode
+# DESCRIPTION:
+#     Processes paramaters in recon mode.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 recon_mode() {
 	while [[ "$#" -gt 0 ]]; do
 	    case $1 in
@@ -4074,6 +5206,15 @@ recon_mode() {
 # --------------------------------------------------------------
 # TCP Mode
 # --------------------------------------------------------------
+#================================================================
+# FUNCTION: tcp_mode
+# DESCRIPTION:
+#     Processes parameters in tcp mode.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 tcp_mode() {
 	while [[ "$#" -gt 0 ]]; do
 	    case $1 in
@@ -4096,6 +5237,15 @@ tcp_mode() {
 # --------------------------------------------------------------
 # UDP Mode
 # --------------------------------------------------------------
+#================================================================
+# FUNCTION: udp_mode
+# DESCRIPTION:
+#     Processes parameters in udp mode.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 udp_mode() {
 	while [[ "$#" -gt 0 ]]; do
 	    case $1 in
@@ -4118,6 +5268,15 @@ udp_mode() {
 # --------------------------------------------------------------
 # Script Mode
 # --------------------------------------------------------------
+#================================================================
+# FUNCTION: script_mode
+# DESCRIPTION:
+#     Processes parameters in script mode.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 script_mode() {
 	while [[ "$#" -gt 0 ]]; do
 	    case $1 in
@@ -4140,6 +5299,15 @@ script_mode() {
 # --------------------------------------------------------------
 # Vulnerability Mode
 # --------------------------------------------------------------
+#================================================================
+# FUNCTION: vuln_mode
+# DESCRIPTION:
+#     Processes parameters in vulnerability mode.
+# PARAMETERS:
+#     None
+# RETURNS:
+#     None
+#================================================================
 vuln_mode() {
 	while [[ "$#" -gt 0 ]]; do
 	    case $1 in
@@ -4162,12 +5330,14 @@ vuln_mode() {
 ###############################################################
 # ARGUMENTS                                                   #
 ###############################################################
+# Print default help info if no parameters are provided
 if [ $# -eq 0 ];
 then 
         help
         exit 1
 fi
 
+# Initialize global variables
 IP=""
 PORTS=""
 MINRATE=""
@@ -4238,6 +5408,7 @@ if [ -z "$PORTS" ]; then
         exit 0
 else
 	handle_ports $PORTS
-	exit 0
+	exit
+	0
 fi
 

@@ -31,7 +31,7 @@ The tools that are utilized for enumeration requires installation of the followi
 | [Nikto](https://github.com/sullo/nikto)        | [WhatWeb](https://github.com/urbanadventurer/WhatWeb)          | [WebTech](https://github.com/ShielderSec/webtech)            | [WebAnalyze](https://github.com/rverton/webanalyze) | [Wapiti](https://github.com/wapiti-scanner/wapiti)        | [wafw00f](https://github.com/EnableSecurity/wafw00f)              |
 | [WhatWaf](https://github.com/Ekultek/WhatWaf)      | [CMSMap](https://github.com/dionach/CMSmap)           | [WPScan](https://github.com/wpscanteam/wpscan)             | [Joomscan](https://github.com/OWASP/joomscan)   | [CMSeeK](https://github.com/Tuhinshubhra/CMSeeK)        |                       |
 
-The following commands used in this script can be accessible from such resources such as [hacktricks](https://book.hacktricks.xyz/), [infrastructure](https://infra.newerasec.com/), [0xffsec](https://0xffsec.com/handbook/) & [exploit-notes](https://exploit-notes.hdks.org/).
+The commands used in this script can be accessible from online resources such as [hacktricks](https://book.hacktricks.xyz/), [infrastructure](https://infra.newerasec.com/), [0xffsec](https://0xffsec.com/handbook/) & [exploit-notes](https://exploit-notes.hdks.org/).
 
 It is recommended that you install the following tools on **Debian** based distribution machine (_ParrotOS_ & _Kali Linux_) for the ease of installing third-party tools.
 

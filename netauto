@@ -1,7 +1,14 @@
 #!/bin/bash
 
+# INSERT HEADER INFORMATION OVER HERE ABOUT THE AIM OF THIS FOLLOWING SCRIPT
+
 ###############################################################
-# Color Codes & Functions 				      # 
+# TIME 				 	      	      	      # 
+###############################################################
+current_time=$(date +"%T")
+
+###############################################################
+# ANSI COLOR CODES & MESSAGE FUNCTIONS 			      #
 ###############################################################
 # Default Font
 BLACK="\e[30m"
@@ -73,25 +80,28 @@ BOLD="\e[1m"
 ITALIC="\e[3m"
 
 info() {
+	local message=$1
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+}
 
+success() {
+	local message=$1
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}SUCCESS${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
 warning() {
-
+	local message=$1
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }
 
 error() {
-
+	local message=$1
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Invalid target live host connection${ENDCOLOR}\n"
 }
 
 
 ###############################################################
-# Current Time 				 	      	      # 
-###############################################################
-current_time=$(date +"%T")
-
-###############################################################
-# Check Functions					      # 
+# VERIFICATION FUNCTIONS				      # 
 ###############################################################
 input_check() {
 	echo " "
@@ -144,7 +154,7 @@ file_check() {
 }
 
 ###############################################################
-# Banner 				 	      	      # 
+# BANNER 				 	      	      # 
 ###############################################################
 bash -c "printf '\e[49m                                                  \e[m
 \e[49m               \e[38;5;239;49m▄\e[38;5;238;49m▄\e[38;5;239;49m▄\e[38;5;239;48;5;238m▄\e[38;5;239;48;5;239m▄\e[48;5;239m  \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[48;5;239m \e[38;5;239;48;5;239m▄\e[38;5;239;48;5;240m▄\e[38;5;239;49m▄▄▄\e[49m               \e[m
@@ -174,7 +184,7 @@ bash -c "printf '\e[49m                                                  \e[m
 ';"
 
 ###############################################################
-# Protocols Scans 				 	      # 
+# PROTOCOL & PORT SCANS 				      # 
 ###############################################################
 dhcp_scan() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating DHCP on port 67 & 68${ENDCOLOR}\n"
@@ -3350,7 +3360,7 @@ oracledb_scan() {
 }
 
 ###############################################################
-# Port Detection                                              #
+# PORT DETECTION                                              #
 ###############################################################
 handle_ports() {
 	start_time=$(date +%s%N)
@@ -3497,9 +3507,8 @@ handle_ports() {
 }
 
 ###############################################################
-# Network                                                     #
+# NETWORK                                                     #
 ###############################################################
-# default_nmap() {
 recon_scan() {
 	start_time=$(date +%s%N)
 
@@ -3741,7 +3750,7 @@ script_scan() {
 	fi
 	file_check "$(pwd)/Netauto/$IP/script/script.nmap" "script scan"
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing version scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS" ]; then
 			nmap -sV $IP -oN Netauto/$IP/script/version.nmap
@@ -3757,7 +3766,7 @@ script_scan() {
 	fi
 	file_check "$(pwd)/Netauto/$IP/script/version.nmap" "version scan"
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing service and version detection scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS" ]; then
 			nmap -sC -sV $IP -oN Netauto/$IP/script/service-version.nmap
@@ -3808,7 +3817,7 @@ vuln_scan() {
 	fi
 	file_check "$(pwd)/Netauto/$IP/vuln/vuln.nmap" "default vulnerability scan"
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability scan on target live host $IP${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability version scan on target live host $IP${ENDCOLOR}\n"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS"]; then
 			nmap -sV --script vuln $IP -oN Netauto/$IP/vuln/version.nmap
@@ -3839,7 +3848,7 @@ vuln_scan() {
 
 
 ###############################################################
-# Help                                                        #
+# HELP                                                        #
 ###############################################################
 usage() {
         echo "Usage: Netauto -i <host> [options]"
@@ -4025,9 +4034,10 @@ vuln_help() {
 	exit 1
 }
 
-# --------------------------------------------------------------
+################################################################
 # Modes
-# --------------------------------------------------------------
+################################################################
+
 # --------------------------------------------------------------
 # Reconnaissance Mode
 # --------------------------------------------------------------
@@ -4129,7 +4139,7 @@ vuln_mode() {
 }
 
 ###############################################################
-# Arguments                                                   #
+# ARGUMENTS                                                   #
 ###############################################################
 if [ $# -eq 0 ];
 then 
@@ -4159,9 +4169,8 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # ===============================================================
-# Checking Conditions...
+# VERIFYING CONDITIONS
 # ===============================================================
-
 # --------------------------------------------------------------
 # IP
 # --------------------------------------------------------------
@@ -4198,10 +4207,9 @@ if [[ -n "$MINRATE" ]]; then
 	fi
 fi 
 
-
-# --------------------------------------------------------------
-# Printing output options...
-# --------------------------------------------------------------
+################################################################
+# OUTPUT
+################################################################
 input_check
 
 if [ -z "$PORTS" ]; then

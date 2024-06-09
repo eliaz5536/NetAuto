@@ -418,10 +418,10 @@ echo_scan() {
 	mkdir -p Netauto/$IP/Protocols/Echo/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc" "Echo netcat"
 
-	nc $IP $port | tee Netauto/$IP/Protocols/Echo/nc/nc.txt
+	timeout 10 nc $IP $port | tee Netauto/$IP/Protocols/Echo/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc/nc.txt" "Echo netcat connection"
 
-	nc -vn $IP $port | tee Netauto/$IP/Protocols/Echo/nc/nc_vn.txt
+	timeout 10 nc -vn $IP $port | tee Netauto/$IP/Protocols/Echo/nc/nc_vn.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/Echo/nc/nc.txt" "Echo verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/Echo/nmap
@@ -439,10 +439,10 @@ ftp_scan() {
 	mkdir -p Netauto/$IP/Protocols/ftp/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/ftp/nc" "FTP netcat connection"
 
-	nc $IP $port | tee Netauto/$IP/Protocols/ftp/nc/nc.txt
+	timeout 10 nc $IP $port | tee Netauto/$IP/Protocols/ftp/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/ftp/nc/nc.txt" "FTP netcat banner-grabbing connection"
 
-	nc -vn $IP $port | tee Netauto/$IP/Protocols/ftp/nc/nc-nv.txt
+	timeout 10 nc -vn $IP $port | tee Netauto/$IP/Protocols/ftp/nc/nc-nv.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/ftp/nc/nc-nv.txt" "FTP netcat verbose connection"
 	
 	mkdir -p Netauto/$IP/Protocols/ftp/openssl
@@ -541,10 +541,10 @@ telnet_scan() {
 	mkdir -p Netauto/$IP/Protocols/Telnet/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nc" "Telnet netcat"
 
-	nc $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/nc.txt
+	timeout 10 nc $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nc/nc.txt" "Telnet netcat connection"
 
-	nc -nv $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/nc-nv.txt
+	timeout 10 nc -nv $IP 23 | tee Netauto/$IP/Protocols/Telnet/nc/nc-nv.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nc/nc-nv.txt" "Telnet netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/Telnet/nmap
@@ -566,10 +566,10 @@ smtp_scan() {
 	mkdir -p Netauto/$IP/Protocols/SMTP/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nc" "SMTP netcat"
 
-	nc $IP 25 | tee Netauto/$IP/Protocols/SMTP/nc.txt
+	timeout 10 nc $IP 25 | tee Netauto/$IP/Protocols/SMTP/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nc.txt""SMTP netcat connection"
 
-	nc -nv $IP 25 | tee Netauto/$IP/Protocols/SMTP/smtp-nv.txt
+	timeout 10 nc -nv $IP 25 | tee Netauto/$IP/Protocols/SMTP/smtp-nv.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nc-nv.txt" "SMTP netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/openssl
@@ -767,10 +767,10 @@ finger_scan() {
 	mkdir -p Netauto/$IP/Protocols/Finger/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Finger/nc" "Finger netcat"
 
-	nc $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/nc.txt
+	timeout 10 nc $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/Finger/nc/nc.txt" "finger netcat connection"
 
-	nc -vn $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/nc-vn.txt
+	timeout 10 nc -vn $IP 79 | tee Netauto/$IP/Protocols/Finger/nc/nc-vn.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/Finger/nc/nc-vn.txt" "finger netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/Finger/nmap
@@ -848,10 +848,10 @@ pop_scan() {
 	mkdir -p Netauto/$IP/Protocols/POP/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/POP/nc" "POP netcat"
 
-	nc $IP 110 | tee Netauto/$IP/Protocols/POP/nc/nc.txt
+	timeout 10 nc $IP 110 | tee Netauto/$IP/Protocols/POP/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/POP/nc/nc.txt" "POP netcat connection"
 	
-	nc -vn $IP 110 | tee Netauto/$IP/Protocols/POP/nc/nc-vn.txt
+	timeout 10 nc -vn $IP 110 | tee Netauto/$IP/Protocols/POP/nc/nc-vn.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/POP/nc/nc-vn.txt" "POP netcat verbose connection"
 
 	mkdir -p Netauto/$IP/Protocols/POP/openssl
@@ -1232,10 +1232,10 @@ imap_scan() {
 	mkdir -p Netauto/$IP/Protocols/IMAP/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nc" "IMAP netcat"
 
-	nc $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/nc.txt
+	timeout 10 nc $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nc/nc.txt" "IMAP netcat connection"
 
-	nc -vn $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/nc-vn.txt
+	timeout 10 nc -vn $IP 143 | tee Netauto/$IP/Protocols/IMAP/nc/nc-vn.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/IMAP/nc/nc-vn.txt" "IMAP verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/IMAP/openssl
@@ -1268,10 +1268,10 @@ irc_scan() {
 	mkdir -p Netauto/$IP/Protocols/IRC/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/IRC/nc" "IRC netcat"
 
-	nc $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/nc.txt
+	timeout 10 nc $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/IRC/nc/nc.txt" "IRC netcat connection"
 
-	nc -vn $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/nc-vn.txt
+	timeout 10 nc -vn $IP 194 | tee Netauto/$IP/Protocols/IRC/nc/nc-vn.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/IRC/nc/nc-vn.txt" "IRC verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/IRC/openssl
@@ -2004,10 +2004,10 @@ subversion_scan() {
 	mkdir -p Netauto/$IP/Protocols/subversion/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/subversion/nc" "subversion netcat"
 
-	nc $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/nc.txt
+	timeout 10 nc $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/subversion/nc/nc.txt" "subversion netcat connection"
 
-	nc -vn $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/nc-vn.txt
+	timeout 10 nc -vn $IP 3690 | tee Netauto/$IP/Protocols/subversion/nc/nc-vn.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/subversion/nc/nc-vn.txt" "subversion verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/subversion/svn
@@ -2052,10 +2052,10 @@ epmd_scan() {
 	mkdir -p Netauto/$IP/Protocols/epmd/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/epmd/nc" "EPMD netcat"
 
-	nc $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/nc.txt
+	timeout 10 nc $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/epmd/nc/nc.txt" "EPMD netcat connection"
 
-	nc -vn $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/epmd-vn.txt
+	timeout 10 nc -vn $IP 4369 | tee Netauto/$IP/Protocols/epmd/nc/epmd-vn.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/epmd/nc/nc-vn.txt" "EPMD verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/epmd/nmap
@@ -2725,13 +2725,13 @@ memcached_scan() {
 	mkdir -p Netauto/$IP/Protocols/Memcached/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc" "Memcached netcat"
 
-	nc $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/nc.txt
+	timeout 10 nc $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc/nc.txt" "Memcached netcat connection"
 
-	nc -vn $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/nc-vn.txt
+	timeout 10 nc -vn $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/nc-vn.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc/nc-vn.txt" "Memcached verbose netcat connection"
 
-	nc -vn -w 1 $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/memcached-w.txt
+	timeout 10 nc -vn -w 1 $IP 11211 | tee Netauto/$IP/Protocols/Memcached/nc/memcached-w.txt
 	file_check "$(pwd)/Netauto/$IP/Protocols/Memcached/nc/w.txt" "Memcached timeout verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached/memcstat
@@ -3304,10 +3304,10 @@ redis_scan() {
 	mkdir -p Netauto/$IP/Databases/Redis/nc
 	directory_check "$(pwd)/Netauto/$IP/Databases/Redis/nc" "Redis netcat"
 
-	nc $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/nc.txt
+	timeout 10 nc $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/nc.txt
 	file_check "$(pwd)/Netauto/$IP/Databases/Redis/nc/nc.txt" "Redis netcat connection"
 
-	nc -nv $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/nc-nv.txt
+	timeout 10 nc -nv $IP 6379 | tee Netauto/$IP/Databases/Redis/nc/nc-nv.txt
 	file_check "$(pwd)/Netauto/$IP/Databases/Redis/nc/nc-nv.txt" "Redis verbose netcat connection"
 
 	mkdir -p Netauto/$IP/Databases/Redis/nmap

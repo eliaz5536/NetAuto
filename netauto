@@ -101,7 +101,7 @@ warning() {
 
 error() {
 	local message=$1
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Invalid target live host connection${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }
 
 
@@ -111,21 +111,21 @@ error() {
 input_check() {
 	echo " "
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Testing connection on target live host $IP${ENDCOLOR}\n"
+	info "Testing connection on target live host $IP"
 
 	test_connection_command=$(nmap -sn $IP)
 	if echo "$test_connection_command" | grep -q "Host is up"; then 
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Target live host $IP is open${ENDCOLOR}\n"
+		success "Target live host $IP is open"
 	else
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Invalid target live host connection${ENDCOLOR}\n"
+		error "Invalid target live host connection"
 		exit 0
 	fi
 
 	if [[ -n "$PORTS" ]]; then
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Enumerating the following ports: $PORTS${ENDCOLOR}\n"
+		info "Enumerating the following ports: $PORTS"
 	fi
 	if [[ -n "$MINRATE" ]]; then
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Applying the following minrate timing option: $MINRATE${ENDCOLOR}\n"
+		info "Applying the following minrate timing options: $MINRATE"
 	fi
 
 	echo " "
@@ -137,10 +137,10 @@ directory_check() {
 
 	if [[ -d $1 ]]; then
 		echo " "
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Created $2 output directory of target live host under '$1'${ENDCOLOR}\n"
+		info "Created $2 output directory of target live host under '$1'"
 	else
 		echo " "
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to create $2 output directory of target live host under '$1'${ENDCOLOR}\n" 
+		warning "Failed to create $2 output directory of target live host under '$1'"
 	fi
 }
 
@@ -150,10 +150,10 @@ file_check() {
 
 	if [[ -e $1 ]]; then
 		echo " "
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Generated output data for $2 of target live host under '$1'${ENDCOLOR}\n"
+		success "Generated output data for $2 of target live host under '$1'"
 	else
 		echo " "
-		printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Failed to generate output data for $2 of target live host under '$1'${ENDCOLOR}\n" 
+		warning "Failed to generate output data for $2 of target live host under '$1'"
 	fi
 
 }
@@ -192,8 +192,8 @@ bash -c "printf '\e[49m                                                  \e[m
 # PROTOCOL & PORT SCANS 				      # 
 ###############################################################
 dhcp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating DHCP on port 67 & 68${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate DHCP scan${ENDCOLOR}\n"
+	important_info "Enumerating DHCP on port 67 & 68"
+	warning "Sudo privileges is required to enumerate DHCP scan"
 
 	mkdir -p Netauto/$IP/Protocols/DHCP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/DHCP" "DHCP"
@@ -214,7 +214,7 @@ dhcp_scan() {
 }
 
 snmp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SNMP on port 161${ENDCOLOR}\n"
+	important_info "Enumerating SNMP on port 161"
 
 	mkdir -p Netauto/$IP/Protocols/SNMP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SNMP" "SNMP"
@@ -403,7 +403,7 @@ snmp_scan() {
 }
 
 echo_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Echo on port 7${ENDCOLOR}\n"
+	important_info "Enumerating Echo on port 7"
 
 	mkdir -p Netauto/$IP/Protocols/Echo
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Echo" "Echo"
@@ -427,7 +427,7 @@ echo_scan() {
 }
 
 ftp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating FTP on port 21${ENDCOLOR}\n"
+	important_info "Enumerating FTP on port 21"
 
 	mkdir -p Netauto/$IP/Protocols/ftp/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/ftp/nc" "FTP netcat connection"
@@ -475,7 +475,7 @@ ftp_scan() {
 }
 
 ssh_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SSH on port 22${ENDCOLOR}\n"
+	important_info "Enumerating SSH on port 22"
 
 	mkdir -p Netauto/$IP/Protocols/SSH/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SSH/nc" "SSH netcat"
@@ -529,7 +529,7 @@ ssh_scan() {
 }
 
 telnet_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Telnet on port 23${ENDCOLOR}\n"
+	important_info "Enumerating Telnet on port 23"
 
 	mkdir -p Netauto/$IP/Protocols/Telnet/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Telnet/nc" "Telnet netcat"
@@ -554,7 +554,7 @@ telnet_scan() {
 }
 
 smtp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SMTP on port 25, 465 & 587${ENDCOLOR}\n"
+	important_info "Enumerating SMTP on port 25, 465 & 587"
 
 	mkdir -p Netauto/$IP/Protocols/SMTP/nc
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SMTP/nc" "SMTP netcat"
@@ -617,7 +617,7 @@ smtp_scan() {
 }
 
 whois_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WHOIS on port 113${ENDCOLOR}\n"
+	important_info "Enumerating WHOIS on port 113"
 
 	mkdir -p Netauto/$IP/Protocols/WHOIS/nmap
 	directory_check "$(pwd)/Netauto/$IP/Protocols/WHOIS/nmap" "NMAP WHOIS"
@@ -635,7 +635,7 @@ whois_scan() {
 }
 
 tacacs_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating TACACS on port 49${ENDCOLOR}\n"
+	important_info "Enumerating TACACS on port 49"
 
 	mkdir -p Netauto/$IP/Protocols/TACACS/nmap
 	directory_check "$(pwd)/Netauto/$IP/Protocols/TACACS/nmap" "NMAP TACACS"
@@ -653,7 +653,7 @@ tacacs_scan() {
 }
 
 dns_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating DNS on port 53${ENDCOLOR}\n"
+	important_info "Enumerating DNS on port 53"
 
 	mkdir -p Netauto/$IP/Protocols/DNS/nmap
 	directory_check "$(pwd)/Netauto/$IP/Protocols/DNS/nmap" "NMAP DNS"
@@ -725,7 +725,7 @@ dns_scan() {
 }
 
 tftp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating TFTP on port 69${ENDCOLOR}\n"
+	important_info "Enumerating TFTP on port 69"
 
 	mkdir -p Netauto/$IP/Protocols/TFTP/nmap
 	directory_check "$(pwd)/Netauto/$IP/Protocols/TFTP/nmap" "NMAP TFTP"
@@ -752,7 +752,7 @@ tftp_scan() {
 }
 
 finger_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Finger on port 79${ENDCOLOR}\n"
+	important_info "Enumerating Finger on port 79"
 
 	mkdir -p Netauto/$IP/Protocols/Finger
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Finger" "Finger"
@@ -812,7 +812,7 @@ finger_scan() {
 }
 
 kerberos_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Kerberos on port 88${ENDCOLOR}\n"
+	important_info "Enumerating Kerberos on port 88"
 
 	mkdir -p Netauto/$IP/Protocols/Kerberos/nmap
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Kerberos/nmap" "NMAP Kerberos"
@@ -833,7 +833,7 @@ kerberos_scan() {
 }
 
 pop_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating POP on port 110${ENDCOLOR}\n"
+	important_info "Enumerating POP on port 110"
 
 	mkdir -p Netauto/$IP/Protocols/POP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/POP" "POP"
@@ -869,7 +869,7 @@ pop_scan() {
 }
 
 portmapper_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Portmapper on port 111${ENDCOLOR}\n"
+	important_info "Enumerating Portmapper on port 111"
 
 	mkdir -p Netauto/$IP/Protocols/Portmapper/nmap
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Portmapper/nmap" "NMAP Portmapper"
@@ -890,7 +890,7 @@ portmapper_scan() {
 }
 
 ident_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Ident on port 113${ENDCOLOR}\n"
+	important_info "Enumerating Ident on port 113"
 
 	mkdir -p Netauto/$IP/Protocols/Ident/nmap
 	directory_check "mkdir -p Netauto/$IP/Protocols/Ident/nmap" "NMAP Ident"
@@ -908,7 +908,7 @@ ident_scan() {
 }
 
 ntp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NTP on port 123${ENDCOLOR}\n"
+	important_info "Enumerating NTP on port 123"
 
 	mkdir -p Netauto/$IP/Protocols/NTP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/NTP" "NTP"
@@ -950,7 +950,7 @@ ntp_scan() {
 }
 
 msrpc_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MSRPC on port 135${ENDCOLOR}\n"
+	important_info "Enumerating MSRPC on port 135"
 
 	mkdir -p Netauto/$IP/Protocols/MSRPC/nmap
 	directory_check "$(pwd)/Netauto/$IP/Protocols/MSRPC/nmap" "NMAP MSRPC"
@@ -986,7 +986,7 @@ msrpc_scan() {
 }
 
 netbios_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NetBIOS on port 135, 137, 138, 139 & 445${ENDCOLOR}\n"
+	important_info "Enumerating NetBIOS on port 135, 137, 138, 139 & 445"
 
 	mkdir -p Netauto/$IP/Protocols/NetBios/nmap
 	directory_check "$(pwd)/Netauto/$IP/Protocols/NetBios/nmap" ""
@@ -1055,7 +1055,7 @@ netbios_scan() {
 }
 
 smb_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SMB on port 445${ENDCOLOR}\n"
+	important_info "Enumerating SMB on port 445"
 
 	mkdir -p Netauto/$IP/Protocols/SMB/nmap
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SMB/nmap" "NMAP SMB"
@@ -1217,7 +1217,7 @@ smb_scan() {
 }
 
 imap_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IMAP on port 143 & 993${ENDCOLOR}\n"
+	important_info "Enumerating IMAP on port 143 & 993"
 
 	mkdir -p Netauto/$IP/Protocols/IMAP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/IMAP" "IMAP"
@@ -1253,7 +1253,7 @@ imap_scan() {
 }
 
 irc_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IRC on port 194 & from 6660 to 7000${ENDCOLOR}\n"
+	important_info "Enumerating IRC on port 194 & from 6660 to 7000"
 
 	mkdir -p Netauto/$IP/Protocols/IRC
 	directory_check "$(pwd)/Netauto/$IP/Protocols/IRC" "IRC"
@@ -1298,7 +1298,7 @@ irc_scan() {
 }
 
 checkpoint_firewall_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Checkpoint Firewall on port 264${ENDCOLOR}\n"
+	important_info "Enumerating Checkpoint Firewall on port 264"
 
 	mkdir -p Netauto/$IP/Protocols/Checkpoint-Firewall
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Checkpoint_Firewall" "Checkpoint Firewall"
@@ -1319,7 +1319,7 @@ checkpoint_firewall_scan() {
 }
 
 ldap_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating LDAP on port 389${ENDCOLOR}\n"
+	important_info "Enumerating LDAP on port 389"
 
 	mkdir -p Netauto/$IP/Protocols/LDAP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/LDAP" "LDAP"
@@ -1358,7 +1358,7 @@ ldap_scan() {
 }
 
 ipsec_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPSEC on port 500${ENDCOLOR}\n"
+	important_info "Enumerating IPSEC on port 500"
 
 	mkdir -p Netauto/$IP/Protocols/IKE
 	directory_check "$(pwd)/Netauto/$IP/Protocols/IKE" "IKE"
@@ -1391,7 +1391,7 @@ ipsec_scan() {
 }
 
 modbus_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Modbus on port 502${ENDCOLOR}\n"
+	important_info "Enumerating Modbus on port 502"
 
 	mkdir -p Netauto/$IP/Protocols/Modbus
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Modbus" "Modbus"
@@ -1418,7 +1418,7 @@ modbus_scan() {
 }
 
 rexec_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rexec on port 512${ENDCOLOR}\n"
+	important_info "Enumerating Rexec on port 512"
 
 	mkdir -p Netauto/$IP/Protocols/Rexec
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Rexec" "Rexec"
@@ -1439,7 +1439,7 @@ rexec_scan() {
 }
 
 rlogin_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rlogin on port 513${ENDCOLOR}\n"
+	important_info "Enumerating Rlogin on port 513"
 
 	mkdir -p Netauto/$IP/Protocols/Rlogin
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Rlogin" "Rlogin"
@@ -1460,7 +1460,7 @@ rlogin_scan() {
 }
 
 rsh_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rsh on port 514${ENDCOLOR}\n"
+	important_info "Enumerating Rsh on port 514"
 
 	mkdir -p Netauto/$IP/Protocols/Rsh
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Rsh" "Rsh"
@@ -1481,7 +1481,7 @@ rsh_scan() {
 }
 
 lpd_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating LPD on port 515${ENDCOLOR}\n"
+	important_info "Enumerating LPD on port 515"
 
 	mkdir -p Netauto/$IP/Protocols/LPD
 	directory_check "$(pwd)/Netauto/$IP/Protocols/LPD" "LPD"
@@ -1502,7 +1502,7 @@ lpd_scan() {
 }
 
 afp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating AFP on port 548${ENDCOLOR}\n"
+	important_info "Enumerating AFP on port 548"
 
 	mkdir -p Netauto/$IP/Protocols/AFP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/AFP" "AFP"
@@ -1529,7 +1529,7 @@ afp_scan() {
 }
 
 rtsp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RTSP on port 554 & 8554${ENDCOLOR}\n"
+	important_info "Enumerating RTSP on port 554 & 8554"
 
 	mkdir -p Netauto/$IP/Protocols/RTSP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/RTSP" "RTSP"
@@ -1553,7 +1553,7 @@ rtsp_scan() {
 }
 
 ipmi_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPMI on port 623${ENDCOLOR}\n"
+	important_info "Enumerating IPMI on port 623"
 
 	mkdir -p Netauto/$IP/Protocols/IPMI
 	directory_check "$(pwd)/Netauto/$IP/Protocols/IPMI" "IPMI"
@@ -1574,7 +1574,7 @@ ipmi_scan() {
 }
 
 ipp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IPP on port 631${ENDCOLOR}\n"
+	important_info "Enumerating IPP on port 631"
 
 	mkdir -p Netauto/$IP/Protocols/IPP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/IPP" "IPP"
@@ -1610,7 +1610,7 @@ ipp_scan() {
 }
 
 epp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating EPP on port 700${ENDCOLOR}\n"
+	important_info "Enumerating EPP on port 700"
 
 	mkdir -p Netauto/$IP/Protocols/EPP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/EPP" "EPP"
@@ -1631,7 +1631,7 @@ epp_scan() {
 }
 
 rsync_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rsync on port 873${ENDCOLOR}\n"
+	important_info "Enumerating Rsync on port 873"
 
 	mkdir -p Netauto/$IP/Protocols/Rsync
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Rsync" "Rsync"
@@ -1670,7 +1670,7 @@ rsync_scan() {
 }
 
 rusersd_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Rusersd on port 1026${ENDCOLOR}\n"
+	important_info "Enumerating Rusersd on port 1026"
 
 	mkdir -p Netauto/$IP/Protocols/Rusersd
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Rusersd" "Rusersd"
@@ -1697,7 +1697,7 @@ rusersd_scan() {
 }
 
 socks_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SOCKS on port 1080${ENDCOLOR}\n"
+	important_info "Enumerating SOCKS on port 1080"
 
 	mkdir -p Netauto/$IP/Protocols/SOCKS
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SOCKS" "SOCKS"
@@ -1715,7 +1715,7 @@ socks_scan() {
 }
 
 java_rmi_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Java RMI${ENDCOLOR}\n"
+	important_info "Enumerating Java RMI"
 
 	mkdir -p Netauto/$IP/Protocols/Java-RMI
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Java-RMI" ""
@@ -1742,8 +1742,8 @@ java_rmi_scan() {
 }
 
 ibm_mq_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating IBM MQ on port 1414${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate IBM MQ${ENDCOLOR}\n"
+	important_info "Enumerating IBM MQ on port 1414"
+	warning "Sudo privileges is required to enumerating IBM MQ"
 
 	mkdir -p Netauto/$IP/Protocols/IBM-MQ
 	directory_check "$(pwd)/Netauto/$IP/Protocols/IBM-MQ" "IBM-MQ"
@@ -1764,7 +1764,7 @@ ibm_mq_scan() {
 }
 
 pptp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating PPTP on port 1723${ENDCOLOR}\n"
+	important_info "Enumerating PPTP on port 1723"
 
 	mkdir -p Netauto/$IP/Protocols/PPTP/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/PPTP/" "PPTP"
@@ -1782,7 +1782,7 @@ pptp_scan() {
 }
 
 mqtt_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MQTT on port 1883${ENDCOLOR}\n"
+	important_info "Enumerating MQTT on port 1883"
 
 	mkdir -p Netauto/$IP/Protocols/MQTT/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/MQTT/" "MQTT"
@@ -1797,8 +1797,8 @@ mqtt_scan() {
 }
 
 nfs_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NFS on port 111 & 2049${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate NFS${ENDCOLOR}\n"
+	important_info "Enumerating NFS on port 111 & 2049"
+	warning "Sudo privileges is required to enumerate NFS"
 
 	mkdir -p Netauto/$IP/Protocols/NFS/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/NFS/" "NFS"
@@ -1843,7 +1843,7 @@ nfs_scan() {
 }
 
 compaq_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Compaq${ENDCOLOR}\n"
+	important_info "Enumerating Compaq"
 
 	mkdir -p Netauto/$IP/Protocols/compaq/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/compaq/" "Compaq"
@@ -1873,7 +1873,7 @@ compaq_scan() {
 }
 
 docker_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Docker on port 2375 & 2376${ENDCOLOR}\n"
+	important_info "Enumerating Docker on port 2375 & 2376"
 
 	mkdir -p Netauto/$IP/Protocols/Docker/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Docker/" "Docker"
@@ -1891,7 +1891,7 @@ docker_scan() {
 }
 
 squid_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Squid on port 3128${ENDCOLOR}\n"
+	important_info "Enumerating Squid on port 3128"
 
 	mkdir -p Netauto/$IP/Protocols/Squid/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Squid/" "Squid"
@@ -1904,7 +1904,7 @@ squid_scan() {
 }
 
 iscsi_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating ISCSI on port 3260${ENDCOLOR}\n"
+	important_info "Enumerating ISCSI on port 3260"
 
 	mkdir -p Netauto/$IP/Protocols/ISCSI/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/ISCSI/" "ISCSI"
@@ -1922,8 +1922,8 @@ iscsi_scan() {
 }
 
 rdp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RDP on port 3389${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate RDP${ENDCOLOR}\n"
+	important_info "Enumerating RDP on port 3389"
+	warning "Sudo privileges is required to enumerate RDP"
 
 	mkdir -p Netauto/$IP/Protocols/RDP/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/RDP/" "RDP"
@@ -1953,7 +1953,7 @@ rdp_scan() {
 }
 
 saprouter_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating SAPRouter on port 3299${ENDCOLOR}\n"
+	important_info "Enumerating SAPRouter on port 3299"
 
 	mkdir -p Netauto/$IP/Protocols/SAPRouter/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/SAPRouter/" "SAPRouter"
@@ -1974,7 +1974,7 @@ saprouter_scan() {
 }
 
 distcc_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Distcc on port 3632${ENDCOLOR}\n"
+	important_info "Enumerating Distcc on port 3632"
 
 	mkdir -p Netauto/$IP/Protocols/distcc/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/distcc/" "distcc"
@@ -1989,7 +1989,7 @@ distcc_scan() {
 }
 
 subversion_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Subversion on port 3690${ENDCOLOR}\n"
+	important_info "Enumerating Subversion on port 3690"
 
 	mkdir -p Netauto/$IP/Protocols/subversion/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/subversion" "subversion"
@@ -2016,7 +2016,7 @@ subversion_scan() {
 }
 
 ws-discovery_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WS Discovery on port 3702${ENDCOLOR}\n"
+	important_info "Enumerating WS Discovery on port 3702"
 
 	mkdir -p Netauto/$IP/Protocols/ws-discovery/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/ws-discovery/" "ws-discovery"
@@ -2037,7 +2037,7 @@ ws-discovery_scan() {
 }
 
 epmd_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating EPMD on port 4369${ENDCOLOR}\n"
+	important_info "Enumerating EPMD on port 4369"
 
 	mkdir -p Netauto/$IP/Protocols/epmd/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/epmd/" "EPMD"
@@ -2064,8 +2064,8 @@ epmd_scan() {
 }
 
 cisco_smart_install_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating CISCO Smart Install${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate CSIS${ENDCOLOR}\n"
+	important_info "Enumerating CISCO Smart Install"
+	warning "Sudo privileges is required to enumerate CSIS"
 
 	mkdir -p Netauto/$IP/Protocols/CSIS
 	directory_check "$(pwd)/Netauto/$IP/Protocols/CSIS" "CSIS"
@@ -2086,7 +2086,7 @@ cisco_smart_install_scan() {
 }
 
 opc_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating OPC on port 4840${ENDCOLOR}\n"
+	important_info "Enumerating OPC on port 4840"
 
 	mkdir -p Netauto/$IP/Protocols/OPC
 	directory_check "$(pwd)/Netauto/$IP/Protocols/OPC" "OPC"
@@ -2110,7 +2110,7 @@ opc_scan() {
 }
 
 docker_registry_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Docker Registry on port 5000${ENDCOLOR}\n"
+	important_info "Enumerating Docker Registry on port 5000"
 
 	mkdir -p Netauto/$IP/Protocols/docker_registry/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/docker_registry/" "Docker Registry"
@@ -2158,7 +2158,7 @@ docker_registry_scan() {
 }
 
 mdns_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MDNS on port 5353${ENDCOLOR}\n"
+	important_info "Enumerating MDNS on port 5353"
 
 	mkdir -p Netauto/$IP/Protocols/mDNS/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/mDNS" "mDNS"
@@ -2176,7 +2176,7 @@ mdns_scan() {
 }
 
 redshift_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RedShift on port 5439${ENDCOLOR}\n"
+	important_info "Enumerating RedShift on port 5439"
 
 	mkdir -p Netauto/$IP/Protocols/redshift/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/redshift/" "redshift"
@@ -2197,7 +2197,7 @@ redshift_scan() {
 }
 
 android_debug_bridge_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Android Debug Bridge on port 5555${ENDCOLOR}\n"
+	important_info "Enumerating Android Debug Bridge on port 5555"
 
 	mkdir -p Netauto/$IP/Protocols/ADB
 	directory_check "$(pwd)/Netauto/$IP/Protocols/ADB" "ADB"
@@ -2218,7 +2218,7 @@ android_debug_bridge_scan() {
 }
 
 kibana_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Kibana on port 5601${ENDCOLOR}\n"
+	important_info "Enumerating Kibana on port 5601"
 
 	mkdir -p Netauto/$IP/Protocols/Kibana
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Kibana" "Kibana"
@@ -2239,7 +2239,7 @@ kibana_scan() {
 }
 
 amqp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating AMQP on port 5672${ENDCOLOR}\n"
+	important_info "Enumerating AMQP on port 5672"
 
 	mkdir -p Netauto/$IP/Protocols/AMQP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/AMQP" "AMQP"
@@ -2257,8 +2257,8 @@ amqp_scan() {
 }
 
 vnc_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating VNC on port 5900${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate VNC${ENDCOLOR}\n"
+	important_info "Enumerating VNC on port 5900"
+	warning "Sudo privileges is required to enumerate VNC"
 
 	mkdir -p Netauto/$IP/Protocols/VNC
 	directory_check "$(pwd)/Netauto/$IP/Protocols/VNC" "VNC"
@@ -2288,7 +2288,7 @@ vnc_scan() {
 }
 
 winrm_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating WinRM on port 5985 & 5986${ENDCOLOR}\n"
+	important_info "Enumerating WinRM on port 5985 & 5986"
 
 	mkdir -p Netauto/$IP/Protocols/WinRM
 	directory_check "$(pwd)/Netauto/$IP/Protocols/WinRM" "WinRM"
@@ -2309,7 +2309,7 @@ winrm_scan() {
 }
 
 omi_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating OMI on port 5985 & 5986${ENDCOLOR}\n"
+	important_info "Enumerating OMI on port 5985 & 5986"
 
 	mkdir -p Netauto/$IP/Protocols/OMI
 	directory_check "$(pwd)/Netauto/$IP/Protocols/OMI" "OMI"
@@ -2330,8 +2330,8 @@ omi_scan() {
 }
 
 x11_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating X11 on port 6000 & in range up to 6005${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate X11${ENDCOLOR}\n"
+	important_info "Enumerating X11 on port 6000 & in range up to 6005"
+	warning "Sudo privileges is required to enumerate X11"
 
 	mkdir -p Netauto/$IP/Protocols/X11
 	directory_check "$(pwd)/Netauto/$IP/Protocols/X11/" "X11"
@@ -2352,7 +2352,7 @@ x11_scan() {
 }
 
 ajp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating AJP on port 8009${ENDCOLOR}\n"
+	important_info "Enumerating AJP on port 8009"
 
 	mkdir -p Netauto/$IP/Protocols/AJP/
 	directory_check "$(pwd)/Netauto/$IP/Protocols/AJP" "AJP"
@@ -2382,7 +2382,7 @@ ajp_scan() {
 }
 
 splunk_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Splunk on port 8089${ENDCOLOR}\n"
+	important_info "Enumerating Splunk on port 8089"
 
 	mkdir -p Netauto/$IP/Protocols/Splunk
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Splunk" "Splunk"
@@ -2403,9 +2403,8 @@ splunk_scan() {
 }
 
 bitcoin_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Bitcoin on port 8333, 18333, 38333 & 18444${ENDCOLOR}\n"
-
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate Bitcoin${ENDCOLOR}\n"
+	important_info "Enumerating Bitcoin on port 8333, 18333, 38333 & 18444"
+	warning "Sudo privileges is required to enumerate Bitcoin"
 
 	mkdir -p Netauto/$IP/Protocols/Bitcoin
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Bitcoin" "Bitcoin"
@@ -2432,7 +2431,7 @@ bitcoin_scan() {
 }
 
 fastcgi_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating FastCGI on port 9000${ENDCOLOR}\n"
+	important_info "Enumerating FastCGI on port 9000"
 
 	mkdir -p Netauto/$IP/Protocols/FastCGI
 	directory_check "$(pwd)/Netauto/$IP/Protocols/FastCGI/" "FastCGI"
@@ -2453,7 +2452,7 @@ fastcgi_scan() {
 }
 
 hsqldb_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating HSQLDB on port 9001${ENDCOLOR}\n"
+	important_info "Enumerating HSQLDB on port 9001"
 
 	mkdir -p Netauto/$IP/Protocols/HSQLDB
 	directory_check "$(pwd)/Netauto/$IP/Protocols/HSQLDB" "HSQLDB"
@@ -2474,7 +2473,7 @@ hsqldb_scan() {
 }
 
 cassandra_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Cassandra on port 9042 & 9160${ENDCOLOR}\n"
+	important_info "Enumerating Cassandra on port 9042 & 9160"
 
 	mkdir -p Netauto/$IP/Protocols/Cassandra
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Cassandra" "Cassandra"
@@ -2492,7 +2491,7 @@ cassandra_scan() {
 }
 
 raw_printing_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Raw Printing on port 9100${ENDCOLOR}\n"
+	important_info "Enumerating Raw Printing on port 9100"
 
 	mkdir -p Netauto/$IP/Protocols/raw_printing
 	directory_check "$(pwd)/Netauto/$IP/Protocols/raw_printing" "Raw Printing"
@@ -2510,7 +2509,7 @@ raw_printing_scan() {
 }
 
 elasticsearch_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Elasticsearch on port 9200${ENDCOLOR}\n"
+	important_info "Enumerating Elasticsearch on port 9200"
 
 	mkdir -p Netauto/$IP/Protocols/Elasticsearch
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Elasticsearch" "Elasticsearch"
@@ -2690,7 +2689,7 @@ elasticsearch_scan() {
 }
 
 ndmp_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating NDMP on port 10000${ENDCOLOR}\n"
+	important_info "Enumerating NDMP on port 10000"
 
 	mkdir -p Netauto/$IP/Protocols/NDMP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/NDMP" "NDMP"
@@ -2711,7 +2710,7 @@ ndmp_scan() {
 }
 
 memcached_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Memcached on port 11211${ENDCOLOR}\n"
+	important_info "Enumerating Memcached on port 11211"
 
 	mkdir -p Netauto/$IP/Protocols/Memcached
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Memcached" "Memcached"
@@ -2750,7 +2749,7 @@ memcached_scan() {
 }
 
 rabbitmq_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating RabbitMQ on port 15672${ENDCOLOR}\n"
+	important_info "Enumerating RabbitMQ on port 15672"
 
 	mkdir -p Netauto/$IP/Protocols/RabbitMQ
 	directory_check "$(pwd)/Netauto/$IP/Protocols/RabbitMQ" "RabbitMQ"
@@ -2771,8 +2770,8 @@ rabbitmq_scan() {
 }
 
 glusterfs_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating GlusterFS on port 24007 & 49152${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate GlusterFS${ENDCOLOR}\n"
+	important_info "Enumerating GlusterFS on port 24007 & 49152"
+	warning "Sudo privileges is required to enumerate GlusterFS"
 
 	mkdir -p Netauto/$IP/Protocols/GlusterFS
 	directory_check "$(pwd)/Netauto/$IP/Protocols/GlusterFS" "GlusterFS"
@@ -2799,8 +2798,8 @@ glusterfs_scan() {
 }
 
 tiller_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Tiller on port 44134${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to enumerate Tiller${ENDCOLOR}\n"
+	important_info "Enumerating Tiller on port 44134"
+	warning "Sudo privileges is required to enumerate Tiller"
 
 	mkdir -p Netauto/$IP/Protocols/Tiller
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Tiller" "Tiller"
@@ -2824,7 +2823,7 @@ tiller_scan() {
 }
 
 ethernetip_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating EthernetIP on port 44818${ENDCOLOR}\n"
+	important_info "Enumerating EthernetIP on port 44818"
 
 	mkdir -p Netauto/$IP/Protocols/EthernetIP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/EthernetIP" "EthernetIP"
@@ -2851,7 +2850,7 @@ ethernetip_scan() {
 }
 
 bacnet_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating BACNet on port 47808${ENDCOLOR}\n"
+	important_info "Enumerating BACNet on port 47808"
 
 	mkdir -p Netauto/$IP/Protocols/BACNet
 	directory_check "$(pwd)/Netauto/$IP/Protocols/BACNet" "BACNet"
@@ -2875,7 +2874,7 @@ bacnet_scan() {
 }
 
 hadoop_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Hadoop on port 50030, 50060, 50070 & 50090${ENDCOLOR}\n"
+	important_info "Enumerating Hadoop on port 50030, 50060, 50070 & 50090"
 
 	mkdir -p Netauto/$IP/Protocols/Hadoop
 	directory_check "$(pwd)/Netauto/$IP/Protocols/Hadoop" "Hadoop"
@@ -2908,7 +2907,7 @@ hadoop_scan() {
 }
 
 http_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating HTTP on port 80${ENDCOLOR}\n"
+	important_info "Enumerating HTTP on port 80"
 
 	mkdir -p Netauto/$IP/Protocols/HTTP
 	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTP" "HTTP"
@@ -3013,7 +3012,7 @@ http_scan() {
 }
 
 https_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating HTTPS on port 443 & 1443${ENDCOLOR}\n"
+	important_info "Enumerating HTTPS on port 443 & 1443"
 
 	mkdir -p Netauto/$IP/Protocols/HTTPS
 	directory_check "$(pwd)/Netauto/$IP/Protocols/HTTPS" "HTTPS"
@@ -3119,7 +3118,7 @@ https_scan() {
 # Database Scans                           		      #
 ###############################################################
 mysql_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MySQL on port 3306${ENDCOLOR}\n"
+	important_info "Enumerating MySQL on port 3306"
 
 	mkdir -p Netauto/$IP/Databases/MySQL
 	directory_check "$(pwd)/Netauto/$IP/Databases/MySQL" "MySQL"
@@ -3167,7 +3166,7 @@ mysql_scan() {
 }
 
 couchdb_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating CouchDB on port 5984 & 6384${ENDCOLOR}\n"
+	important_info "Enumerating CouchDB on port 5984 & 6384"
 
 	mkdir -p Netauto/$IP/Databases/CouchDB
 	directory_check "$(pwd)/Netauto/$IP/Databases/CouchDB" "CouchDB"
@@ -3185,7 +3184,7 @@ couchdb_scan() {
 }
 
 influxdb_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating InfluxDB on port 8086${ENDCOLOR}\n"
+	important_info "Enumerating InfluxDB on port 8086"
 
 	mkdir -p Netauto/$IP/Databases/InfluxDB
 	directory_check "$(pwd)/Netauto/$IP/Databases/InfluxDB" "InfluxDB"
@@ -3197,7 +3196,7 @@ influxdb_scan() {
 }
 
 mongodb_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MongoDB on port 27017${ENDCOLOR}\n"
+	important_info "Enumerating MongoDB on port 27017"
 
 	mkdir -p Netauto/$IP/Databases/MongoDB
 	directory_check "$(pwd)/Netauto/$IP/Databases/MongoDB" "MongoDB"
@@ -3218,7 +3217,7 @@ mongodb_scan() {
 }
 
 mssql_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating MSSQL on port 1433${ENDCOLOR}\n"
+	important_info "Enumerating MSSQL on port 1433"
 
 	mkdir -p Netauto/$IP/Databases/MSSQL
 	directory_check "$(pwd)/Netauto/$IP/Databases/MSSQL" "MSSQL"
@@ -3269,7 +3268,7 @@ mssql_scan() {
 }
 
 postgresql_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating PostgreSQL on port 5432${ENDCOLOR}\n"
+	important_info "Enumerating PostgreSQL on port 5432"
 
 	mkdir -p Netauto/$IP/Databases/PostgreSQL
 	directory_check "$(pwd)/Netauto/$IP/Databases/PostgreSQL" "PostgreSQL"
@@ -3290,7 +3289,7 @@ postgresql_scan() {
 }
 
 redis_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating Redis on port 6379${ENDCOLOR}\n"
+	important_info "Enumerating Redis on port 6379"
 
 	mkdir -p Netauto/$IP/Databases/Redis
 	directory_check "$(pwd)/Netauto/$IP/Databases/Redis" "Redis"
@@ -3323,7 +3322,7 @@ redis_scan() {
 }
 
 oracledb_scan() {
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Enumerating OracleDB on port 1521${ENDCOLOR}\n"
+	important_info "Enumerating OracleDB on port 1521"
 
 	mkdir -p Netauto/$IP/Databases/OracleDB
 	directory_check "$(pwd)/Netauto/$IP/Databases/OracleDB" "OracleDB"

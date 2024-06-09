@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# INSERT HEADER INFORMATION OVER HERE ABOUT THE AIM OF THIS FOLLOWING SCRIPT IN GREAT DETAIL
-
 ###############################################################
 # TIME 				 	      	      	      # 
 ###############################################################
 current_time=$(date +"%T")
 
 ###############################################################
-# ANSI COLOR CODES & MESSAGE FUNCTIONS 			      #
+# ANSI COLOR CODES & FUNCTIONS 			      	      #
 ###############################################################
 # Default Font
 BLACK="\e[30m"
@@ -99,11 +97,20 @@ warning() {
 	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
 }
 
-error() {
+important_warning() {
 	local message=$1
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
 }
 
+error() {
+	local message=$1
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}$1${ENDCOLOR}\n"
+}
+
+important_error() {
+	local message=$1
+	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}$1${ENDCOLOR}\n"
+}
 
 ###############################################################
 # VERIFICATION FUNCTIONS				      # 
@@ -118,7 +125,7 @@ input_check() {
 		success "Target live host $IP is open"
 	else
 		error "Invalid target live host connection"
-		exit 0
+		exit 1
 	fi
 
 	if [[ -n "$PORTS" ]]; then
@@ -3520,8 +3527,8 @@ recon_scan() {
 
 	echo " "
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Performing full reconnaissance scan${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform reconnaissance scan${ENDCOLOR}\n"
+	important_info "Performing full reconnaissance scan"
+	important_warning "Sudo privileges is required to perform reconnaissance scan"
 
 	mkdir -p Netauto/$IP
 	directory_check "$(pwd)/Netauto/$IP" "target machine"
@@ -3531,7 +3538,7 @@ recon_scan() {
 
         # Scans ports only and no host discovery
         # Scans for all ports available
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing port scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing port scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		nmap -Pn $IP -p- -oN Netauto/$IP/recon/port.nmap
 	else 
@@ -3545,7 +3552,7 @@ recon_scan() {
         # This is to potentially identify vulnerabilities and/or misconfigurations
         # Scans vendor and service version for each open port (Service Version Detection)
         # Useful for attempting to identify outdated version of service
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing script scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		nmap -sC -sV $IP -oN Netauto/$IP/recon/script.nmap
 	else 
@@ -3558,7 +3565,7 @@ recon_scan() {
         # Performs "TCP SYN Scan" by conducting TCP scan of target host by sending SYN packets
         # Also known as "Stealth Scan" as it is designed to be less intrusive and more discreet
         # Scans ports only and no host discovery
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing stealth scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing stealth scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		sudo nmap -sS -Pn -n $IP -oN Netauto/$IP/recon/stealth.nmap
 	else 
@@ -3572,7 +3579,7 @@ recon_scan() {
         # This involves such as OS/Version Detection, Script Scanning and Traceroute
         # This provides wealth of information about the target system 
         # Useful for detailed reconnaissane and vulnerability assessment
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing aggressive scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing aggressive scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		nmap -p- -A $IP -oN Netauto/$IP/recon/aggressive.nmap
 	else 
@@ -3584,7 +3591,7 @@ recon_scan() {
 
         # Scans all standard ports to establish connection system call using TCP Connection Scan
         # runs all the scripts and checks on them
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing TCP scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing TCP scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		nmap -n -v -sT -A $IP -oN Netauto/$IP/recon/tcp.nmap
 	else
@@ -3595,7 +3602,7 @@ recon_scan() {
         echo " "
 
         # Run Vulnerability Script to perform NSE Vulnerability Scan
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing vulnerability scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		nmap -sV --script vuln $IP -oN Netauto/$IP/recon/vuln.nmap
 	else
@@ -3622,20 +3629,20 @@ tcp_scan() {
 
 	echo " "
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Performing full TCP scan${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform TCP scan${ENDCOLOR}\n"
+	info "Performing full TCP scan"
+	warning "Sudo privileges is required to perform TCP scan" 
 
 	mkdir -p Netauto/$IP/TCP
 	directory_check "$(pwd)/Netauto/$IP/TCP" "TCP"
 
 	if [ "$MINRATE" == "" ]; then
-		if [ -z "$PORTS"]; then
+		if [[ -z "$PORTS" ]]; then
 			nmap -n -v -sT -p- -T5 -oN Netauto/$IP/TCP/port.nmap $IP
 		else
 			nmap -n -v -sT -p$PORTS -T5 -oN Netauto/$IP/TCP/port.nmap $IP
 		fi
 	else	
-		if [ -z "$PORTS"]; then
+		if [[ -z "$PORTS" ]]; then
 			nmap -n -v -sT -p- $MINRATE -oN Netauto/$IP/TCP/port.nmap $IP
 		else
 			nmap -n -v -sT -p$PORTS $MINRATE -oN Netauto/$IP/TCP/port.nmap $IP
@@ -3645,16 +3652,16 @@ tcp_scan() {
 
 
 	if [ "$MINRATE" == "" ]; then
-		if [ -z "$PORTS"]; then
+		if [[ -z "$PORTS" ]]; then
 			sudo nmap -T4 -F -sV -sC -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
 		else
-			sudo nmap -T4 -F -sV -sC -p$PORTS -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
+			sudo nmap -T4 -sV -sC -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p$PORTS $IP
 		fi
 	else
-		if [ -z "$PORTS"]; then
+		if [[ -z "$PORTS" ]]; then
 			sudo nmap $MINRATE -F -sV -sC -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
 		else
-			sudo nmap $MINRATE -F -sV -sC -p$PORTS -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p- $IP
+			sudo nmap $MINRATE -sV -sC -oN Netauto/$IP/TCP/service-version.nmap --reason --stats-every 5s -p$PORTS $IP
 		fi
 	fi
 	file_check "$(pwd)/Netauto/$IP/TCP/service-version.nmap" "full TCP service and version detection scan"
@@ -3678,8 +3685,8 @@ udp_scan() {
 
 	echo " "
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Performing full UDP scan${ENDCOLOR}\n"
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_YELLOW}WARNING${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Sudo privileges is required to perform UDP scan${ENDCOLOR}\n"
+	important_info "Performing full UDP scan"
+	important_warning "Sudo privileges is required to perform UDP scan"
 
 	mkdir -p Netauto/$IP/UDP
 	directory_check "$(pwd)/Netauto/$IP/UDP" "UDP"
@@ -3688,13 +3695,13 @@ udp_scan() {
 		if [ -z "$PORTS" ]; then
 			sudo nmap -n -v -sU -oN Netauto/$IP/UDP/port.nmap $IP
 		else
-			sudo nmap -n -v -sU -oN -p$PORTS Netauto/$IP/UDP/port.nmap $IP
+			sudo nmap -n -v -sU -p$PORTS -oN Netauto/$IP/UDP/port.nmap $IP
 		fi
 	else 
 		if [ -z "$PORTS" ]; then
 			sudo nmap -n -v $MINRATE -sU -oN Netauto/$IP/UDP/port.nmap $IP
 		else
-			sudo nmap -n -v $MINRATE -sU -oN -p$PORTS Netauto/$IP/UDP/port.nmap $IP
+			sudo nmap -n -v $MINRATE -sU -p$PORTS -oN Netauto/$IP/UDP/port.nmap $IP
 		fi
 	fi 
 	file_check "$(pwd)/Netauto/$IP/UDP/port.nmap" "full UDP port scan"
@@ -3737,7 +3744,7 @@ script_scan() {
 	mkdir -p Netauto/$IP/script
 	directory_check "$(pwd)/Netauto/$IP/script" "script"
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing script scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing script scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS" ]; then
 			nmap -sC $IP -oN Netauto/$IP/script/script.nmap
@@ -3754,7 +3761,7 @@ script_scan() {
 	fi
 	file_check "$(pwd)/Netauto/$IP/script/script.nmap" "script scan"
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing version scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing version scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS" ]; then
 			nmap -sV $IP -oN Netauto/$IP/script/version.nmap
@@ -3770,7 +3777,7 @@ script_scan() {
 	fi
 	file_check "$(pwd)/Netauto/$IP/script/version.nmap" "version scan"
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing service and version detection scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing service and version detection scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS" ]; then
 			nmap -sC -sV $IP -oN Netauto/$IP/script/service-version.nmap
@@ -3804,7 +3811,7 @@ vuln_scan() {
 	mkdir -p Netauto/$IP/vuln
 	directory_check "$(pwd)/Netauto/$IP/vuln" "vuln"
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing vulnerability scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS"]; then
 			nmap --script vuln $IP -oN Netauto/$IP/vuln/vuln.nmap
@@ -3821,7 +3828,7 @@ vuln_scan() {
 	fi
 	file_check "$(pwd)/Netauto/$IP/vuln/vuln.nmap" "default vulnerability scan"
 
-	printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_GREEN}INFO${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Executing vulnerability version scan on target live host $IP${ENDCOLOR}\n"
+	important_info "Executing vulnerability version scan on target live host $IP"
 	if [ "$MINRATE" == "" ]; then
 		if [ -z "$PORTS"]; then
 			nmap -sV --script vuln $IP -oN Netauto/$IP/vuln/version.nmap
@@ -4053,13 +4060,15 @@ recon_mode() {
 		-i|--ip) IP="$2"; shift ;;
 		-p|--ports) PORTS="$2"; shift ;;
 		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+		*) error "Unknown Parameter Passed: $1"; exit 1 ;;
 	    esac
 	    shift
 	done
 
 	input_check
 	recon_scan	
+
+	exit 0
 }
 
 # --------------------------------------------------------------
@@ -4073,13 +4082,15 @@ tcp_mode() {
 		-i|--ip) IP="$2"; shift ;;
 		-p|--ports) PORTS="$2"; shift ;;
 		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+		*) error "Unknown Parameter Passed: $1"; exit 1 ;;
 	    esac
 	    shift
 	done
 
 	input_check
 	tcp_scan
+
+	exit 0
 }
 
 # --------------------------------------------------------------
@@ -4093,13 +4104,15 @@ udp_mode() {
 		-i|--ip) IP="$2"; shift ;;
 		-p|--ports) PORTS="$2"; shift ;;
 		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+		*) error "Unknown Parameter Passed: $1"; exit 1 ;;
 	    esac
 	    shift
 	done
 
 	input_check
 	udp_scan
+
+	exit 0
 }
 
 # --------------------------------------------------------------
@@ -4113,13 +4126,15 @@ script_mode() {
 		-i|--ip) IP="$2"; shift ;;
 		-p|--ports) PORTS="$2"; shift ;;
 		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+		*) error "Unknonwn Parameter Passed: $1"; exit 1 ;;
 	    esac
 	    shift
 	done
 
 	input_check
 	script_scan
+
+	exit 0
 }
 
 # --------------------------------------------------------------
@@ -4133,13 +4148,15 @@ vuln_mode() {
 		-i|--ip) IP="$2"; shift ;;
 		-p|--ports) PORTS="$2"; shift ;;
 		-m|--minrate) MINRATE="$2"; shift ;;
-		*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+		*) error "Unknonwn Parameter Passed: $1"; exit 1 ;;
 	    esac
 	    shift
 	done
 
 	input_check
 	vuln_scan
+
+	exit 0
 }
 
 ###############################################################
@@ -4167,7 +4184,7 @@ while [[ "$#" -gt 0 ]]; do
 	udp) shift; udp_mode "$@"; break ;;
 	script) shift; script_mode "$@"; break ;;
 	vuln) shift; vuln_mode "$@"; break ;;
-	*) printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Unknown Parameter Passed: $1${ENDCOLOR}"; exit 1 ;;
+	*) error "Unknown Parameter Passed: $1"; exit 1 ;;
     esac
     shift
 done
@@ -4179,7 +4196,7 @@ done
 # IP
 # --------------------------------------------------------------
 if [ -z "$IP" ]; then
-        printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}Missing IP address. Please specify an IP using the -i option.${ENDCOLOR}"
+	important_error "Missing IP address. Specify the IP address of target host using -i."
         exit 1
 fi
 
@@ -4194,19 +4211,19 @@ if [[ -n "$MINRATE" ]]; then
 
 	# Check if the input is an integer
 	if ! [[ $MINRATE =~ ^[0-9]+$ ]]; then
-	    printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Minrate Input must be an integer${ENDCOLOR}"
+	    important_error "Minrate Input must be an integer"
 	    exit 1
 	fi
 
 	# Check if the input is a single character
 	if [ $MINRATE -ne 1 ]; then
-	    printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Minrate Input must be a single character${ENDCOLOR}"
+	    important_error "Minrate Input must be a single character"
 	    exit 1
 	fi
 
 	# Check if the integer is not higher than 5
 	if [ $MINRATE -gt 5 ]; then
-	    printf "${WHITE}[${ENDCOLOR}${CYAN}$current_time${ENDCOLOR}${WHITE}]${ENDCOLOR} ${WHITE}[${ENDCOLOR}${BOLD_RED}ERROR${ENDCOLOR}${WHITE}]${ENDCOLOR} ${BOLD_WHITE}Minrate Input must not be higher than 5${ENDCOLOR}"
+	    important_error "Minrate Input must not be higher than 5"
 	    exit 1
 	fi
 fi 
@@ -4218,9 +4235,10 @@ input_check
 
 if [ -z "$PORTS" ]; then
 	recon_scan
-       exit 1
+        exit 0
 else 
-	handle_ports $PORTS
-	exit 1
-fi
 
+if [[ -n "$PORTS" ]]; then
+	handle_ports $PORTS
+	exit 0
+fi

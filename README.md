@@ -3,6 +3,8 @@
 # Demos
 ## Reconnaissance
 [![asciicast](https://asciinema.org/a/NP6Y1c9osgFYr38LA51jrfk8e.svg)](https://asciinema.org/a/NP6Y1c9osgFYr38LA51jrfk8e)
+## Port Enumeration
+[![asciicast](https://asciinema.org/a/pYpvEjll5NNjierp2Y0RenukK.svg)](https://asciinema.org/a/pYpvEjll5NNjierp2Y0RenukK)
 
 # NetAuto
 NetAuto is a customizable network reconnaissance tool that automates enumeration of services, protocols and ports, suitable network scanning and penetration testing practices.

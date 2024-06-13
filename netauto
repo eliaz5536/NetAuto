@@ -173,7 +173,7 @@ important_warning() {
 }
 
 #================================================================
-# FUNCTION: print_usage
+# FUNCTION: error
 # DESCRIPTION:
 #     Prints error message using the provided parameter.
 # PARAMETERS:
@@ -187,7 +187,7 @@ error() {
 }
 
 #================================================================
-# FUNCTION: print_usage
+# FUNCTION: important_error
 # DESCRIPTION:
 #     Prints important error message using the provided parameter.
 # PARAMETERS:
@@ -4592,7 +4592,7 @@ recon_scan() {
 }
 
 #================================================================
-# FUNCTION: print_usage
+# FUNCTION: tcp_scan
 # DESCRIPTION:
 #     Performs enumeration scan only on TCP ports.
 # PARAMETERS:
@@ -4938,7 +4938,7 @@ help() {
 #================================================================
 # FUNCTION: recon_usage
 # DESCRIPTION:
-#     Displays the usage information for the script.
+#     Displays reconnaissance usage information for the script.
 # PARAMETERS:
 #     None
 # RETURNS:
@@ -4950,9 +4950,9 @@ recon_usage() {
 }
 
 #================================================================
-# FUNCTION: print_usage
+# FUNCTION: recon_help
 # DESCRIPTION:
-#     Displays the usage information for the script.
+#     Displays reconnaissance usage information for the script.
 # PARAMETERS:
 #     None
 # RETURNS:
